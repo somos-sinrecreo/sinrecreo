@@ -500,7 +500,9 @@
           const { error } = await sb.from('products').update(payload).eq('id', savedProductId);
           if (error) throw error;
         } else {
-          const { data, error } = await sb.from('products').insert(payload).select('id').single();
+          const insertPayload = { ...payload };
+          delete insertPayload.id;
+          const { data, error } = await sb.from('products').insert(insertPayload).select('id').single();
           if (error) throw error;
           savedProductId = data.id;
           el('productId').value = savedProductId;
