@@ -53,6 +53,7 @@
     a { text-decoration: none; color: inherit; }
     button, input, select { font: inherit; }
     .container { width: var(--container); margin: 0 auto; }
+    .hidden { display: none !important; }
 
     /* ── ANNOUNCE BAR ── */
     .announce {
@@ -1484,6 +1485,76 @@
       border-radius: var(--r-sm);
     }
 
+
+    /* ── PAYMENT STATUS ── */
+    .payment-status-wrap {
+      padding: 20px 0 0;
+    }
+    .payment-status-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 18px;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--r-xl);
+      padding: 18px 22px;
+      box-shadow: var(--sh);
+    }
+    .payment-status-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      flex: none;
+    }
+    .payment-status-card.success .payment-status-icon { background: rgba(26,122,58,.12); }
+    .payment-status-card.pending .payment-status-icon { background: rgba(179,92,68,.12); }
+    .payment-status-card.failure .payment-status-icon { background: rgba(156,47,47,.12); }
+    .payment-status-eyebrow {
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .payment-status-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: .03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .payment-status-body {
+      font-size: .92rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 60ch;
+    }
+    .payment-status-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .btn-soft-dark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: .84rem;
+      cursor: pointer;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1100px) {
       .hero-grid { grid-template-columns: 1fr; }
@@ -1497,6 +1568,8 @@
       .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .payment-status-card { grid-template-columns: 1fr; align-items: start; }
+      .payment-status-actions { justify-content: flex-start; }
       .header-inner { grid-template-columns: 1fr auto; grid-template-areas: 'search actions' 'logo logo'; }
       .logo-block { grid-area: logo; align-items: flex-start; padding-top: 6px; }
       .header-left { grid-area: search; }
@@ -1510,6 +1583,7 @@
       .hero-main { padding: 32px 24px; min-height: 380px; }
       .hero-right { flex-direction: column; }
       .hero-title { font-size: 3.2rem; }
+      .payment-status-title { font-size: 1.45rem; }
       .capsule-grid { grid-template-columns: 1fr; }
       .products-grid { grid-template-columns: 1fr; }
       .pcard-actions { flex-direction: column; }
@@ -1591,6 +1665,10 @@
     </div>
   </nav>
 </header>
+
+<div id="paymentStatusMount" class="payment-status-wrap hidden" aria-live="polite">
+  <div class="container" id="paymentStatusInner"></div>
+</div>
 
 <main>
 
@@ -2230,8 +2308,86 @@
       console.error('Error cargando catálogo desde Supabase:', error);
     } finally {
       refreshCatalogData();
+      renderPaymentStatusBanner();
       observeElements();
     }
+  };
+
+
+  const PAYMENT_STATUS_META = {
+    success: {
+      cardClass: 'success',
+      icon: '✓',
+      eyebrow: 'Pago confirmado',
+      title: 'Tu pago salió bien',
+      body: 'Mercado Pago te devolvió a la tienda con estado aprobado. Si la confirmación ya impactó, tu pedido quedó registrado y el stock se actualizó automáticamente.'
+    },
+    pending: {
+      cardClass: 'pending',
+      icon: '⏳',
+      eyebrow: 'Pago pendiente',
+      title: 'Tu pago todavía está en proceso',
+      body: 'A veces Mercado Pago demora unos minutos en cerrar la operación. Si recién pagaste, esperá un poco y volvé a revisar. Si preferís, escribinos por WhatsApp y lo miramos con vos.'
+    },
+    failure: {
+      cardClass: 'failure',
+      icon: '!',
+      eyebrow: 'Pago no completado',
+      title: 'La compra no se cerró',
+      body: 'No se aprobó el pago o el checkout se cortó antes de tiempo. Podés intentar de nuevo con Mercado Pago o cerrar la compra por transferencia y comprobante.'
+    }
+  };
+
+  const getPaymentStatusFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mp_status') || '';
+  };
+
+  const clearPaymentStatusFromUrl = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('mp_status');
+    window.history.replaceState({}, '', url.toString());
+  };
+
+  const renderPaymentStatusBanner = () => {
+    const status = getPaymentStatusFromUrl();
+    const mount = document.getElementById('paymentStatusMount');
+    const inner = document.getElementById('paymentStatusInner');
+    if (!mount || !inner) return;
+
+    const meta = PAYMENT_STATUS_META[status];
+    if (!meta) {
+      mount.classList.add('hidden');
+      inner.innerHTML = '';
+      return;
+    }
+
+    inner.innerHTML = `
+      <div class="payment-status-card ${meta.cardClass}">
+        <div class="payment-status-icon" aria-hidden="true">${meta.icon}</div>
+        <div>
+          <div class="payment-status-eyebrow">${meta.eyebrow}</div>
+          <div class="payment-status-title">${meta.title}</div>
+          <div class="payment-status-body">${meta.body}</div>
+        </div>
+        <div class="payment-status-actions">
+          <a class="btn-primary" href="#catalogo">Seguir comprando</a>
+          <button class="btn-soft-dark" type="button" onclick="openPaymentHelp()">Necesito ayuda</button>
+        </div>
+      </div>
+    `;
+
+    mount.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      mount.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+  };
+
+  const openPaymentHelp = () => {
+    const status = getPaymentStatusFromUrl() || 'sin estado';
+    const msg = encodeURIComponent(`Hola SIN RECREO. Volví desde Mercado Pago con estado: ${status}. ¿Me ayudan a revisar si mi compra quedó bien?`);
+    window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
   };
 
   const placeholderImage = (title, n, accent='#b35c44') => {
@@ -2752,13 +2908,9 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     }
 
     const checkoutUrl = await createMPPreference(cart.map(item => ({
-      id: item.id,
-      title: item.title,
-      size: item.selectedSize,
-      quantity: item.qty,
-      unit_price: item.price,
-      sku: item.sku
-    })));
+      variant_id: item.variantIdsBySize?.[item.selectedSize] || '',
+      quantity: item.qty
+    })).filter(item => item.variant_id));
 
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
