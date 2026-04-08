@@ -1865,7 +1865,7 @@
           </div>
           <div class="pay-method-info">
             <div class="pay-method-name">Transferencia bancaria</div>
-            <div class="pay-method-detail">CBU / Alias · Pago inmediato</div>
+            <div class="pay-method-detail">CVU / Alias · Pago inmediato</div>
           </div>
           <span class="pay-method-badge badge-discount">10% OFF</span>
         </button>
@@ -1886,16 +1886,16 @@
             <span id="transferOwnerValue">SIN RECREO</span>
           </div>
           <div class="transfer-item">
-            <label>CBU</label>
+            <label>CVU</label>
             <span id="transferCbuValue">0000003100000000000000</span>
           </div>
         </div>
         <div class="transfer-actions">
           <button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button>
-          <button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CBU</button>
+          <button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button>
           <button class="transfer-btn" type="button" onclick="openTransferWhatsApp()">Enviar comprobante por WhatsApp</button>
         </div>
-        <div class="modal-note">Te reservamos la prenda y cerrás la compra por WhatsApp con atención real. Ideal si querés confirmar talle, envío o una duda antes de pagar.</div>
+        <div class="modal-note">Vas a ver el alias y el CVU para transferir, y después nos enviás el comprobante por WhatsApp para confirmar la reserva y el envío.</div>
       </div>
 
       <!-- Total -->
@@ -1923,9 +1923,9 @@
   const STORE_CONFIG = {
     whatsappNumber: '54911138614767',
     instagramUrl: 'https://instagram.com/somos.sinrecreo',
-    transferAlias: 'SINRECREO.TIENDA',
-    transferOwner: 'SIN RECREO',
-    transferCBU: '0000003100000000000000',
+    transferAlias: 'lucas.faga.mp',
+    transferOwner: 'Lucas Matias Faga',
+    transferCBU: '0000003100065142182346',
     transferDiscount: 10,
     mpMode: 'direct_links', // 'direct_links' o 'backend'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
@@ -2581,7 +2581,7 @@ ${value}`);
   const buildTransferMessage = () => {
     if (!currentProduct) return 'Hola SIN RECREO, quiero comprar por transferencia.';
     const price = getTransferPrice(currentProduct);
-    return `Hola SIN RECREO! Quiero comprar por transferencia:
+    return `Hola SIN RECREO! Quiero comprar por transferencia y te envío comprobante:
 • ${currentProduct.title} (${currentProduct.sku})
 • Talle: ${selectedSize || 'a confirmar'}
 • Total: ${fmt(price)}
