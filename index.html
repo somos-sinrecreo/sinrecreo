@@ -1927,9 +1927,9 @@
     transferOwner: 'Lucas Matias Faga',
     transferCBU: '0000003100065142182346',
     transferDiscount: 10,
-    mpMode: 'direct_links', // 'direct_links' o 'backend'
+    mpMode: 'backend', // 'direct_links' o 'backend'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
-    mpPreferenceEndpoint: '',// opcional: endpoint seguro de backend para crear preferencias
+    mpPreferenceEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-mp-preference',// endpoint seguro de backend para crear preferencias
     useSupabase: true,
     supabaseUrl: 'https://xedhdojvynmwaadmkcby.supabase.co',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZGhkb2p2eW5td2FhZG1rY2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ4MjYsImV4cCI6MjA5MTI0MDgyNn0.Keaskg8KUqFz4JyuUJJxGCjIDdD6iaDnEAUyvwPgZrA',
@@ -2150,7 +2150,7 @@
         .order('position', { ascending: true }),
       client
         .from('product_variants')
-        .select('product_id, size, stock, mp_link, is_active')
+        .select('id, product_id, size, stock, mp_link, is_active')
         .eq('is_active', true)
     ]);
 
@@ -2175,10 +2175,12 @@
       const rowVariants = variantsByProduct[row.id] || [];
       const stockBySize = {};
       const mpLinks = {};
+      const variantIdsBySize = {};
 
       rowVariants.forEach(variant => {
         stockBySize[variant.size] = Number(variant.stock || 0);
         mpLinks[variant.size] = variant.mp_link || '';
+        variantIdsBySize[variant.size] = variant.id || '';
       });
 
       return {
@@ -2195,7 +2197,8 @@
         artType: row.art_type || 'poster',
         images: rowImages.map(img => img.image_url).slice(0, 3),
         stockBySize,
-        mpLinks
+        mpLinks,
+        variantIdsBySize
       };
     });
   };
@@ -2597,9 +2600,14 @@ ${value}`);
   const createMPPreference = async (items) => {
     if (STORE_CONFIG.mpMode !== 'backend' || !STORE_CONFIG.mpPreferenceEndpoint) return null;
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'apikey': STORE_CONFIG.supabaseAnonKey,
+        'Authorization': `Bearer ${STORE_CONFIG.supabaseAnonKey}`
+      };
       const res = await fetch(STORE_CONFIG.mpPreferenceEndpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ items })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -2624,20 +2632,22 @@ ${value}`);
       return;
     }
 
-    const directLink = getMpLink(currentProduct, selectedSize);
+    const variantId = currentProduct.variantIdsBySize?.[selectedSize] || '';
+    const directLink = STORE_CONFIG.mpMode === 'direct_links' ? getMpLink(currentProduct, selectedSize) : '';
     if (directLink) {
       window.open(directLink, '_blank');
       closeModal();
       return;
     }
 
+    if (!variantId && STORE_CONFIG.mpMode === 'backend') {
+      alert(`No encontré la variante de talle ${selectedSize} para esta prenda. Revisá el stock cargado en el panel admin.`);
+      return;
+    }
+
     const checkoutUrl = await createMPPreference([{
-      id: currentProduct.id,
-      title: currentProduct.title,
-      size: selectedSize,
-      quantity: 1,
-      unit_price: currentProduct.price,
-      sku: currentProduct.sku
+      variant_id: variantId,
+      quantity: 1
     }]);
 
     if (checkoutUrl) {
@@ -2649,8 +2659,8 @@ ${value}`);
     alert(`Falta conectar Mercado Pago para "${currentProduct.title}" (${selectedSize}).
 
 Tenés dos caminos seguros:
-1. Cargar un link directo de MP por talle en mpLinks.
-2. Conectar un backend que cree la preferencia de pago.
+1. Revisar que la Edge Function create-mp-preference esté desplegada.
+2. Revisar que ese talle tenga variante activa y stock en Supabase.
 
 Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   };
