@@ -1061,6 +1061,42 @@
     }
 
 
+
+
+    .customer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .customer-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .customer-field.full { grid-column: 1 / -1; }
+    .customer-label {
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .customer-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      background: #fff;
+      outline: none;
+      font-size: .92rem;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .customer-input:focus {
+      border-color: rgba(14,14,16,.24);
+      box-shadow: 0 0 0 3px rgba(192,90,58,.08);
+    }
+
     /* ── PAYMENT MODAL ── */
     .modal-overlay {
       display: none;
@@ -1919,6 +1955,22 @@
       <div class="modal-section-title">Talle</div>
       <div class="size-selector" id="modalSizes"></div>
 
+      <div class="modal-section-title">Tus datos</div>
+      <div class="customer-grid">
+        <label class="customer-field">
+          <span class="customer-label">Nombre</span>
+          <input id="customerName" class="customer-input" type="text" placeholder="Cómo te llamás" />
+        </label>
+        <label class="customer-field">
+          <span class="customer-label">Teléfono</span>
+          <input id="customerPhone" class="customer-input" type="tel" placeholder="11 1234 5678" />
+        </label>
+        <label class="customer-field full">
+          <span class="customer-label">Email</span>
+          <input id="customerEmail" class="customer-input" type="email" placeholder="tuemail@dominio.com" />
+        </label>
+      </div>
+
       <!-- Payment methods -->
       <div class="modal-section-title">Medio de pago</div>
       <div class="pay-methods">
@@ -2188,6 +2240,33 @@
   let selectedSize = null;
   let selectedPayMethod = 'mp';
   let sbClient = null;
+
+  const getCheckoutCustomer = () => ({
+    name: (document.getElementById('customerName')?.value || '').trim(),
+    phone: (document.getElementById('customerPhone')?.value || '').trim(),
+    email: (document.getElementById('customerEmail')?.value || '').trim().toLowerCase()
+  });
+
+  const validateCheckoutCustomer = () => {
+    const customer = getCheckoutCustomer();
+    if (!customer.name) {
+      alert('Necesitamos tu nombre para confirmar el pedido.');
+      document.getElementById('customerName')?.focus();
+      return null;
+    }
+    if (!customer.email) {
+      alert('Necesitamos tu correo para enviarte la confirmación del pedido.');
+      document.getElementById('customerEmail')?.focus();
+      return null;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email);
+    if (!emailOk) {
+      alert('Revisá el correo electrónico antes de continuar.');
+      document.getElementById('customerEmail')?.focus();
+      return null;
+    }
+    return customer;
+  };
 
   /* ─── HELPERS ─── */
   const fmt = v => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(v);
@@ -2683,6 +2762,12 @@
       <button class="sz-btn ${selectedSize === sz ? 'selected' : ''}" onclick="selectSize(this,'${sz}')">${sz}</button>
     `).join('');
 
+    const emailHint = currentProduct?.sku ? `${currentProduct.sku.toLowerCase()}@pedido.com` : '';
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('customerEmail').value = '';
+    document.getElementById('customerEmail').placeholder = 'tuemail@dominio.com';
+
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
     const first = document.querySelector('.pay-method-btn');
     if (first) first.classList.add('selected');
@@ -2758,10 +2843,14 @@ ${value}`);
   };
 
   const buildTransferMessage = () => {
+    const customer = getCheckoutCustomer();
     if (!currentProduct) return 'Hola SIN RECREO, quiero comprar por transferencia.';
     const price = getTransferPrice(currentProduct);
     return `Hola SIN RECREO! Quiero comprar por transferencia y te envío comprobante:
-• ${currentProduct.title} (${currentProduct.sku})
+• Nombre: ${customer.name || 'A confirmar'}
+• Email: ${customer.email || 'A confirmar'}
+• Teléfono: ${customer.phone || 'A confirmar'}
+• Producto: ${currentProduct.title} (${currentProduct.sku})
 • Talle: ${selectedSize || 'a confirmar'}
 • Total: ${fmt(price)}
 
@@ -2773,7 +2862,7 @@ ${value}`);
     window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
   };
 
-  const createMPPreference = async (items) => {
+  const createMPPreference = async (items, customer = {}) => {
     if (STORE_CONFIG.mpMode !== 'backend' || !STORE_CONFIG.mpPreferenceEndpoint) return null;
     try {
       const headers = {
@@ -2784,7 +2873,12 @@ ${value}`);
       const res = await fetch(STORE_CONFIG.mpPreferenceEndpoint, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ items })
+        body: JSON.stringify({
+          items,
+          customer_name: customer.name || '',
+          customer_email: customer.email || '',
+          customer_phone: customer.phone || ''
+        })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -2804,6 +2898,9 @@ ${value}`);
       alert('Elegí un talle antes de continuar.');
       return;
     }
+
+    const customer = validateCheckoutCustomer();
+    if (!customer) return;
 
     if (selectedPayMethod === 'transfer') {
       openTransferWhatsApp();
@@ -2827,7 +2924,7 @@ ${value}`);
     const checkoutUrl = await createMPPreference([{
       variant_id: variantId,
       quantity: 1
-    }]);
+    }], customer);
 
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
@@ -2917,6 +3014,15 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   const checkoutMP = async () => {
     if (!cart.length) return;
 
+    const email = window.prompt('Antes de ir a Mercado Pago, cargá tu email para enviarte la confirmación del pedido:');
+    if (!email) return;
+    const customer = { name: '', phone: '', email: email.trim().toLowerCase() };
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email);
+    if (!emailOk) {
+      alert('Revisá el correo electrónico antes de continuar.');
+      return;
+    }
+
     if (cart.length === 1) {
       const single = cart[0];
       const directLink = getMpLink(single, single.selectedSize);
@@ -2929,7 +3035,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     const checkoutUrl = await createMPPreference(cart.map(item => ({
       variant_id: item.variantIdsBySize?.[item.selectedSize] || '',
       quantity: item.qty
-    })).filter(item => item.variant_id));
+    })).filter(item => item.variant_id), customer);
 
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
