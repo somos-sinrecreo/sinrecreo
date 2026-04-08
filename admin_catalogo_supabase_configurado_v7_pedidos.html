@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIN RECREO | Admin catálogo + pedidos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧵%3C/text%3E%3C/svg%3E">
+  <style>
+    :root{
+      --ink:#1a1a1b; --paper:#faf9f6; --accent:#b35c44; --muted:#6d6863; --line:#e8e1d7;
+      --card:#ffffff; --ok:#1c7f4f; --danger:#9c2f2f; --radius:20px; --shadow:0 16px 40px rgba(26,26,27,.08);
+      --display:'Bebas Neue', sans-serif; --serif:'DM Serif Display', Georgia, serif; --body:'DM Sans', system-ui, sans-serif;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var(--body)}
+    a{text-decoration:none;color:inherit} button,input,textarea,select{font:inherit}
+    .wrap{max-width:1400px;margin:0 auto;padding:24px}
+    .hero{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:20px}
+    .brand{font-family:var(--display);font-size:3.2rem;letter-spacing:.04em;line-height:.9}
+    .sub{color:var(--muted);max-width:62ch;line-height:1.6}
+    .notice{background:#fff6f0;border:1px solid #f0d4c7;color:#6c3c2e;padding:14px 16px;border-radius:16px;margin:16px 0}
+    .grid{display:grid;grid-template-columns:340px 1fr;gap:20px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .p24{padding:24px}.p20{padding:20px}.p16{padding:16px}
+    .title{font-family:var(--display);font-size:1.6rem;letter-spacing:.04em;margin:0 0 14px}
+    .mini{font-size:.8rem;color:var(--muted)}
+    .stack{display:flex;flex-direction:column;gap:12px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .label{font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+    input,textarea,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;outline:none}
+    textarea{min-height:110px;resize:vertical}
+    .btn{border:0;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer}
+    .btn-dark{background:var(--ink);color:#fff}
+    .btn-accent{background:var(--accent);color:#fff}
+    .btn-soft{background:#f4efe9;border:1px solid var(--line)}
+    .btn-danger{background:var(--danger);color:#fff}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .list{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow:auto}
+    .item{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff;cursor:pointer;transition:.15s}
+    .item:hover,.item.active{border-color:var(--ink);transform:translateY(-1px)}
+    .item h4{margin:0 0 4px;font-size:1rem}
+    .item p{margin:0;color:var(--muted);font-size:.85rem;line-height:1.45}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:#f4efe9;border:1px solid var(--line)}
+    .divider{height:1px;background:var(--line);margin:10px 0}
+    .img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .img-box{border:1px dashed #d6cec4;border-radius:16px;padding:12px;background:#fcfbf9}
+    .preview{width:100%;aspect-ratio:1/1;border-radius:12px;background:#f0ebe5;display:block;object-fit:cover;border:1px solid var(--line);margin-top:8px}
+    .variant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .variant-card{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fcfbf9}
+    .variant-head{font-weight:700;margin-bottom:8px}
+    .status{padding:10px 12px;border-radius:12px;font-size:.88rem}
+    .ok{background:#ebfff4;color:var(--ok);border:1px solid #bfe8d0}
+    .err{background:#fff0f0;color:var(--danger);border:1px solid #efc2c2}
+    .hidden{display:none !important}
+
+    .app-shell{display:flex;flex-direction:column;gap:16px}
+    .view-switch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .segmented{display:flex;gap:8px;flex-wrap:wrap}
+    .seg-btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:999px;font-weight:700;cursor:pointer}
+    .seg-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .orders-grid{display:grid;grid-template-columns:360px 1fr;gap:20px}
+    .order-list{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow:auto}
+    .order-item{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff;cursor:pointer;transition:.15s}
+    .order-item:hover,.order-item.active{border-color:var(--ink);transform:translateY(-1px)}
+    .order-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+    .order-code{font-weight:800;font-size:.96rem}
+    .order-pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border:1px solid transparent}
+    .pill-approved{background:#ebfff4;color:#1c7f4f;border-color:#bfe8d0}
+    .pill-pending{background:#fff6ec;color:#9b5b22;border-color:#f0d5b9}
+    .pill-rejected,.pill-cancelled,.pill-failure,.pill-refunded{background:#fff0f0;color:#9c2f2f;border-color:#efc2c2}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    .summary-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fcfbf9}
+    .summary-card strong{display:block;font-family:var(--display);font-size:1.7rem;line-height:1;letter-spacing:.03em;margin-bottom:4px}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .detail-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fcfbf9}
+    .kv{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:.92rem;line-height:1.55}
+    .kv div:nth-child(odd){color:var(--muted);font-weight:700}
+    .order-items-table{width:100%;border-collapse:collapse;margin-top:6px}
+    .order-items-table th,.order-items-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:.9rem}
+    .order-items-table th{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .empty-state{border:1px dashed #d6cec4;border-radius:18px;padding:28px;text-align:center;background:#fcfbf9;color:var(--muted)}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}.orders-grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.detail-grid,.img-grid,.variant-grid,.row{grid-template-columns:1fr}}
+    @media (max-width:700px){.summary-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="brand">SIN RECREO</div>
+        <p class="sub">Panel de gestión para catálogo y pedidos. Cargá productos, controlá stock por talle y mirá en claro lo que entra por Mercado Pago.</p>
+      </div>
+      <div class="mini">Hecho para GitHub Pages + Supabase</div>
+    </div>
+
+    <div class="notice">
+      Entrá con tu usuario administrador. Desde acá podés cargar catálogo y revisar pedidos de forma clara, con stock por talle e imágenes por producto.
+    </div>
+
+    <div id="statusBox" class="hidden"></div>
+
+    <div id="loginCard" class="card p24">
+      <h2 class="title">Ingresar</h2>
+      <div class="row">
+        <label class="field">
+          <span class="label">Email</span>
+          <input id="loginEmail" type="email" placeholder="tuemail@dominio.com" />
+        </label>
+        <label class="field">
+          <span class="label">Contraseña</span>
+          <input id="loginPassword" type="password" placeholder="••••••••" />
+        </label>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn btn-dark" id="loginBtn">Entrar al admin</button>
+      </div>
+    </div>
+
+    <div id="appShell" class="app-shell hidden" style="margin-top:20px">
+      <div class="card p16 view-switch">
+        <div>
+          <h2 class="title" style="margin:0 0 4px">Panel de gestión</h2>
+          <div class="mini">Elegí si querés trabajar catálogo o revisar pedidos.</div>
+        </div>
+        <div class="segmented">
+          <button class="seg-btn active" id="catalogViewBtn">Catálogo</button>
+          <button class="seg-btn" id="ordersViewBtn">Pedidos</button>
+          <button class="btn btn-soft" id="logoutBtn">Salir</button>
+        </div>
+      </div>
+
+      <div id="catalogView" class="grid">
+        <aside class="card p20">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+            <h2 class="title" style="margin:0">Productos</h2>
+          </div>
+          <div class="toolbar" style="margin-bottom:12px">
+            <button class="btn btn-accent" id="newProductBtn">Nuevo producto</button>
+            <button class="btn btn-soft" id="reloadBtn">Recargar</button>
+          </div>
+          <div id="productList" class="list"></div>
+        </aside>
+
+        <section class="card p24">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <h2 class="title" style="margin:0">Editor de catálogo</h2>
+            <div class="toolbar">
+              <button class="btn btn-dark" id="saveBtn">Guardar</button>
+              <button class="btn btn-danger" id="deactivateBtn">Desactivar</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <input id="productId" type="hidden" />
+
+          <div class="row">
+            <label class="field"><span class="label">Slug</span><input id="slug" placeholder="voto-femenino" /></label>
+            <label class="field"><span class="label">SKU</span><input id="sku" placeholder="SR-MA-001" /></label>
+          </div>
+
+          <div class="row">
+            <label class="field"><span class="label">Cápsula</span><input id="capsule" placeholder="Memoria y archivo" /></label>
+            <label class="field"><span class="label">Título</span><input id="title" placeholder="Voto femenino" /></label>
+          </div>
+
+          <div class="row">
+            <label class="field"><span class="label">Precio</span><input id="price" type="number" min="0" step="100" /></label>
+            <label class="field"><span class="label">Corte</span>
+              <select id="cut">
+                <option>Unisex</option>
+                <option>Corte dama</option>
+                <option>Oversize</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="row">
+            <label class="field"><span class="label">Fecha de orden</span><input id="sortDate" type="date" /></label>
+            <label class="field"><span class="label">Estilo visual</span>
+              <select id="artType">
+                <option value="poster">Poster</option>
+                <option value="type">Type</option>
+                <option value="pop">Pop</option>
+                <option value="portrait">Portrait</option>
+                <option value="grid">Grid</option>
+                <option value="symbol">Symbol</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="row">
+            <label class="field"><span class="label">Destacado</span>
+              <select id="featured">
+                <option value="false">No</option>
+                <option value="true">Sí</option>
+              </select>
+            </label>
+            <label class="field"><span class="label">Activo</span>
+              <select id="isActive">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field" style="margin-top:12px">
+            <span class="label">Descripción</span>
+            <textarea id="description" placeholder="Descripción breve de la prenda"></textarea>
+          </label>
+
+          <div class="divider"></div>
+          <h3 class="title" style="font-size:1.35rem">Imágenes</h3>
+          <p class="mini">Podés pegar URLs o subir archivos al bucket <strong>product-images</strong>. Cargá hasta 3 imágenes por prenda.</p>
+
+          <div class="img-grid" id="imagesGrid"></div>
+
+          <div class="divider"></div>
+          <h3 class="title" style="font-size:1.35rem">Talles y links de pago</h3>
+          <p class="mini">En cada talle podés cargar stock y su link directo de Mercado Pago. Si el stock queda en 0, no se mostrará al público.</p>
+          <div class="variant-grid" id="variantsGrid"></div>
+        </section>
+      </div>
+
+      <div id="ordersView" class="orders-grid hidden">
+        <aside class="card p20">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+            <h2 class="title" style="margin:0">Pedidos</h2>
+            <button class="btn btn-soft" id="reloadOrdersBtn">Recargar</button>
+          </div>
+          <div class="toolbar" style="margin-bottom:12px">
+            <select id="orderStatusFilter">
+              <option value="all">Todos</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <div id="orderList" class="order-list"></div>
+        </aside>
+
+        <section class="card p24">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div>
+              <h2 class="title" style="margin:0">Lectura de pedidos</h2>
+              <div class="mini">Un vistazo claro de lo que entró, cómo se pagó y qué compró cada persona.</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="ordersSummary" class="summary-grid"></div>
+          <div id="orderDetail"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      SUPABASE_URL: 'https://xedhdojvynmwaadmkcby.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZGhkb2p2eW5td2FhZG1rY2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ4MjYsImV4cCI6MjA5MTI0MDgyNn0.Keaskg8KUqFz4JyuUJJxGCjIDdD6iaDnEAUyvwPgZrA',
+      STORAGE_BUCKET: 'product-images'
+    };
+
+    const SIZE_ORDER = ['XS','S','M','L','XL','XXL','3XL'];
+    const IMAGE_SLOTS = [1,2,3];
+    let sb = null;
+    let currentUser = null;
+    let currentProduct = null;
+    let currentImages = {};
+    let products = [];
+    let currentView = 'catalog';
+    let orders = [];
+    let currentOrderId = null;
+
+    const el = id => document.getElementById(id);
+    const showStatus = (msg, type='ok') => {
+      const box = el('statusBox');
+      box.className = `status ${type === 'ok' ? 'ok' : 'err'}`;
+      box.textContent = msg;
+      box.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const clearStatus = () => el('statusBox').classList.add('hidden');
+
+    const isConfigured = () => CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_URL.includes('PEGA_ACA') && !CONFIG.SUPABASE_ANON_KEY.includes('PEGA_ACA');
+
+    const init = () => {
+      if (!isConfigured()) {
+        showStatus('Pegá tu SUPABASE_URL y SUPABASE_ANON_KEY en el archivo admin_catalogo_supabase.html antes de usarlo.', 'err');
+        return;
+      }
+      sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      renderImageInputs();
+      renderVariantInputs();
+      wireEvents();
+      restoreSession();
+    };
+
+    const wireEvents = () => {
+      el('loginBtn').addEventListener('click', login);
+      el('logoutBtn').addEventListener('click', logout);
+      el('catalogViewBtn').addEventListener('click', () => switchView('catalog'));
+      el('ordersViewBtn').addEventListener('click', () => switchView('orders'));
+      el('newProductBtn').addEventListener('click', newProduct);
+      el('reloadBtn').addEventListener('click', loadProducts);
+      el('reloadOrdersBtn').addEventListener('click', loadOrders);
+      el('orderStatusFilter').addEventListener('change', renderOrderList);
+      el('saveBtn').addEventListener('click', saveProduct);
+      el('deactivateBtn').addEventListener('click', deactivateProduct);
+    };
+
+    const renderImageInputs = () => {
+      el('imagesGrid').innerHTML = IMAGE_SLOTS.map(pos => `
+        <div class="img-box">
+          <div class="label">Imagen ${pos}</div>
+          <input id="imageUrl${pos}" placeholder="https://..." />
+          <input id="imageFile${pos}" type="file" accept="image/*" style="margin-top:8px" />
+          <img id="imagePreview${pos}" class="preview" alt="Preview ${pos}" />
+        </div>
+      `).join('');
+      IMAGE_SLOTS.forEach(pos => {
+        el(`imageUrl${pos}`).addEventListener('input', e => {
+          el(`imagePreview${pos}`).src = e.target.value || '';
+        });
+        el(`imageFile${pos}`).addEventListener('change', e => {
+          const file = e.target.files?.[0];
+          if (file) el(`imagePreview${pos}`).src = URL.createObjectURL(file);
+        });
+      });
+    };
+
+    const renderVariantInputs = () => {
+      el('variantsGrid').innerHTML = SIZE_ORDER.map(size => `
+        <div class="variant-card">
+          <div class="variant-head">${size}</div>
+          <label class="field">
+            <span class="label">Stock</span>
+            <input id="stock_${size}" type="number" min="0" step="1" value="0" />
+          </label>
+          <label class="field" style="margin-top:8px">
+            <span class="label">Link MP</span>
+            <input id="mp_${size}" placeholder="https://mpago.la/..." />
+          </label>
+        </div>
+      `).join('');
+    };
+
+    const restoreSession = async () => {
+      const { data } = await sb.auth.getSession();
+      if (data?.session) {
+        currentUser = data.session.user;
+        await enterApp();
+      }
+    };
+
+    const ensureAdmin = async () => {
+      const { data, error } = await sb
+        .from('profiles')
+        .select('is_admin, email')
+        .eq('id', currentUser.id)
+        .single();
+      if (error) throw error;
+      if (!data?.is_admin) throw new Error('Tu usuario existe, pero no tiene permisos de administrador.');
+      return data;
+    };
+
+    const login = async () => {
+      clearStatus();
+      try {
+        const email = el('loginEmail').value.trim();
+        const password = el('loginPassword').value;
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        currentUser = data.user;
+        await enterApp();
+        showStatus('Sesión iniciada correctamente.');
+      } catch (err) {
+        showStatus(err.message || 'No se pudo iniciar sesión.', 'err');
+      }
+    };
+
+    const logout = async () => {
+      await sb.auth.signOut();
+      location.reload();
+    };
+
+    const enterApp = async () => {
+      await ensureAdmin();
+      el('loginCard').classList.add('hidden');
+      el('appShell').classList.remove('hidden');
+      switchView(currentView);
+      await Promise.all([loadProducts(), loadOrders()]);
+      newProduct();
+    };
+
+    const switchView = (view) => {
+      currentView = view;
+      el('catalogView').classList.toggle('hidden', view !== 'catalog');
+      el('ordersView').classList.toggle('hidden', view !== 'orders');
+      el('catalogViewBtn').classList.toggle('active', view === 'catalog');
+      el('ordersViewBtn').classList.toggle('active', view === 'orders');
+    };
+
+    const fmtMoney = value => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(value || 0));
+    const fmtDate = value => {
+      if (!value) return '—';
+      const d = new Date(value);
+      return new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short' }).format(d);
+    };
+    const getOrderPillClass = status => {
+      const s = String(status || '').toLowerCase();
+      if (s === 'approved') return 'pill-approved';
+      if (s === 'pending') return 'pill-pending';
+      return 'pill-rejected';
+    };
+
+    const loadOrders = async () => {
+      clearStatus();
+      try {
+        const { data: orderRows, error: orderError } = await sb
+          .from('orders')
+          .select('id, created_at, status, customer_name, customer_email, customer_phone, payment_method, mp_preference_id, mp_payment_id, mp_external_reference, subtotal, discount, total, notes')
+          .order('created_at', { ascending: false })
+          .limit(100);
+        if (orderError) throw orderError;
+
+        const orderIds = (orderRows || []).map(o => o.id);
+        let items = [];
+        if (orderIds.length) {
+          const { data: itemRows, error: itemError } = await sb
+            .from('order_items')
+            .select('id, order_id, product_title, size, quantity, unit_price, line_total')
+            .in('order_id', orderIds)
+          if (itemError) throw itemError;
+          items = itemRows || [];
+        }
+
+        const byOrder = {};
+        items.forEach(item => {
+          if (!byOrder[item.order_id]) byOrder[item.order_id] = [];
+          byOrder[item.order_id].push(item);
+        });
+
+        orders = (orderRows || []).map(order => ({ ...order, items: byOrder[order.id] || [] }));
+        if (!currentOrderId && orders[0]) currentOrderId = orders[0].id;
+        if (currentOrderId && !orders.some(o => o.id === currentOrderId)) currentOrderId = orders[0]?.id || null;
+        renderOrdersSummary();
+        renderOrderList();
+        renderOrderDetail();
+      } catch (err) {
+        showStatus(err.message || 'No se pudieron cargar los pedidos.', 'err');
+      }
+    };
+
+    const getFilteredOrders = () => {
+      const filter = el('orderStatusFilter')?.value || 'all';
+      if (filter === 'all') return orders;
+      return orders.filter(order => String(order.status || '').toLowerCase() === filter);
+    };
+
+    const renderOrdersSummary = () => {
+      const wrap = el('ordersSummary');
+      const approved = orders.filter(o => o.status === 'approved');
+      const pending = orders.filter(o => o.status === 'pending');
+      const billed = orders.reduce((acc, o) => acc + Number(o.total || 0), 0);
+      wrap.innerHTML = `
+        <div class="summary-card"><strong>${orders.length}</strong><span class="mini">pedidos cargados</span></div>
+        <div class="summary-card"><strong>${approved.length}</strong><span class="mini">aprobados</span></div>
+        <div class="summary-card"><strong>${pending.length}</strong><span class="mini">pendientes</span></div>
+        <div class="summary-card"><strong>${fmtMoney(billed)}</strong><span class="mini">monto total registrado</span></div>
+      `;
+    };
+
+    const renderOrderList = () => {
+      const list = el('orderList');
+      const filtered = getFilteredOrders();
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty-state">Todavía no hay pedidos para este filtro.</div>';
+        if (!orders.length) currentOrderId = null;
+        renderOrderDetail();
+        return;
+      }
+      if (!filtered.some(o => o.id === currentOrderId)) currentOrderId = filtered[0].id;
+      list.innerHTML = filtered.map(order => {
+        const customer = order.customer_name || order.customer_email || 'Sin nombre';
+        const itemsCount = order.items.reduce((acc, item) => acc + Number(item.quantity || 0), 0);
+        return `
+          <div class="order-item ${currentOrderId === order.id ? 'active' : ''}" data-id="${order.id}">
+            <div class="order-top">
+              <div class="order-code">#${order.id.slice(0, 8)}</div>
+              <span class="order-pill ${getOrderPillClass(order.status)}">${order.status || 'pending'}</span>
+            </div>
+            <p style="margin:0 0 6px"><strong>${customer}</strong></p>
+            <p style="margin:0 0 6px">${fmtDate(order.created_at)}</p>
+            <p style="margin:0">${itemsCount} item(s) · ${fmtMoney(order.total)}</p>
+          </div>
+        `;
+      }).join('');
+      list.querySelectorAll('.order-item[data-id]').forEach(node => {
+        node.addEventListener('click', () => {
+          currentOrderId = node.dataset.id;
+          renderOrderList();
+          renderOrderDetail();
+        });
+      });
+      renderOrderDetail();
+    };
+
+    const renderOrderDetail = () => {
+      const detail = el('orderDetail');
+      const order = orders.find(o => o.id === currentOrderId);
+      if (!order) {
+        detail.innerHTML = '<div class="empty-state">Elegí un pedido para ver el detalle completo.</div>';
+        return;
+      }
+      const itemsRows = order.items.length ? order.items.map(item => `
+        <tr>
+          <td>${item.product_title}</td>
+          <td>${item.size || '—'}</td>
+          <td>${item.quantity}</td>
+          <td>${fmtMoney(item.unit_price)}</td>
+          <td>${fmtMoney(item.line_total)}</td>
+        </tr>
+      `).join('') : '<tr><td colspan="5">Sin items cargados</td></tr>';
+
+      detail.innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-card">
+            <div class="label" style="margin-bottom:10px">Compra</div>
+            <div class="kv">
+              <div>Pedido</div><div>#${order.id}</div>
+              <div>Estado</div><div><span class="order-pill ${getOrderPillClass(order.status)}">${order.status || 'pending'}</span></div>
+              <div>Creado</div><div>${fmtDate(order.created_at)}</div>
+              <div>Método</div><div>${order.payment_method || '—'}</div>
+              <div>Total</div><div><strong>${fmtMoney(order.total)}</strong></div>
+              <div>Referencia MP</div><div>${order.mp_external_reference || '—'}</div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="label" style="margin-bottom:10px">Cliente</div>
+            <div class="kv">
+              <div>Nombre</div><div>${order.customer_name || '—'}</div>
+              <div>Email</div><div>${order.customer_email || '—'}</div>
+              <div>Teléfono</div><div>${order.customer_phone || '—'}</div>
+              <div>Payment ID</div><div>${order.mp_payment_id || '—'}</div>
+              <div>Preference ID</div><div>${order.mp_preference_id || '—'}</div>
+              <div>Notas</div><div>${order.notes || '—'}</div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-card" style="margin-top:14px">
+          <div class="label" style="margin-bottom:10px">Items del pedido</div>
+          <table class="order-items-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Talle</th>
+                <th>Cant.</th>
+                <th>Unitario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>${itemsRows}</tbody>
+          </table>
+        </div>
+      `;
+    };
+
+    const loadProducts = async () => {
+      clearStatus();
+      try {
+        const { data, error } = await sb
+          .from('products')
+          .select('id, slug, sku, capsule, title, description, price, cut, sort_date, featured, art_type, is_active, created_at')
+          .order('sort_date', { ascending: false })
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        products = data || [];
+        renderProductList();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo cargar el catálogo.', 'err');
+      }
+    };
+
+    const renderProductList = () => {
+      const list = el('productList');
+      if (!products.length) {
+        list.innerHTML = '<div class="item"><h4>Sin productos</h4><p>Creá el primero desde “Nuevo producto”.</p></div>';
+        return;
+      }
+      list.innerHTML = products.map(p => `
+        <div class="item ${currentProduct?.id === p.id ? 'active' : ''}" data-id="${p.id}">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+            <h4>${p.title}</h4>
+            <span class="badge">${p.is_active ? 'Activo' : 'Inactivo'}</span>
+          </div>
+          <p>${p.capsule} · ${p.sku || 'sin SKU'} · $${Number(p.price || 0).toLocaleString('es-AR')}</p>
+        </div>
+      `).join('');
+      list.querySelectorAll('.item[data-id]').forEach(node => {
+        node.addEventListener('click', () => editProduct(node.dataset.id));
+      });
+    };
+
+    const blankForm = () => ({
+      id:'',
+      slug:'',
+      sku:'',
+      capsule:'',
+      title:'',
+      description:'',
+      price:'',
+      cut:'Unisex',
+      sort_date:new Date().toISOString().slice(0,10),
+      featured:false,
+      art_type:'poster',
+      is_active:true
+    });
+
+    const fillForm = product => {
+      el('productId').value = product.id || '';
+      el('slug').value = product.slug || '';
+      el('sku').value = product.sku || '';
+      el('capsule').value = product.capsule || '';
+      el('title').value = product.title || '';
+      el('description').value = product.description || '';
+      el('price').value = product.price || '';
+      el('cut').value = product.cut || 'Unisex';
+      el('sortDate').value = product.sort_date || new Date().toISOString().slice(0,10);
+      el('featured').value = String(Boolean(product.featured));
+      el('artType').value = product.art_type || 'poster';
+      el('isActive').value = String(Boolean(product.is_active));
+    };
+
+    const clearImages = () => {
+      currentImages = {};
+      IMAGE_SLOTS.forEach(pos => {
+        el(`imageUrl${pos}`).value = '';
+        el(`imageFile${pos}`).value = '';
+        el(`imagePreview${pos}`).src = '';
+      });
+    };
+
+    const clearVariants = () => {
+      SIZE_ORDER.forEach(size => {
+        el(`stock_${size}`).value = 0;
+        el(`mp_${size}`).value = '';
+      });
+    };
+
+    const newProduct = () => {
+      currentProduct = blankForm();
+      fillForm(currentProduct);
+      clearImages();
+      clearVariants();
+      renderProductList();
+    };
+
+    const editProduct = async (id) => {
+      clearStatus();
+      try {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+        currentProduct = product;
+        fillForm(product);
+
+        const [{ data: images, error: imgError }, { data: variants, error: varError }] = await Promise.all([
+          sb.from('product_images').select('id, image_url, position').eq('product_id', id).order('position'),
+          sb.from('product_variants').select('id, size, stock, mp_link, is_active').eq('product_id', id)
+        ]);
+
+        if (imgError) throw imgError;
+        if (varError) throw varError;
+
+        clearImages();
+        (images || []).forEach(img => {
+          currentImages[img.position] = img.image_url;
+          el(`imageUrl${img.position}`).value = img.image_url || '';
+          el(`imagePreview${img.position}`).src = img.image_url || '';
+        });
+
+        clearVariants();
+        (variants || []).forEach(v => {
+          if (el(`stock_${v.size}`)) el(`stock_${v.size}`).value = Number(v.stock || 0);
+          if (el(`mp_${v.size}`)) el(`mp_${v.size}`).value = v.mp_link || '';
+        });
+
+        renderProductList();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo abrir el producto.', 'err');
+      }
+    };
+
+    const slugify = value => String(value || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const collectForm = () => {
+      const title = el('title').value.trim();
+      const slug = slugify(el('slug').value.trim() || title);
+      return {
+        id: el('productId').value || null,
+        slug,
+        sku: el('sku').value.trim() || null,
+        capsule: el('capsule').value.trim(),
+        title,
+        description: el('description').value.trim(),
+        price: Number(el('price').value || 0),
+        cut: el('cut').value,
+        sort_date: el('sortDate').value,
+        featured: el('featured').value === 'true',
+        art_type: el('artType').value,
+        is_active: el('isActive').value === 'true'
+      };
+    };
+
+    const uploadImageIfNeeded = async (productSlug, position) => {
+      const fileInput = el(`imageFile${position}`);
+      const urlInput = el(`imageUrl${position}`);
+      const file = fileInput.files?.[0];
+
+      if (!file) {
+        return urlInput.value.trim() || '';
+      }
+
+      const ext = file.name.split('.').pop() || 'jpg';
+      const safeName = `${productSlug}/${Date.now()}-${position}.${ext}`;
+      const { error } = await sb.storage.from(CONFIG.STORAGE_BUCKET).upload(safeName, file, { upsert: true });
+      if (error) throw error;
+
+      const { data } = sb.storage.from(CONFIG.STORAGE_BUCKET).getPublicUrl(safeName);
+      return data.publicUrl;
+    };
+
+    const saveProduct = async () => {
+      clearStatus();
+      try {
+        const payload = collectForm();
+        if (!payload.title || !payload.capsule || !payload.slug) {
+          throw new Error('Completá al menos slug, cápsula y título.');
+        }
+
+        let savedProductId = payload.id;
+
+        if (savedProductId) {
+          const { error } = await sb.from('products').update(payload).eq('id', savedProductId);
+          if (error) throw error;
+        } else {
+          const insertPayload = { ...payload };
+          delete insertPayload.id;
+          const { data, error } = await sb.from('products').insert(insertPayload).select('id').single();
+          if (error) throw error;
+          savedProductId = data.id;
+          el('productId').value = savedProductId;
+        }
+
+        const imageRows = [];
+        for (const position of IMAGE_SLOTS) {
+          const imageUrl = await uploadImageIfNeeded(payload.slug, position);
+          if (imageUrl) {
+            imageRows.push({ product_id: savedProductId, position, image_url: imageUrl });
+          }
+        }
+
+        const { error: deleteImagesError } = await sb.from('product_images').delete().eq('product_id', savedProductId);
+        if (deleteImagesError) throw deleteImagesError;
+        if (imageRows.length) {
+          const { error: insertImagesError } = await sb.from('product_images').insert(imageRows);
+          if (insertImagesError) throw insertImagesError;
+        }
+
+        for (const size of SIZE_ORDER) {
+          const stockRaw = el(`stock_${size}`).value;
+          const stock = parseInt(stockRaw, 10) || 0;
+          const mpLinkRaw = el(`mp_${size}`).value || '';
+          const mpLink = mpLinkRaw.trim() || null;
+
+          if (stock > 0 || mpLink) {
+            const variantPayload = {
+              product_id: savedProductId,
+              size,
+              stock,
+              mp_link: mpLink,
+              is_active: stock > 0
+            };
+
+            const { error: upsertVariantError } = await sb
+              .from('product_variants')
+              .upsert(variantPayload, { onConflict: 'product_id,size' });
+
+            if (upsertVariantError) throw upsertVariantError;
+          } else {
+            const { error: deleteVariantError } = await sb
+              .from('product_variants')
+              .delete()
+              .eq('product_id', savedProductId)
+              .eq('size', size);
+
+            if (deleteVariantError) throw deleteVariantError;
+          }
+        }
+
+        showStatus('Producto guardado correctamente.');
+        await loadProducts();
+        await editProduct(savedProductId);
+      } catch (err) {
+        showStatus(err.message || 'No se pudo guardar el producto.', 'err');
+      }
+    };
+
+    const deactivateProduct = async () => {
+      clearStatus();
+      try {
+        const id = el('productId').value;
+        if (!id) throw new Error('Primero elegí un producto guardado.');
+        const { error } = await sb.from('products').update({ is_active: false }).eq('id', id);
+        if (error) throw error;
+        showStatus('Producto desactivado.');
+        await loadProducts();
+        newProduct();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo desactivar.', 'err');
+      }
+    };
+
+    init();
+  </script>
+</body>
+</html>
