@@ -2066,6 +2066,7 @@
     mpEnvironment: 'sandbox', // 'sandbox' mientras uses credenciales de prueba; luego 'production'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
     mpPreferenceEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-mp-preference',// endpoint seguro de backend para crear preferencias
+    transferOrderEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-transfer-order',// endpoint seguro para pedidos por transferencia
     useSupabase: true,
     supabaseUrl: 'https://xedhdojvynmwaadmkcby.supabase.co',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZGhkb2p2eW5td2FhZG1rY2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ4MjYsImV4cCI6MjA5MTI0MDgyNn0.Keaskg8KUqFz4JyuUJJxGCjIDdD6iaDnEAUyvwPgZrA',
@@ -2871,9 +2872,81 @@ Cuando haga la transferencia, les envío el comprobante por este medio.
 ¿Me confirman disponibilidad?`;
   };
 
-  const openTransferWhatsApp = () => {
-    const msg = encodeURIComponent(buildTransferMessage());
+  const openTransferWhatsApp = (customMessage) => {
+    const msg = encodeURIComponent(customMessage || buildTransferMessage());
     window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
+  };
+
+  const createTransferOrder = async (items, customer = {}, context = 'single') => {
+    if (!STORE_CONFIG.transferOrderEndpoint) return null;
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'apikey': STORE_CONFIG.supabaseAnonKey,
+        'Authorization': `Bearer ${STORE_CONFIG.supabaseAnonKey}`
+      };
+      const res = await fetch(STORE_CONFIG.transferOrderEndpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          items,
+          customer_name: customer.name || '',
+          customer_email: customer.email || '',
+          customer_phone: customer.phone || '',
+          payment_method: 'transferencia',
+          transfer_discount: STORE_CONFIG.transferDiscount,
+          notes: context === 'cart'
+            ? 'Pedido iniciado por transferencia desde el carrito de la tienda'
+            : 'Pedido iniciado por transferencia desde la ficha de producto'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      return data;
+    } catch (error) {
+      console.error('No se pudo crear la orden por transferencia', error);
+      return null;
+    }
+  };
+
+  const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '' } = {}) => {
+    const lines = items.length
+      ? items.map(item => `• ${item.title} (${item.sku || 'Sin código'}) · Talle ${item.size || 'A confirmar'} · x${item.quantity || 1} → ${fmt(item.lineTotal || 0)}`).join('\n')
+      : `• ${currentProduct?.title || 'Producto'} (${currentProduct?.sku || 'Sin código'}) · Talle ${selectedSize || 'A confirmar'} → ${fmt(getTransferPrice(currentProduct || { price: 0 }))}`;
+
+    return `Hola SIN RECREO 👋
+
+Quiero continuar este pedido por transferencia.
+
+━━━━━━━━━━
+PEDIDO
+━━━━━━━━━━
+• Nº de pedido: ${orderCode || (orderId ? '#' + String(orderId).slice(0, 8).toUpperCase() : 'Pendiente de generar')}
+${lines}
+• Total por transferencia: ${fmt(total || 0)}
+
+━━━━━━━━━━
+MIS DATOS
+━━━━━━━━━━
+• Nombre: ${customer.name || 'A confirmar'}
+• Email: ${customer.email || 'A confirmar'}
+• Teléfono: ${customer.phone || 'A confirmar'}
+
+En un momento les envío el comprobante por este medio. ¿Me confirman disponibilidad?`;
+  };
+
+  const collectCartCustomer = () => {
+    const name = (window.prompt('Para registrar el pedido por transferencia, escribí tu nombre y apellido:') || '').trim();
+    if (!name) return null;
+    const email = (window.prompt('Ahora escribí tu email para enviarte la confirmación del pedido:') || '').trim().toLowerCase();
+    if (!email) return null;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) {
+      alert('Revisá el correo electrónico antes de continuar.');
+      return null;
+    }
+    const phone = (window.prompt('Por último, dejanos tu WhatsApp o teléfono (opcional):') || '').trim();
+    return { name, email, phone };
   };
 
   const createMPPreference = async (items, customer = {}) => {
@@ -2917,8 +2990,31 @@ Cuando haga la transferencia, les envío el comprobante por este medio.
     if (!customer) return;
 
     if (selectedPayMethod === 'transfer') {
-      openTransferWhatsApp();
+      const transferOrder = await createTransferOrder([{
+        variant_id: currentProduct.variantIdsBySize?.[selectedSize] || '',
+        quantity: 1
+      }], customer, 'single');
+
+      const transferMessage = buildTransferOrderMessage({
+        customer,
+        items: [{
+          title: currentProduct.title,
+          sku: currentProduct.sku,
+          size: selectedSize,
+          quantity: 1,
+          lineTotal: getTransferPrice(currentProduct)
+        }],
+        total: getTransferPrice(currentProduct),
+        orderId: transferOrder?.order_id || '',
+        orderCode: transferOrder?.order_code || ''
+      });
+
+      openTransferWhatsApp(transferMessage);
       closeModal();
+
+      if (!transferOrder?.ok) {
+        alert('Te abrimos WhatsApp, pero no pudimos registrar el pedido pendiente en Supabase. Después revisamos esa conexión.');
+      }
       return;
     }
 
@@ -3018,11 +3114,44 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     document.body.style.overflow = '';
   };
 
-  const checkoutWhatsApp = () => {
-    const items = cart.map(c => `• ${c.title} (${c.sku}) · Talle ${c.selectedSize} · x${c.qty} → ${fmt(c.price * c.qty)}`).join('\\n');
-    const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
-    const msg = encodeURIComponent(`Hola SIN RECREO! Quiero comprar estas prendas:\n${items}\n\nTotal estimado: ${fmt(total)}\n\n¿Seguimos por acá?`);
-    window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
+  const checkoutWhatsApp = async () => {
+    if (!cart.length) return;
+
+    const customer = collectCartCustomer();
+    if (!customer) return;
+
+    const validItems = cart.map(item => ({
+      variant_id: item.variantIdsBySize?.[item.selectedSize] || '',
+      quantity: item.qty
+    })).filter(item => item.variant_id);
+
+    if (!validItems.length) {
+      alert('No encontramos variantes válidas en el carrito para registrar el pedido.');
+      return;
+    }
+
+    const transferOrder = await createTransferOrder(validItems, customer, 'cart');
+
+    const total = cart.reduce((sum, item) => sum + (getTransferPrice(item) * item.qty), 0);
+    const transferMessage = buildTransferOrderMessage({
+      customer,
+      items: cart.map(item => ({
+        title: item.title,
+        sku: item.sku,
+        size: item.selectedSize,
+        quantity: item.qty,
+        lineTotal: getTransferPrice(item) * item.qty
+      })),
+      total,
+      orderId: transferOrder?.order_id || '',
+      orderCode: transferOrder?.order_code || ''
+    });
+
+    openTransferWhatsApp(transferMessage);
+
+    if (!transferOrder?.ok) {
+      alert('Te abrimos WhatsApp, pero no pudimos registrar el pedido pendiente en Supabase.');
+    }
   };
 
   const checkoutMP = async () => {
