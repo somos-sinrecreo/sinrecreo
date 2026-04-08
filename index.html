@@ -523,19 +523,35 @@
           if (insertImagesError) throw insertImagesError;
         }
 
-        const variantRows = SIZE_ORDER.map(size => ({
-          product_id: savedProductId,
-          size,
-          stock: Number(el(`stock_${size}`).value || 0),
-          mp_link: el(`mp_${size}`).value.trim() || null,
-          is_active: Number(el(`stock_${size}`).value || 0) > 0
-        })).filter(v => v.stock > 0 || v.mp_link);
+        for (const size of SIZE_ORDER) {
+          const stockRaw = el(`stock_${size}`).value;
+          const stock = parseInt(stockRaw, 10) || 0;
+          const mpLinkRaw = el(`mp_${size}`).value || '';
+          const mpLink = mpLinkRaw.trim() || null;
 
-        const { error: deleteVariantsError } = await sb.from('product_variants').delete().eq('product_id', savedProductId);
-        if (deleteVariantsError) throw deleteVariantsError;
-        if (variantRows.length) {
-          const { error: insertVariantsError } = await sb.from('product_variants').insert(variantRows);
-          if (insertVariantsError) throw insertVariantsError;
+          if (stock > 0 || mpLink) {
+            const variantPayload = {
+              product_id: savedProductId,
+              size,
+              stock,
+              mp_link: mpLink,
+              is_active: stock > 0
+            };
+
+            const { error: upsertVariantError } = await sb
+              .from('product_variants')
+              .upsert(variantPayload, { onConflict: 'product_id,size' });
+
+            if (upsertVariantError) throw upsertVariantError;
+          } else {
+            const { error: deleteVariantError } = await sb
+              .from('product_variants')
+              .delete()
+              .eq('product_id', savedProductId)
+              .eq('size', size);
+
+            if (deleteVariantError) throw deleteVariantError;
+          }
         }
 
         showStatus('Producto guardado correctamente.');
