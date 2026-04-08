@@ -278,6 +278,8 @@
     let currentView = 'catalog';
     let orders = [];
     let currentOrderId = null;
+    const MANAGEABLE_ORDER_STATUSES = ['pending','approved','rejected','cancelled','refunded'];
+    const MANAGEABLE_PAYMENT_METHODS = ['mercadopago','transferencia','manual','whatsapp'];
 
     const el = id => document.getElementById(id);
     const showStatus = (msg, type='ok') => {
@@ -436,7 +438,7 @@
         if (orderIds.length) {
           const { data: itemRows, error: itemError } = await sb
             .from('order_items')
-            .select('id, order_id, product_title, size, quantity, unit_price, line_total')
+            .select('id, order_id, product_title, size, quantity, unit_price, line_total, variant_id')
             .in('order_id', orderIds)
           if (itemError) throw itemError;
           items = itemRows || [];
@@ -556,6 +558,34 @@
           </div>
         </div>
         <div class="detail-card" style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+            <div class="label">Gestión manual</div>
+            <div class="mini">Podés editar estado, método de pago y notas. Si pasás de pendiente a approved, el stock se descuenta ahora.</div>
+          </div>
+          <div class="row">
+            <label class="field">
+              <span class="label">Estado</span>
+              <select id="manageOrderStatus">
+                ${MANAGEABLE_ORDER_STATUSES.map(status => `<option value="${status}" ${String(order.status||'').toLowerCase() === status ? 'selected' : ''}>${status}</option>`).join('')}
+              </select>
+            </label>
+            <label class="field">
+              <span class="label">Método de pago</span>
+              <select id="manageOrderPaymentMethod">
+                ${MANAGEABLE_PAYMENT_METHODS.map(method => `<option value="${method}" ${String(order.payment_method||'').toLowerCase() === method ? 'selected' : ''}>${method}</option>`).join('')}
+              </select>
+            </label>
+          </div>
+          <label class="field" style="margin-top:12px">
+            <span class="label">Notas</span>
+            <textarea id="manageOrderNotes" style="min-height:90px">${order.notes || ''}</textarea>
+          </label>
+          <div class="toolbar" style="margin-top:14px">
+            <button class="btn btn-dark" id="saveOrderBtn" type="button">Guardar cambios</button>
+            <button class="btn btn-danger" id="deleteOrderBtn" type="button">Borrar pedido</button>
+          </div>
+        </div>
+        <div class="detail-card" style="margin-top:14px">
           <div class="label" style="margin-bottom:10px">Items del pedido</div>
           <table class="order-items-table">
             <thead>
@@ -571,6 +601,84 @@
           </table>
         </div>
       `;
+
+      document.getElementById('saveOrderBtn')?.addEventListener('click', saveOrderChanges);
+      document.getElementById('deleteOrderBtn')?.addEventListener('click', deleteCurrentOrder);
+    };
+
+    const adjustStockForApprovedOrder = async (order) => {
+      const variantItems = (order.items || []).filter(item => item.variant_id);
+      for (const item of variantItems) {
+        const { data: variant, error: variantError } = await sb
+          .from('product_variants')
+          .select('id, stock')
+          .eq('id', item.variant_id)
+          .single();
+        if (variantError) throw variantError;
+
+        const nextStock = Math.max(0, Number(variant.stock || 0) - Number(item.quantity || 0));
+        const { error: updateVariantError } = await sb
+          .from('product_variants')
+          .update({ stock: nextStock })
+          .eq('id', item.variant_id);
+        if (updateVariantError) throw updateVariantError;
+      }
+    };
+
+    const saveOrderChanges = async () => {
+      clearStatus();
+      try {
+        const order = orders.find(o => o.id === currentOrderId);
+        if (!order) throw new Error('No encontramos el pedido activo.');
+
+        const nextStatus = (el('manageOrderStatus')?.value || 'pending').toLowerCase();
+        const nextPaymentMethod = (el('manageOrderPaymentMethod')?.value || '').toLowerCase();
+        const nextNotes = (el('manageOrderNotes')?.value || '').trim();
+
+        if (order.status !== 'approved' && nextStatus === 'approved') {
+          await adjustStockForApprovedOrder(order);
+        }
+
+        const { error } = await sb
+          .from('orders')
+          .update({
+            status: nextStatus,
+            payment_method: nextPaymentMethod || null,
+            notes: nextNotes || null
+          })
+          .eq('id', order.id);
+        if (error) throw error;
+
+        showStatus('Pedido actualizado correctamente.');
+        await loadOrders();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo actualizar el pedido.', 'err');
+      }
+    };
+
+    const deleteCurrentOrder = async () => {
+      clearStatus();
+      try {
+        const order = orders.find(o => o.id === currentOrderId);
+        if (!order) throw new Error('No encontramos el pedido activo.');
+
+        const warning = order.status === 'approved'
+          ? 'Este pedido ya estaba aprobado. Borrarlo no repone stock automáticamente. ¿Querés borrarlo igual?'
+          : '¿Querés borrar este pedido?';
+        if (!window.confirm(warning)) return;
+
+        const { error } = await sb
+          .from('orders')
+          .delete()
+          .eq('id', order.id);
+        if (error) throw error;
+
+        showStatus('Pedido borrado.');
+        currentOrderId = null;
+        await loadOrders();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo borrar el pedido.', 'err');
+      }
     };
 
     const loadProducts = async () => {
