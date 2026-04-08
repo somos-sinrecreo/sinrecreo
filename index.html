@@ -1928,6 +1928,7 @@
     transferCBU: '0000003100065142182346',
     transferDiscount: 10,
     mpMode: 'backend', // 'direct_links' o 'backend'
+    mpEnvironment: 'sandbox', // 'sandbox' mientras uses credenciales de prueba; luego 'production'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
     mpPreferenceEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-mp-preference',// endpoint seguro de backend para crear preferencias
     useSupabase: true,
@@ -2612,6 +2613,9 @@ ${value}`);
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      if (STORE_CONFIG.mpEnvironment === 'sandbox') {
+        return data.sandbox_init_point || data.init_point || data.checkoutUrl || null;
+      }
       return data.init_point || data.sandbox_init_point || data.checkoutUrl || null;
     } catch (error) {
       console.error('No se pudo crear la preferencia de MP', error);
