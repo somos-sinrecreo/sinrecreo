@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIN RECREO | Admin catálogo</title>
+  <title>SIN RECREO | Admin catálogo v4</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧵%3C/text%3E%3C/svg%3E">
   <style>
     :root{
       --ink:#1a1a1b; --paper:#faf9f6; --accent:#b35c44; --muted:#6d6863; --line:#e8e1d7;
@@ -195,7 +196,7 @@
 
     const SIZE_ORDER = ['XS','S','M','L','XL','XXL','3XL'];
     const IMAGE_SLOTS = [1,2,3];
-    let supabase = null;
+    let sb = null;
     let currentUser = null;
     let currentProduct = null;
     let currentImages = {};
@@ -218,7 +219,7 @@
         showStatus('Pegá tu SUPABASE_URL y SUPABASE_ANON_KEY en el archivo admin_catalogo_supabase.html antes de usarlo.', 'err');
         return;
       }
-      supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
       renderImageInputs();
       renderVariantInputs();
       wireEvents();
@@ -271,7 +272,7 @@
     };
 
     const restoreSession = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
       if (data?.session) {
         currentUser = data.session.user;
         await enterApp();
@@ -279,7 +280,7 @@
     };
 
     const ensureAdmin = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('profiles')
         .select('is_admin, email')
         .eq('id', currentUser.id)
@@ -294,7 +295,7 @@
       try {
         const email = el('loginEmail').value.trim();
         const password = el('loginPassword').value;
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
         if (error) throw error;
         currentUser = data.user;
         await enterApp();
@@ -305,7 +306,7 @@
     };
 
     const logout = async () => {
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       location.reload();
     };
 
@@ -320,7 +321,7 @@
     const loadProducts = async () => {
       clearStatus();
       try {
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from('products')
           .select('id, slug, sku, capsule, title, description, price, cut, sort_date, featured, art_type, is_active, created_at')
           .order('sort_date', { ascending: false })
@@ -416,8 +417,8 @@
         fillForm(product);
 
         const [{ data: images, error: imgError }, { data: variants, error: varError }] = await Promise.all([
-          supabase.from('product_images').select('id, image_url, position').eq('product_id', id).order('position'),
-          supabase.from('product_variants').select('id, size, stock, mp_link, is_active').eq('product_id', id)
+          sb.from('product_images').select('id, image_url, position').eq('product_id', id).order('position'),
+          sb.from('product_variants').select('id, size, stock, mp_link, is_active').eq('product_id', id)
         ]);
 
         if (imgError) throw imgError;
@@ -478,10 +479,10 @@
 
       const ext = file.name.split('.').pop() || 'jpg';
       const safeName = `${productSlug}/${Date.now()}-${position}.${ext}`;
-      const { error } = await supabase.storage.from(CONFIG.STORAGE_BUCKET).upload(safeName, file, { upsert: true });
+      const { error } = await sb.storage.from(CONFIG.STORAGE_BUCKET).upload(safeName, file, { upsert: true });
       if (error) throw error;
 
-      const { data } = supabase.storage.from(CONFIG.STORAGE_BUCKET).getPublicUrl(safeName);
+      const { data } = sb.storage.from(CONFIG.STORAGE_BUCKET).getPublicUrl(safeName);
       return data.publicUrl;
     };
 
@@ -496,10 +497,10 @@
         let savedProductId = payload.id;
 
         if (savedProductId) {
-          const { error } = await supabase.from('products').update(payload).eq('id', savedProductId);
+          const { error } = await sb.from('products').update(payload).eq('id', savedProductId);
           if (error) throw error;
         } else {
-          const { data, error } = await supabase.from('products').insert(payload).select('id').single();
+          const { data, error } = await sb.from('products').insert(payload).select('id').single();
           if (error) throw error;
           savedProductId = data.id;
           el('productId').value = savedProductId;
@@ -513,10 +514,10 @@
           }
         }
 
-        const { error: deleteImagesError } = await supabase.from('product_images').delete().eq('product_id', savedProductId);
+        const { error: deleteImagesError } = await sb.from('product_images').delete().eq('product_id', savedProductId);
         if (deleteImagesError) throw deleteImagesError;
         if (imageRows.length) {
-          const { error: insertImagesError } = await supabase.from('product_images').insert(imageRows);
+          const { error: insertImagesError } = await sb.from('product_images').insert(imageRows);
           if (insertImagesError) throw insertImagesError;
         }
 
@@ -528,10 +529,10 @@
           is_active: Number(el(`stock_${size}`).value || 0) > 0
         })).filter(v => v.stock > 0 || v.mp_link);
 
-        const { error: deleteVariantsError } = await supabase.from('product_variants').delete().eq('product_id', savedProductId);
+        const { error: deleteVariantsError } = await sb.from('product_variants').delete().eq('product_id', savedProductId);
         if (deleteVariantsError) throw deleteVariantsError;
         if (variantRows.length) {
-          const { error: insertVariantsError } = await supabase.from('product_variants').insert(variantRows);
+          const { error: insertVariantsError } = await sb.from('product_variants').insert(variantRows);
           if (insertVariantsError) throw insertVariantsError;
         }
 
@@ -548,7 +549,7 @@
       try {
         const id = el('productId').value;
         if (!id) throw new Error('Primero elegí un producto guardado.');
-        const { error } = await supabase.from('products').update({ is_active: false }).eq('id', id);
+        const { error } = await sb.from('products').update({ is_active: false }).eq('id', id);
         if (error) throw error;
         showStatus('Producto desactivado.');
         await loadProducts();
