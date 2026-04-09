@@ -273,7 +273,7 @@
       STORAGE_BUCKET: 'product-images'
     };
 
-    const SIZE_ORDER = ['XS','S','M','L','XL','XXL','3XL'];
+    const SIZE_ORDER = ['XS','S','M','L','XL','XXL'];
     const FIT_ORDER = ['unisex','femenino','masculino'];
     const FIT_LABELS = { unisex:'Unisex', femenino:'Femenino', masculino:'Masculino' };
     const IMAGE_SLOTS = [1,2,3];
@@ -376,7 +376,7 @@
           ${FIT_ORDER.map(fit => `
             <label class="field" style="margin-top:${fit === 'unisex' ? '0' : '8px'}">
               <span class="label">${FIT_LABELS[fit]}</span>
-              <input id="stock_${fit}_${size}" type="number" min="0" step="1" value="0" />
+              <input id="stock_${fit}_${size}" type="number" min="0" step="1" value="10" />
             </label>
           `).join('')}
         </div>
@@ -813,7 +813,7 @@
     const clearVariants = () => {
       SIZE_ORDER.forEach(size => {
         FIT_ORDER.forEach(fit => {
-          el(`stock_${fit}_${size}`).value = 0;
+          el(`stock_${fit}_${size}`).value = 10;
         });
       });
     };
