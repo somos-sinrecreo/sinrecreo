@@ -1063,7 +1063,21 @@
 
 
 
-    .customer-grid {
+    
+    .modal-customer-prompt {
+      margin: 10px 0 2px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(179,92,68,.10);
+      border: 1px solid rgba(179,92,68,.18);
+      color: #8a4836;
+      font-size: .84rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .modal-customer-prompt.hidden { display: none !important; }
+
+.customer-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -2062,6 +2076,7 @@
           <input id="customerEmail" class="customer-input" type="email" placeholder="tuemail@dominio.com" />
         </label>
       </div>
+      <div id="modalCustomerPrompt" class="modal-customer-prompt hidden">Complete nombre y correo para continuar.</div>
 
       <!-- Payment methods -->
       <div class="modal-section-title">Medio de pago</div>
@@ -2385,9 +2400,30 @@
     ['customerName','customerPhone','customerEmail'].forEach(id => {
       const input = document.getElementById(id);
       if (!input) return;
-      input.addEventListener('input', () => saveCheckoutCustomer(getCheckoutCustomer()));
-      input.addEventListener('change', () => saveCheckoutCustomer(getCheckoutCustomer()));
+      input.addEventListener('input', () => {
+        saveCheckoutCustomer(getCheckoutCustomer());
+        if ((document.getElementById('customerName')?.value || '').trim() && (document.getElementById('customerEmail')?.value || '').trim()) hideCustomerPrompt();
+      });
+      input.addEventListener('change', () => {
+        saveCheckoutCustomer(getCheckoutCustomer());
+        if ((document.getElementById('customerName')?.value || '').trim() && (document.getElementById('customerEmail')?.value || '').trim()) hideCustomerPrompt();
+      });
     });
+  };
+
+  const hideCustomerPrompt = () => {
+    const prompt = document.getElementById('modalCustomerPrompt');
+    if (!prompt) return;
+    prompt.textContent = 'Complete nombre y correo para continuar.';
+    prompt.classList.add('hidden');
+  };
+
+  const showCustomerPrompt = (message = 'Complete nombre y correo para continuar.') => {
+    const prompt = document.getElementById('modalCustomerPrompt');
+    if (!prompt) return;
+    prompt.textContent = message;
+    prompt.classList.remove('hidden');
+    prompt.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
   const validateCheckoutCustomer = () => {
@@ -2953,6 +2989,7 @@
     const first = document.querySelector('.pay-method-btn');
     if (first) first.classList.add('selected');
 
+    hideCustomerPrompt();
     updateModalTotal();
     document.getElementById('buyModal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -2983,6 +3020,8 @@
       alert('Elegí modelo y talle antes de agregar al carrito.');
       return;
     }
+    const customer = validateCheckoutCustomer();
+    if (!customer) return;
     const selectedVariantId = getVariantId(currentProduct, selectedSize, selectedFit);
     if (!selectedVariantId) {
       alert('No encontramos una variante válida para esa combinación.');
@@ -3313,6 +3352,14 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   /* ─── CART ─── */
   const addToCart = (id, e) => {
     if (e) e.stopPropagation();
+    const storedCustomer = getStoredCheckoutCustomer();
+    if (!storedCustomer.name || !storedCustomer.email) {
+      openBuyModal(id);
+      showCustomerPrompt('Complete nombre y correo para continuar.');
+      const missingField = !storedCustomer.name ? document.getElementById('customerName') : document.getElementById('customerEmail');
+      missingField?.focus();
+      return;
+    }
     const p = products.find(item => item.id === id);
     if (!p) return;
     const defaultFit = getDefaultFit(p);
@@ -3373,6 +3420,16 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     document.getElementById('cartDrawer').classList.remove('open');
     document.getElementById('drawerBackdrop').classList.remove('open');
     document.body.style.overflow = '';
+  };
+
+  const goBackToCatalogFromCart = () => {
+    closeCartDrawer();
+    const catalog = document.getElementById('catalogo');
+    if (catalog) {
+      catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.location.hash = '#catalogo';
+    }
   };
 
   const checkoutWhatsApp = async () => {
