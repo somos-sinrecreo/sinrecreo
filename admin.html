@@ -220,8 +220,8 @@
           <div class="img-grid" id="imagesGrid"></div>
 
           <div class="divider"></div>
-          <h3 class="title" style="font-size:1.35rem">Talles y links de pago</h3>
-          <p class="mini">En cada talle podés cargar stock y su link directo de Mercado Pago. Si el stock queda en 0, no se mostrará al público.</p>
+          <h3 class="title" style="font-size:1.35rem">Stock por talle y tipo de corte</h3>
+          <p class="mini">Cargá stock unisex, femenino o masculino por cada talle. El panel ya no pide links de pago: solo disponibilidad real.</p>
           <div class="variant-grid" id="variantsGrid"></div>
         </section>
       </div>
@@ -269,6 +269,8 @@
     };
 
     const SIZE_ORDER = ['XS','S','M','L','XL','XXL','3XL'];
+    const FIT_ORDER = ['unisex','femenino','masculino'];
+    const FIT_LABELS = { unisex:'Unisex', femenino:'Femenino', masculino:'Masculino' };
     const IMAGE_SLOTS = [1,2,3];
     let sb = null;
     let currentUser = null;
@@ -338,18 +340,26 @@
       });
     };
 
+    const makeVariantSizeKey = (fit, size) => fit === 'unisex' ? size : `${fit.toUpperCase()}__${size}`;
+    const parseVariantSizeKey = raw => {
+      const value = String(raw || '');
+      if (value.includes('__')) {
+        const [fit, size] = value.split('__');
+        return { fit: fit.toLowerCase(), size };
+      }
+      return { fit: 'unisex', size: value };
+    };
+
     const renderVariantInputs = () => {
       el('variantsGrid').innerHTML = SIZE_ORDER.map(size => `
         <div class="variant-card">
           <div class="variant-head">${size}</div>
-          <label class="field">
-            <span class="label">Stock</span>
-            <input id="stock_${size}" type="number" min="0" step="1" value="0" />
-          </label>
-          <label class="field" style="margin-top:8px">
-            <span class="label">Link MP</span>
-            <input id="mp_${size}" placeholder="https://mpago.la/..." />
-          </label>
+          ${FIT_ORDER.map(fit => `
+            <label class="field" style="margin-top:${fit === 'unisex' ? '0' : '8px'}">
+              <span class="label">${FIT_LABELS[fit]}</span>
+              <input id="stock_${fit}_${size}" type="number" min="0" step="1" value="0" />
+            </label>
+          `).join('')}
         </div>
       `).join('');
     };
@@ -783,8 +793,9 @@
 
     const clearVariants = () => {
       SIZE_ORDER.forEach(size => {
-        el(`stock_${size}`).value = 0;
-        el(`mp_${size}`).value = '';
+        FIT_ORDER.forEach(fit => {
+          el(`stock_${fit}_${size}`).value = 0;
+        });
       });
     };
 
@@ -821,8 +832,9 @@
 
         clearVariants();
         (variants || []).forEach(v => {
-          if (el(`stock_${v.size}`)) el(`stock_${v.size}`).value = Number(v.stock || 0);
-          if (el(`mp_${v.size}`)) el(`mp_${v.size}`).value = v.mp_link || '';
+          const parsed = parseVariantSizeKey(v.size);
+          const field = el(`stock_${parsed.fit}_${parsed.size}`);
+          if (field) field.value = Number(v.stock || 0);
         });
 
         renderProductList();
@@ -912,33 +924,33 @@
         }
 
         for (const size of SIZE_ORDER) {
-          const stockRaw = el(`stock_${size}`).value;
-          const stock = parseInt(stockRaw, 10) || 0;
-          const mpLinkRaw = el(`mp_${size}`).value || '';
-          const mpLink = mpLinkRaw.trim() || null;
+          for (const fit of FIT_ORDER) {
+            const stockRaw = el(`stock_${fit}_${size}`).value;
+            const stock = parseInt(stockRaw, 10) || 0;
+            const variantSize = makeVariantSizeKey(fit, size);
 
-          if (stock > 0 || mpLink) {
-            const variantPayload = {
-              product_id: savedProductId,
-              size,
-              stock,
-              mp_link: mpLink,
-              is_active: stock > 0
-            };
+            if (stock > 0) {
+              const variantPayload = {
+                product_id: savedProductId,
+                size: variantSize,
+                stock,
+                is_active: true
+              };
 
-            const { error: upsertVariantError } = await sb
-              .from('product_variants')
-              .upsert(variantPayload, { onConflict: 'product_id,size' });
+              const { error: upsertVariantError } = await sb
+                .from('product_variants')
+                .upsert(variantPayload, { onConflict: 'product_id,size' });
 
-            if (upsertVariantError) throw upsertVariantError;
-          } else {
-            const { error: deleteVariantError } = await sb
-              .from('product_variants')
-              .delete()
-              .eq('product_id', savedProductId)
-              .eq('size', size);
+              if (upsertVariantError) throw upsertVariantError;
+            } else {
+              const { error: deleteVariantError } = await sb
+                .from('product_variants')
+                .delete()
+                .eq('product_id', savedProductId)
+                .eq('size', variantSize);
 
-            if (deleteVariantError) throw deleteVariantError;
+              if (deleteVariantError) throw deleteVariantError;
+            }
           }
         }
 
