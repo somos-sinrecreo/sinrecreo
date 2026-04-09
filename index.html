@@ -1235,6 +1235,7 @@
       justify-content: center;
       gap: 10px;
       padding: 15px;
+      margin-top: 12px;
       margin-bottom: 10px;
       background: #fff;
       color: var(--ink);
@@ -1308,6 +1309,7 @@
       justify-content: center;
       gap: 12px;
       padding: 17px;
+      margin-bottom: 0;
       background: var(--ink);
       color: #fff;
       border-radius: var(--r-lg);
@@ -2112,7 +2114,7 @@
 
       <!-- CTA -->
       <button class="modal-cta mp-style" id="modalCta" onclick="processPayment()">
-        Ir a pagar esta prenda con Mercado Pago
+        Pagar esta prenda con Mercado Pago
       </button>
       <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
         Agregar esta prenda al carrito y seguir comprando
@@ -3003,11 +3005,11 @@
     const secure = document.querySelector('.modal-secure');
     if (selectedPayMethod === 'mp' || selectedPayMethod === 'card') {
       cta.className = 'modal-cta mp-style';
-      cta.textContent = 'Ir a pagar esta prenda con Mercado Pago';
+      cta.textContent = 'Pagar esta prenda con Mercado Pago';
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Pago en entorno seguro de Mercado Pago · No expongas datos sensibles por WhatsApp`;
     } else {
       cta.className = 'modal-cta';
-      cta.textContent = 'Confirmar la compra de esta prenda única por transferencia';
+      cta.textContent = 'Confirmar compra de esta prenda por transferencia';
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Reservá la prenda y cerrá el pago con contacto directo por WhatsApp`;
     }
     updateTransferPanel();
@@ -3029,36 +3031,45 @@ ${value}`);
     }
   };
 
+
+  const buildTransferLineBlock = (item = {}) => {
+    const quantity = Number(item.quantity || 1);
+    const unitPrice = Number(item.unitPrice ?? item.basePrice ?? item.lineTotal ?? 0);
+    const subTotal = Number(item.basePrice ?? (quantity ? unitPrice * quantity : unitPrice) ?? 0);
+    const discount = Number(item.discount ?? Math.max(0, subTotal - Number(item.lineTotal || 0)));
+    const total = Number(item.lineTotal || Math.max(0, subTotal - discount));
+
+    return `• Producto: ${item.title || 'Producto'}
+• Código: ${item.sku || 'Sin código'}
+• Cápsula: ${item.capsule || 'Sin cápsula'}
+• Variante: ${describeFitAndSize(item.fit || 'unisex', item.size || 'A confirmar')}${quantity > 1 ? ` · x${quantity}` : ''}
+• Sub Total: ${fmt(subTotal)}
+• Descuento: ${fmt(discount)}
+• Total: ${fmt(total)}`;
+  };
+
   const buildTransferMessage = () => {
     const customer = getCheckoutCustomer();
     if (!currentProduct) return 'Hola SIN RECREO, quiero comprar por transferencia.';
-    const price = getTransferPrice(currentProduct);
-    return `Hola SIN RECREO 👋
 
-Quiero reservar esta compra por transferencia.
-
-━━━━━━━━━━
-DATOS DEL PEDIDO
-━━━━━━━━━━
-• Producto: ${currentProduct.title}
-• Código: ${currentProduct.sku || 'Sin código'}
-• Cápsula: ${currentProduct.capsule || 'Sin cápsula'}
-• Talle: ${selectedSize || 'A confirmar'}
-• Total por transferencia: ${fmt(price)}
-
-━━━━━━━━━━
-MIS DATOS
-━━━━━━━━━━
-• Nombre: ${customer.name || 'A confirmar'}
-• Email: ${customer.email || 'A confirmar'}
-• Teléfono: ${customer.phone || 'A confirmar'}
-
-Cuando haga la transferencia, les envío el comprobante por este medio.
-
-¿Me confirman disponibilidad?`;
+    return buildTransferOrderMessage({
+      customer,
+      items: [{
+        title: currentProduct.title,
+        sku: currentProduct.sku,
+        capsule: currentProduct.capsule,
+        size: selectedSize,
+        fit: selectedFit,
+        quantity: 1,
+        basePrice: Number(currentProduct.price || 0),
+        discount: Number(currentProduct.price || 0) - Number(getTransferPrice(currentProduct) || 0),
+        lineTotal: Number(getTransferPrice(currentProduct) || 0)
+      }]
+    });
   };
 
   const openTransferWhatsApp = (customMessage) => {
+
     const msg = encodeURIComponent(customMessage || buildTransferMessage());
     window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
   };
@@ -3095,10 +3106,43 @@ Cuando haga la transferencia, les envío el comprobante por este medio.
     }
   };
 
+
   const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '' } = {}) => {
-    const lines = items.length
-      ? items.map(item => `• ${item.title} (${item.sku || 'Sin código'}) · ${describeFitAndSize(item.fit || 'unisex', item.size || 'A confirmar')} · x${item.quantity || 1} → ${fmt(item.lineTotal || 0)}`).join('\n')
-      : `• ${currentProduct?.title || 'Producto'} (${currentProduct?.sku || 'Sin código'}) · ${describeFitAndSize(selectedFit || 'unisex', selectedSize || 'A confirmar')} → ${fmt(getTransferPrice(currentProduct || { price: 0 }))}`;
+    const normalizedItems = items.length
+      ? items.map(item => {
+          const quantity = Number(item.quantity || 1);
+          const basePrice = Number(item.basePrice ?? item.unitPrice ?? item.lineTotal ?? 0);
+          const subTotal = Number(item.subTotal ?? (basePrice * quantity));
+          const lineTotal = Number(item.lineTotal ?? subTotal);
+          const discount = Number(item.discount ?? Math.max(0, subTotal - lineTotal));
+          return {
+            ...item,
+            quantity,
+            basePrice,
+            subTotal,
+            lineTotal,
+            discount
+          };
+        })
+      : [{
+          title: currentProduct?.title || 'Producto',
+          sku: currentProduct?.sku || 'Sin código',
+          capsule: currentProduct?.capsule || 'Sin cápsula',
+          size: selectedSize || 'A confirmar',
+          fit: selectedFit || 'unisex',
+          quantity: 1,
+          basePrice: Number(currentProduct?.price || 0),
+          subTotal: Number(currentProduct?.price || 0),
+          discount: Number(currentProduct?.price || 0) - Number(getTransferPrice(currentProduct || { price: 0 }) || 0),
+          lineTotal: Number(getTransferPrice(currentProduct || { price: 0 }) || 0)
+        }];
+
+    const computedTotal = Number(total || normalizedItems.reduce((acc, item) => acc + Number(item.lineTotal || 0), 0));
+    const computedSubTotal = normalizedItems.reduce((acc, item) => acc + Number(item.subTotal || 0), 0);
+    const computedDiscount = normalizedItems.reduce((acc, item) => acc + Number(item.discount || 0), 0);
+    const itemsText = normalizedItems.map(buildTransferLineBlock).join('
+
+');
 
     return `Hola SIN RECREO 👋
 
@@ -3108,8 +3152,15 @@ Quiero continuar este pedido por transferencia.
 PEDIDO
 ━━━━━━━━━━
 • Nº de pedido: ${orderCode || (orderId ? '#' + String(orderId).slice(0, 8).toUpperCase() : 'Pendiente de generar')}
-${lines}
-• Total por transferencia: ${fmt(total || 0)}
+
+${itemsText}
+
+━━━━━━━━━━
+RESUMEN
+━━━━━━━━━━
+• Sub Total: ${fmt(computedSubTotal)}
+• Descuento: ${fmt(computedDiscount)}
+• Total: ${fmt(computedTotal)}
 
 ━━━━━━━━━━
 MIS DATOS
@@ -3122,6 +3173,7 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
   };
 
   const collectCartCustomer = () => {
+
     const customer = getStoredCheckoutCustomer();
     if (!customer.name || !customer.email) {
       alert('Primero cargá tus datos desde la ventana de una prenda. Después vas a poder cerrar el carrito sin volver a escribirlos.');
@@ -3187,10 +3239,13 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
         items: [{
           title: currentProduct.title,
           sku: currentProduct.sku,
+          capsule: currentProduct.capsule,
           size: selectedSize,
           fit: selectedFit,
           quantity: 1,
-          lineTotal: getTransferPrice(currentProduct)
+          basePrice: Number(currentProduct.price || 0),
+          discount: Number(currentProduct.price || 0) - Number(getTransferPrice(currentProduct) || 0),
+          lineTotal: Number(getTransferPrice(currentProduct) || 0)
         }],
         total: getTransferPrice(currentProduct),
         orderId: transferOrder?.order_id || '',
@@ -3328,10 +3383,13 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
       items: cart.map(item => ({
         title: item.title,
         sku: item.sku,
+        capsule: item.capsule,
         size: item.selectedSize,
         fit: item.selectedFit || 'unisex',
         quantity: item.qty,
-        lineTotal: getTransferPrice(item) * item.qty
+        basePrice: Number(item.price || 0),
+        discount: (Number(item.price || 0) - Number(getTransferPrice(item) || 0)) * Number(item.qty || 1),
+        lineTotal: Number(getTransferPrice(item) || 0) * Number(item.qty || 1)
       })),
       total,
       orderId: transferOrder?.order_id || '',
