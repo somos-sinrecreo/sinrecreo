@@ -223,6 +223,11 @@
           <h3 class="title" style="font-size:1.35rem">Stock por talle y tipo de corte</h3>
           <p class="mini">Cargá stock unisex, femenino o masculino por cada talle. El panel ya no pide links de pago: solo disponibilidad real.</p>
           <div class="variant-grid" id="variantsGrid"></div>
+
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-soft" type="button" id="saveBtnBottom">Guardar desde acá</button>
+          </div>
         </section>
       </div>
 
@@ -280,6 +285,7 @@
     let currentView = 'catalog';
     let orders = [];
     let currentOrderId = null;
+    let isSavingProduct = false;
     const MANAGEABLE_ORDER_STATUSES = ['pending','approved','rejected','cancelled','refunded'];
     const MANAGEABLE_PAYMENT_METHODS = ['mercadopago','transferencia','manual','whatsapp'];
 
@@ -292,6 +298,18 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     const clearStatus = () => el('statusBox').classList.add('hidden');
+
+    const setSaveButtonsState = (saving) => {
+      isSavingProduct = saving;
+      ['saveBtn','saveBtnBottom'].forEach(id => {
+        const btn = el(id);
+        if (!btn) return;
+        btn.disabled = saving;
+        btn.style.opacity = saving ? '.7' : '1';
+        btn.style.cursor = saving ? 'wait' : 'pointer';
+        btn.textContent = saving ? 'Guardando…' : (id === 'saveBtnBottom' ? 'Guardar desde acá' : 'Guardar');
+      });
+    };
 
     const isConfigured = () => CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_URL.includes('PEGA_ACA') && !CONFIG.SUPABASE_ANON_KEY.includes('PEGA_ACA');
 
@@ -317,6 +335,7 @@
       el('reloadOrdersBtn').addEventListener('click', loadOrders);
       el('orderStatusFilter').addEventListener('change', renderOrderList);
       el('saveBtn').addEventListener('click', saveProduct);
+      el('saveBtnBottom').addEventListener('click', saveProduct);
       el('deactivateBtn').addEventListener('click', deactivateProduct);
     };
 
@@ -887,7 +906,9 @@
     };
 
     const saveProduct = async () => {
+      if (isSavingProduct) return;
       clearStatus();
+      setSaveButtonsState(true);
       try {
         const payload = collectForm();
         if (!payload.title || !payload.capsule || !payload.slug) {
@@ -954,11 +975,13 @@
           }
         }
 
-        showStatus('Producto guardado correctamente.');
         await loadProducts();
         await editProduct(savedProductId);
+        showStatus('Producto guardado correctamente.');
       } catch (err) {
         showStatus(err.message || 'No se pudo guardar el producto.', 'err');
+      } finally {
+        setSaveButtonsState(false);
       }
     };
 
