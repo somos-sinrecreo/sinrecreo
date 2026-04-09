@@ -1210,6 +1210,43 @@
       color: #fff;
     }
 
+    .fit-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .fit-btn {
+      min-width: 92px;
+      padding: 10px 14px;
+      border-radius: var(--r-sm);
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-weight: 700;
+      font-size: .84rem;
+      cursor: pointer;
+      transition: all .15s;
+      text-align: center;
+    }
+    .fit-btn:hover, .fit-btn.selected {
+      border-color: var(--accent);
+      background: rgba(192,90,58,.08);
+      color: var(--ink);
+    }
+    .modal-secondary-cta {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #fff;
+      color: var(--ink);
+      border: 1.5px solid var(--line);
+      border-radius: var(--r-lg);
+      font-weight: 700;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .modal-secondary-cta:hover { background: var(--cream); border-color: rgba(14,14,16,.18); }
+
     .pay-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
     .pay-method-btn {
       display: flex;
@@ -1984,6 +2021,9 @@
       <div class="modal-product-row" id="modalProductRow"></div>
 
       <!-- Size -->
+      <div class="modal-section-title">Modelo</div>
+      <div class="fit-selector" id="modalFits"></div>
+
       <div class="modal-section-title">Talle</div>
       <div class="size-selector" id="modalSizes"></div>
 
@@ -2072,6 +2112,9 @@
       </div>
 
       <!-- CTA -->
+      <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
+        Agregar al carrito
+      </button>
       <button class="modal-cta mp-style" id="modalCta" onclick="processPayment()">
         Continuar con MercadoPago
       </button>
@@ -2271,6 +2314,7 @@
 
   let currentProduct = null;
   let selectedSize = null;
+  let selectedFit = 'unisex';
   let selectedPayMethod = 'mp';
   let sbClient = null;
 
@@ -2306,9 +2350,26 @@
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]));
   const getWhatsAppBase = () => `https://wa.me/${STORE_CONFIG.whatsappNumber}`;
   const getTransferPrice = p => p.transferPrice ?? Math.round(p.price * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
-  const getAvailableSizes = p => p.stockBySize ? Object.entries(p.stockBySize).filter(([,qty]) => qty > 0).map(([size]) => size) : (p.sizes || []);
-  const getTotalStock = p => p.stockBySize ? Object.values(p.stockBySize).reduce((acc, qty) => acc + qty, 0) : (p.stock || 0);
-  const getMpLink = (p, size) => (p.mpLinks && size && p.mpLinks[size]) || p.mpLink || STORE_CONFIG.mpGenericLink || '';
+  const normalizeFit = fit => ({ femenino:'femenino', femenina:'femenino', masculino:'masculino', masculina:'masculino', unisex:'unisex' }[String(fit || '').toLowerCase()] || 'unisex');
+  const parseVariantSizeKey = raw => {
+    const value = String(raw || '');
+    if (value.includes('__')) {
+      const [fit, size] = value.split('__');
+      return { fit: normalizeFit(fit), size: size || '' };
+    }
+    return { fit: 'unisex', size: value };
+  };
+  const makeVariantSizeKey = (fit, size) => normalizeFit(fit) === 'unisex' ? String(size || '') : `${normalizeFit(fit).toUpperCase()}__${String(size || '')}`;
+  const getFitLabel = fit => ({ unisex:'Unisex', femenino:'Femenino', masculino:'Masculino' }[normalizeFit(fit)] || 'Unisex');
+  const getFitOrder = fit => ({ unisex:0, femenino:1, masculino:2 }[normalizeFit(fit)] ?? 9);
+  const getAvailableFits = p => Object.entries(p.fitStockBySize || {}).filter(([, sizes]) => Object.values(sizes || {}).some(qty => Number(qty || 0) > 0)).map(([fit]) => fit).sort((a,b) => getFitOrder(a) - getFitOrder(b));
+  const getSizesForFit = (p, fit = 'unisex') => Object.entries((p.fitStockBySize || {})[normalizeFit(fit)] || {}).filter(([, qty]) => Number(qty || 0) > 0).map(([size]) => size);
+  const getAvailableSizes = p => [...new Set(Object.values(p.fitStockBySize || {}).flatMap(sizes => Object.entries(sizes || {}).filter(([, qty]) => Number(qty || 0) > 0).map(([size]) => size)))];
+  const getDefaultFit = p => getAvailableFits(p)[0] || 'unisex';
+  const getTotalStock = p => Object.values(p.fitStockBySize || {}).reduce((acc, sizes) => acc + Object.values(sizes || {}).reduce((sum, qty) => sum + Number(qty || 0), 0), 0);
+  const getMpLink = (p, size, fit = 'unisex') => (p.mpLinksByKey && p.mpLinksByKey[`${normalizeFit(fit)}|${size}`]) || (p.mpLinks && size && p.mpLinks[size]) || p.mpLink || STORE_CONFIG.mpGenericLink || '';
+  const getVariantId = (p, size, fit = 'unisex') => (p.variantIdsByKey && p.variantIdsByKey[`${normalizeFit(fit)}|${size}`]) || (normalizeFit(fit) === 'unisex' ? (p.variantIdsBySize?.[size] || '') : '');
+  const describeFitAndSize = (fit, size) => `${getFitLabel(fit)} · Talle ${size}`;
   const getProductUrl = p => `${location.origin}${location.pathname}#${p.id}`;
 
   const wireAdminAccessLinks = () => {
@@ -2382,14 +2443,18 @@
     return (productRows || []).map(row => {
       const rowImages = (imagesByProduct[row.id] || []).sort((a,b) => (a.position || 999) - (b.position || 999));
       const rowVariants = variantsByProduct[row.id] || [];
-      const stockBySize = {};
-      const mpLinks = {};
+      const fitStockBySize = { unisex: {}, femenino: {}, masculino: {} };
+      const variantIdsByKey = {};
+      const mpLinksByKey = {};
       const variantIdsBySize = {};
 
       rowVariants.forEach(variant => {
-        stockBySize[variant.size] = Number(variant.stock || 0);
-        mpLinks[variant.size] = variant.mp_link || '';
-        variantIdsBySize[variant.size] = variant.id || '';
+        const parsed = parseVariantSizeKey(variant.size);
+        if (!fitStockBySize[parsed.fit]) fitStockBySize[parsed.fit] = {};
+        fitStockBySize[parsed.fit][parsed.size] = Number(variant.stock || 0);
+        variantIdsByKey[`${parsed.fit}|${parsed.size}`] = variant.id || '';
+        mpLinksByKey[`${parsed.fit}|${parsed.size}`] = variant.mp_link || '';
+        if (parsed.fit === 'unisex') variantIdsBySize[parsed.size] = variant.id || '';
       });
 
       return {
@@ -2405,8 +2470,9 @@
         featured: Boolean(row.featured),
         artType: row.art_type || 'poster',
         images: rowImages.map(img => img.image_url).slice(0, 3),
-        stockBySize,
-        mpLinks,
+        fitStockBySize,
+        mpLinksByKey,
+        variantIdsByKey,
         variantIdsBySize
       };
     });
@@ -2723,7 +2789,7 @@
             <div class="pcard-overlay">
               <button class="overlay-btn primary" onclick="openBuyModal('${p.id}',event)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Comprar ahora
+                Elegir opciones
               </button>
               <button class="overlay-btn ghost" onclick="addToCart('${p.id}',event)">+ Agregar al carrito</button>
             </div>
@@ -2732,6 +2798,7 @@
             <div class="pcard-cap">${p.capsule}</div>
             <h3 class="pcard-name">${p.title}</h3>
             <p class="pcard-desc">${p.description}</p>
+            ${getAvailableFits(p).length > 1 ? `<div class="pcard-transfer" style="margin-top:-4px">Disponible en femenino, masculino o unisex según talle</div>` : ``}
             <div class="pcard-price-block">
               <div class="pcard-price">${fmt(p.price)}</div>
               <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
@@ -2744,7 +2811,7 @@
             <div class="pcard-actions">
               <button class="action-buy" onclick="openBuyModal('${p.id}',event)">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Comprar
+                Elegir
               </button>
               <a class="action-wa" href="${getWhatsAppBase()}?text=${encodeURIComponent(`Hola SIN RECREO, quiero consultar por la remera "${p.title}" (${p.sku}).`)}" target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.76-.87-2.03-.97-.27-.1-.47-.14-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.52.14-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12 2a10 10 0 00-8.5 15.27L2 22l4.86-1.48A10 10 0 1012 2z"/></svg>
@@ -2758,14 +2825,35 @@
   };
 
   /* ─── BUY MODAL ─── */
+  const renderModalFitOptions = (product) => {
+    const fits = getAvailableFits(product);
+    const fitWrap = document.getElementById('modalFits');
+    if (!fitWrap) return;
+    if (!fits.length) {
+      fitWrap.innerHTML = '<div class="mini">Sin stock disponible</div>';
+      return;
+    }
+    fitWrap.innerHTML = fits.map(fit => `
+      <button class="fit-btn ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')">${getFitLabel(fit)}</button>
+    `).join('');
+  };
+
+  const renderModalSizeOptions = (product) => {
+    const sizes = getSizesForFit(product, selectedFit);
+    if (!sizes.includes(selectedSize)) selectedSize = sizes[0] || null;
+    document.getElementById('modalSizes').innerHTML = sizes.map(sz => `
+      <button class="sz-btn ${selectedSize === sz ? 'selected' : ''}" onclick="selectSize(this,'${sz}')">${sz}</button>
+    `).join('');
+  };
+
   const openBuyModal = (id, e) => {
     if (e) e.stopPropagation();
     currentProduct = products.find(p => p.id === id);
     selectedPayMethod = 'mp';
     if (!currentProduct) return;
 
-    const sizes = getAvailableSizes(currentProduct);
-    selectedSize = sizes[0] || null;
+    selectedFit = getDefaultFit(currentProduct);
+    selectedSize = getSizesForFit(currentProduct, selectedFit)[0] || null;
     const images = getImageList(currentProduct);
 
     document.getElementById('modalProductRow').innerHTML = `
@@ -2791,15 +2879,8 @@
       </div>
     `;
 
-    document.getElementById('modalSizes').innerHTML = sizes.map(sz => `
-      <button class="sz-btn ${selectedSize === sz ? 'selected' : ''}" onclick="selectSize(this,'${sz}')">${sz}</button>
-    `).join('');
-
-    const emailHint = currentProduct?.sku ? `${currentProduct.sku.toLowerCase()}@pedido.com` : '';
-    document.getElementById('customerName').value = '';
-    document.getElementById('customerPhone').value = '';
-    document.getElementById('customerEmail').value = '';
-    document.getElementById('customerEmail').placeholder = 'tuemail@dominio.com';
+    renderModalFitOptions(currentProduct);
+    renderModalSizeOptions(currentProduct);
 
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
     const first = document.querySelector('.pay-method-btn');
@@ -2815,11 +2896,37 @@
     document.body.style.overflow = '';
   };
 
+  const selectFit = (btn, fit) => {
+    document.querySelectorAll('#modalFits .fit-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedFit = normalizeFit(fit);
+    renderModalSizeOptions(currentProduct);
+    updateModalTotal();
+  };
+
   const selectSize = (btn, sz) => {
     document.querySelectorAll('#modalSizes .sz-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedSize = sz;
     updateModalTotal();
+  };
+
+  const addConfiguredToCart = (closeAfter = false) => {
+    if (!currentProduct || !selectedSize) {
+      alert('Elegí modelo y talle antes de agregar al carrito.');
+      return;
+    }
+    const selectedVariantId = getVariantId(currentProduct, selectedSize, selectedFit);
+    if (!selectedVariantId) {
+      alert('No encontramos una variante válida para esa combinación.');
+      return;
+    }
+    const existing = cart.find(item => item.id === currentProduct.id && item.selectedSize === selectedSize && normalizeFit(item.selectedFit) === normalizeFit(selectedFit));
+    if (existing) existing.qty += 1;
+    else cart.push({ ...currentProduct, qty: 1, selectedSize, selectedFit, selectedVariantId });
+    updateCartUI();
+    openCartDrawer();
+    if (closeAfter) closeModal();
   };
 
   const selectPayMethod = (btn, method) => {
@@ -2943,8 +3050,8 @@ Cuando haga la transferencia, les envío el comprobante por este medio.
 
   const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '' } = {}) => {
     const lines = items.length
-      ? items.map(item => `• ${item.title} (${item.sku || 'Sin código'}) · Talle ${item.size || 'A confirmar'} · x${item.quantity || 1} → ${fmt(item.lineTotal || 0)}`).join('\n')
-      : `• ${currentProduct?.title || 'Producto'} (${currentProduct?.sku || 'Sin código'}) · Talle ${selectedSize || 'A confirmar'} → ${fmt(getTransferPrice(currentProduct || { price: 0 }))}`;
+      ? items.map(item => `• ${item.title} (${item.sku || 'Sin código'}) · ${describeFitAndSize(item.fit || 'unisex', item.size || 'A confirmar')} · x${item.quantity || 1} → ${fmt(item.lineTotal || 0)}`).join('\n')
+      : `• ${currentProduct?.title || 'Producto'} (${currentProduct?.sku || 'Sin código'}) · ${describeFitAndSize(selectedFit || 'unisex', selectedSize || 'A confirmar')} → ${fmt(getTransferPrice(currentProduct || { price: 0 }))}`;
 
     return `Hola SIN RECREO 👋
 
@@ -3023,7 +3130,7 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
 
     if (selectedPayMethod === 'transfer') {
       const transferOrder = await createTransferOrder([{
-        variant_id: currentProduct.variantIdsBySize?.[selectedSize] || '',
+        variant_id: getVariantId(currentProduct, selectedSize, selectedFit) || '',
         quantity: 1
       }], customer, 'single');
 
@@ -3033,6 +3140,7 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
           title: currentProduct.title,
           sku: currentProduct.sku,
           size: selectedSize,
+          fit: selectedFit,
           quantity: 1,
           lineTotal: getTransferPrice(currentProduct)
         }],
@@ -3050,8 +3158,8 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
       return;
     }
 
-    const variantId = currentProduct.variantIdsBySize?.[selectedSize] || '';
-    const directLink = STORE_CONFIG.mpMode === 'direct_links' ? getMpLink(currentProduct, selectedSize) : '';
+    const variantId = getVariantId(currentProduct, selectedSize, selectedFit) || '';
+    const directLink = STORE_CONFIG.mpMode === 'direct_links' ? getMpLink(currentProduct, selectedSize, selectedFit) : '';
     if (directLink) {
       window.open(directLink, '_blank');
       closeModal();
@@ -3088,10 +3196,12 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     if (e) e.stopPropagation();
     const p = products.find(item => item.id === id);
     if (!p) return;
-    const defaultSize = getAvailableSizes(p)[0] || 'Único';
-    const existing = cart.find(item => item.id === id && item.selectedSize === defaultSize);
+    const defaultFit = getDefaultFit(p);
+    const defaultSize = getSizesForFit(p, defaultFit)[0] || 'Único';
+    const selectedVariantId = getVariantId(p, defaultSize, defaultFit);
+    const existing = cart.find(item => item.id === id && item.selectedSize === defaultSize && normalizeFit(item.selectedFit) === normalizeFit(defaultFit));
     if (existing) existing.qty += 1;
-    else cart.push({ ...p, qty: 1, selectedSize: defaultSize });
+    else cart.push({ ...p, qty: 1, selectedSize: defaultSize, selectedFit: defaultFit, selectedVariantId });
     updateCartUI();
     openCartDrawer();
   };
@@ -3122,7 +3232,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
           <div class="cart-item-img"><img src="${img}" alt="${escapeHtml(item.title)}" style="width:100%;height:100%;object-fit:cover;display:block" /></div>
           <div class="cart-item-info">
             <div class="cart-item-name">${item.title}</div>
-            <div class="cart-item-meta">${item.capsule} · Talle ${item.selectedSize} · x${item.qty}</div>
+            <div class="cart-item-meta">${item.capsule} · ${describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize)} · x${item.qty}</div>
             <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
           </div>
           <button class="cart-item-remove" onclick="removeFromCart('${item.id}','${item.selectedSize}')" aria-label="Eliminar ${item.title}">✕</button>
@@ -3153,7 +3263,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     if (!customer) return;
 
     const validItems = cart.map(item => ({
-      variant_id: item.variantIdsBySize?.[item.selectedSize] || '',
+      variant_id: item.selectedVariantId || getVariantId(item, item.selectedSize, item.selectedFit) || '',
       quantity: item.qty
     })).filter(item => item.variant_id);
 
@@ -3171,6 +3281,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
         title: item.title,
         sku: item.sku,
         size: item.selectedSize,
+        fit: item.selectedFit || 'unisex',
         quantity: item.qty,
         lineTotal: getTransferPrice(item) * item.qty
       })),
@@ -3200,7 +3311,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
 
     if (cart.length === 1) {
       const single = cart[0];
-      const directLink = getMpLink(single, single.selectedSize);
+      const directLink = getMpLink(single, single.selectedSize, single.selectedFit || 'unisex');
       if (directLink) {
         window.open(directLink, '_blank');
         return;
@@ -3208,7 +3319,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     }
 
     const checkoutUrl = await createMPPreference(cart.map(item => ({
-      variant_id: item.variantIdsBySize?.[item.selectedSize] || '',
+      variant_id: item.selectedVariantId || getVariantId(item, item.selectedSize, item.selectedFit) || '',
       quantity: item.qty
     })).filter(item => item.variant_id), customer);
 
