@@ -2317,12 +2317,59 @@
   let selectedFit = 'unisex';
   let selectedPayMethod = 'mp';
   let sbClient = null;
+  const CHECKOUT_CUSTOMER_STORAGE_KEY = 'sinrecreo_checkout_customer_v1';
 
-  const getCheckoutCustomer = () => ({
-    name: (document.getElementById('customerName')?.value || '').trim(),
-    phone: (document.getElementById('customerPhone')?.value || '').trim(),
-    email: (document.getElementById('customerEmail')?.value || '').trim().toLowerCase()
+  const normalizeCustomer = (customer = {}) => ({
+    name: String(customer.name || '').trim(),
+    phone: String(customer.phone || '').trim(),
+    email: String(customer.email || '').trim().toLowerCase()
   });
+
+  const getStoredCheckoutCustomer = () => {
+    try {
+      const raw = localStorage.getItem(CHECKOUT_CUSTOMER_STORAGE_KEY);
+      return raw ? normalizeCustomer(JSON.parse(raw)) : { name:'', phone:'', email:'' };
+    } catch (error) {
+      return { name:'', phone:'', email:'' };
+    }
+  };
+
+  const saveCheckoutCustomer = (customer = {}) => {
+    const normalized = normalizeCustomer(customer);
+    try {
+      localStorage.setItem(CHECKOUT_CUSTOMER_STORAGE_KEY, JSON.stringify(normalized));
+    } catch (error) {}
+    return normalized;
+  };
+
+  const fillCheckoutCustomerInputs = (customer = {}) => {
+    const normalized = normalizeCustomer(customer);
+    const nameInput = document.getElementById('customerName');
+    const phoneInput = document.getElementById('customerPhone');
+    const emailInput = document.getElementById('customerEmail');
+    if (nameInput && !nameInput.value.trim()) nameInput.value = normalized.name;
+    if (phoneInput && !phoneInput.value.trim()) phoneInput.value = normalized.phone;
+    if (emailInput && !emailInput.value.trim()) emailInput.value = normalized.email;
+  };
+
+  const getCheckoutCustomer = () => {
+    const stored = getStoredCheckoutCustomer();
+    return normalizeCustomer({
+      name: (document.getElementById('customerName')?.value || stored.name || '').trim(),
+      phone: (document.getElementById('customerPhone')?.value || stored.phone || '').trim(),
+      email: (document.getElementById('customerEmail')?.value || stored.email || '').trim().toLowerCase()
+    });
+  };
+
+  const wireCheckoutCustomerInputs = () => {
+    fillCheckoutCustomerInputs(getStoredCheckoutCustomer());
+    ['customerName','customerPhone','customerEmail'].forEach(id => {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.addEventListener('input', () => saveCheckoutCustomer(getCheckoutCustomer()));
+      input.addEventListener('change', () => saveCheckoutCustomer(getCheckoutCustomer()));
+    });
+  };
 
   const validateCheckoutCustomer = () => {
     const customer = getCheckoutCustomer();
@@ -2342,7 +2389,7 @@
       document.getElementById('customerEmail')?.focus();
       return null;
     }
-    return customer;
+    return saveCheckoutCustomer(customer);
   };
 
   /* ─── HELPERS ─── */
@@ -2504,6 +2551,7 @@
       console.error('Error cargando catálogo desde Supabase:', error);
     } finally {
       wireAdminAccessLinks();
+      wireCheckoutCustomerInputs();
       refreshCatalogData();
       renderPaymentStatusBanner();
       observeElements();
@@ -3075,17 +3123,18 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
   };
 
   const collectCartCustomer = () => {
-    const name = (window.prompt('Para registrar el pedido por transferencia, escribí tu nombre y apellido:') || '').trim();
-    if (!name) return null;
-    const email = (window.prompt('Ahora escribí tu email para enviarte la confirmación del pedido:') || '').trim().toLowerCase();
-    if (!email) return null;
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!emailOk) {
-      alert('Revisá el correo electrónico antes de continuar.');
+    const customer = getStoredCheckoutCustomer();
+    if (!customer.name || !customer.email) {
+      alert('Primero cargá tus datos desde la ventana de una prenda. Después vas a poder cerrar el carrito sin volver a escribirlos.');
+      closeCartDrawer();
       return null;
     }
-    const phone = (window.prompt('Por último, dejanos tu WhatsApp o teléfono (opcional):') || '').trim();
-    return { name, email, phone };
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email);
+    if (!emailOk) {
+      alert('Revisá el correo electrónico guardado antes de continuar.');
+      return null;
+    }
+    return customer;
   };
 
   const createMPPreference = async (items, customer = {}) => {
@@ -3300,14 +3349,8 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   const checkoutMP = async () => {
     if (!cart.length) return;
 
-    const email = window.prompt('Antes de ir a Mercado Pago, cargá tu email para enviarte la confirmación del pedido:');
-    if (!email) return;
-    const customer = { name: '', phone: '', email: email.trim().toLowerCase() };
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email);
-    if (!emailOk) {
-      alert('Revisá el correo electrónico antes de continuar.');
-      return;
-    }
+    const customer = collectCartCustomer();
+    if (!customer) return;
 
     if (cart.length === 1) {
       const single = cart[0];
