@@ -3140,9 +3140,7 @@ ${value}`);
     const computedTotal = Number(total || normalizedItems.reduce((acc, item) => acc + Number(item.lineTotal || 0), 0));
     const computedSubTotal = normalizedItems.reduce((acc, item) => acc + Number(item.subTotal || 0), 0);
     const computedDiscount = normalizedItems.reduce((acc, item) => acc + Number(item.discount || 0), 0);
-    const itemsText = normalizedItems.map(buildTransferLineBlock).join('
-
-');
+    const itemsText = normalizedItems.map(buildTransferLineBlock).join('\n\n');
 
     return `Hola SIN RECREO 👋
 
