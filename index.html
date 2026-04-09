@@ -1403,6 +1403,21 @@
     }
     .cart-subtotal-label { font-size: .88rem; color: var(--muted); font-weight: 600; }
     .cart-subtotal-price { font-family: var(--font-display); font-size: 1.5rem; }
+
+    .cart-browse-btn {
+      width: 100%;
+      padding: 14px;
+      background: #f5f3ee;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      font-weight: 700;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: all .18s;
+      margin-bottom: 10px;
+    }
+    .cart-browse-btn:hover { background: #ebe7df; border-color: rgba(14,14,16,.18); }
     .cart-checkout-btn {
       width: 100%;
       padding: 16px;
@@ -2005,6 +2020,7 @@
       <span class="cart-subtotal-label">Subtotal</span>
       <span class="cart-subtotal-price" id="cartTotal">$0</span>
     </div>
+    <button class="cart-browse-btn" onclick="goBackToCatalogFromCart()">Ver más prendas</button>
     <button class="cart-checkout-btn" onclick="checkoutWhatsApp()">Enviar pedido por WhatsApp</button>
     <button class="cart-mp-btn" onclick="checkoutMP()">
       <svg width="20" height="20" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="#009ee3"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="white" font-family="Arial">MP</text></svg>
@@ -2119,7 +2135,7 @@
         Pagar esta prenda con Mercado Pago
       </button>
       <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
-        Agregar esta prenda al carrito y seguir comprando
+        Agregar al carrito y seguir comprando
       </button>
       <div class="modal-secure">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -3011,7 +3027,7 @@
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Pago en entorno seguro de Mercado Pago · No expongas datos sensibles por WhatsApp`;
     } else {
       cta.className = 'modal-cta';
-      cta.textContent = 'Confirmar compra de esta prenda por transferencia';
+      cta.textContent = 'Confirmar transferencia';
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Reservá la prenda y cerrá el pago con contacto directo por WhatsApp`;
     }
     updateTransferPanel();
