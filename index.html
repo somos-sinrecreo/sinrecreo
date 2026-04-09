@@ -2100,9 +2100,8 @@
         <div class="transfer-actions">
           <button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button>
           <button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button>
-          <button class="transfer-btn" type="button" onclick="openTransferWhatsApp()">Enviar comprobante por WhatsApp</button>
         </div>
-        <div class="modal-note">Vas a ver el alias y el CVU para transferir, y después nos enviás el comprobante por WhatsApp para confirmar la reserva y el envío.</div>
+        <div class="modal-note">Vas a ver el alias y el CVU para transferir. Cuando confirmes la compra de esta prenda, te abrimos WhatsApp con el pedido ya armado para que nos envíes el comprobante.</div>
       </div>
 
       <!-- Total -->
@@ -2112,11 +2111,11 @@
       </div>
 
       <!-- CTA -->
-      <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
-        Agregar al carrito
-      </button>
       <button class="modal-cta mp-style" id="modalCta" onclick="processPayment()">
-        Continuar con MercadoPago
+        Ir a pagar esta prenda con Mercado Pago
+      </button>
+      <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
+        Agregar esta prenda al carrito y seguir comprando
       </button>
       <div class="modal-secure">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -3004,11 +3003,11 @@
     const secure = document.querySelector('.modal-secure');
     if (selectedPayMethod === 'mp' || selectedPayMethod === 'card') {
       cta.className = 'modal-cta mp-style';
-      cta.textContent = 'Ir a pagar con Mercado Pago';
+      cta.textContent = 'Ir a pagar esta prenda con Mercado Pago';
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Pago en entorno seguro de Mercado Pago · No expongas datos sensibles por WhatsApp`;
     } else {
       cta.className = 'modal-cta';
-      cta.textContent = 'Confirmar compra por transferencia';
+      cta.textContent = 'Confirmar la compra de esta prenda única por transferencia';
       if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Reservá la prenda y cerrá el pago con contacto directo por WhatsApp`;
     }
     updateTransferPanel();
