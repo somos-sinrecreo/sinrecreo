@@ -1235,14 +1235,15 @@
       justify-content: center;
       gap: 10px;
       padding: 15px;
-      margin-top: 12px;
+      margin-top: 14px;
       margin-bottom: 10px;
-      background: #fff;
-      color: var(--ink);
-      border: 1.5px solid var(--line);
+      background: var(--accent);
+      color: #fff;
+      border: 1.5px solid var(--accent);
       border-radius: var(--r-lg);
       font-weight: 700;
-      font-size: .95rem;
+      font-size: .88rem;
+      white-space: nowrap;
       cursor: pointer;
       transition: all .2s;
     }
@@ -1314,7 +1315,8 @@
       color: #fff;
       border-radius: var(--r-lg);
       font-weight: 700;
-      font-size: 1rem;
+      font-size: .88rem;
+      white-space: nowrap;
       cursor: pointer;
       border: none;
       transition: all .2s;
@@ -2003,7 +2005,7 @@
       <span class="cart-subtotal-label">Subtotal</span>
       <span class="cart-subtotal-price" id="cartTotal">$0</span>
     </div>
-    <button class="cart-checkout-btn" onclick="checkoutWhatsApp()">Comprar por WhatsApp</button>
+    <button class="cart-checkout-btn" onclick="checkoutWhatsApp()">Enviar pedido por WhatsApp</button>
     <button class="cart-mp-btn" onclick="checkoutMP()">
       <svg width="20" height="20" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="#009ee3"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="white" font-family="Arial">MP</text></svg>
       Pagar con MercadoPago
