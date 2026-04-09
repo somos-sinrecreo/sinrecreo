@@ -943,13 +943,13 @@
 
               if (upsertVariantError) throw upsertVariantError;
             } else {
-              const { error: deleteVariantError } = await sb
+              const { error: deactivateVariantError } = await sb
                 .from('product_variants')
-                .delete()
+                .update({ stock: 0, is_active: false })
                 .eq('product_id', savedProductId)
                 .eq('size', variantSize);
 
-              if (deleteVariantError) throw deleteVariantError;
+              if (deactivateVariantError) throw deactivateVariantError;
             }
           }
         }
