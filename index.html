@@ -2809,7 +2809,7 @@
 
   /* ─── FILTERS ─── */
   const getFilterLists = () => {
-    const sizeOrder = ['XS','S','M','L','XL','XXL','3XL'];
+    const sizeOrder = ['XS','S','M','L','XL','XXL'];
     return {
       allCapsules: [...new Set(products.map(p => p.capsule).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'es')),
       allCuts: [...new Set(products.map(p => p.cut).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'es')),
