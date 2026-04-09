@@ -625,6 +625,24 @@
       }
     };
 
+
+    const triggerOrderEmails = async (orderId) => {
+      const response = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-order-emails`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CONFIG.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({ order_id: orderId })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.ok === false) {
+        throw new Error(data?.error || 'El pedido se actualizó, pero falló el envío del mail.');
+      }
+      return data;
+    };
+
     const saveOrderChanges = async () => {
       clearStatus();
       try {
@@ -639,6 +657,8 @@
           await adjustStockForApprovedOrder(order);
         }
 
+        const justApproved = order.status !== 'approved' && nextStatus === 'approved';
+
         const { error } = await sb
           .from('orders')
           .update({
@@ -649,7 +669,12 @@
           .eq('id', order.id);
         if (error) throw error;
 
-        showStatus('Pedido actualizado correctamente.');
+        if (justApproved) {
+          await triggerOrderEmails(order.id);
+          showStatus('Pedido actualizado y mail enviado correctamente.');
+        } else {
+          showStatus('Pedido actualizado correctamente.');
+        }
         await loadOrders();
       } catch (err) {
         showStatus(err.message || 'No se pudo actualizar el pedido.', 'err');
