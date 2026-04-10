@@ -1744,21 +1744,21 @@
 <!-- Announce bar -->
 <div class="announce" aria-label="Novedades">
   <div class="announce-track">
-    <span>ENVÍO GRATIS EN PEDIDOS +$50.000</span>
+    <span>ENVÍO GRATIS COMPRANDO 3 PRENDAS O MAS</span>
     <span class="dot">✦</span>
     <span>3 CUOTAS SIN INTERÉS CON MERCADOPAGO</span>
     <span class="dot">✦</span>
     <span>10% OFF PAGANDO POR TRANSFERENCIA</span>
     <span class="dot">✦</span>
-    <span>CÁPSULAS LIMITADAS · ABRIL 2026</span>
+    <span class="announce-featured-capsule">CÁPSULA DESTACADA DEL MES</span>
     <span class="dot">✦</span>
-    <span>ENVÍO GRATIS EN PEDIDOS +$50.000</span>
+    <span>ENVÍO GRATIS COMPRANDO 3 PRENDAS O MAS</span>
     <span class="dot">✦</span>
     <span>3 CUOTAS SIN INTERÉS CON MERCADOPAGO</span>
     <span class="dot">✦</span>
     <span>10% OFF PAGANDO POR TRANSFERENCIA</span>
     <span class="dot">✦</span>
-    <span>CÁPSULAS LIMITADAS · ABRIL 2026</span>
+    <span class="announce-featured-capsule">CÁPSULA DESTACADA DEL MES</span>
     <span class="dot">✦</span>
   </div>
 </div>
@@ -1837,31 +1837,31 @@
       <div class="hero-right">
         <div class="hero-stat-card fade-up">
           <div class="stat-grid">
-            <div class="stat-item"><strong>12</strong><span>drops activos</span></div>
-            <div class="stat-item"><strong>5</strong><span>cápsulas</span></div>
-            <div class="stat-item"><strong>+500</strong><span>clientes</span></div>
-            <div class="stat-item"><strong>3x</strong><span>cuotas sin interés</span></div>
+            <div class="stat-item"><strong id="statActiveDrops">0</strong><span>drops activos</span></div>
+            <div class="stat-item"><strong id="statActiveCapsules">0</strong><span>cápsulas</span></div>
+            <div class="stat-item"><strong id="statCustomers">0</strong><span>clientes</span></div>
+            <div class="stat-item"><strong id="statInstallments">3x</strong><span>cuotas sin interés</span></div>
           </div>
           <div class="divider"></div>
           <div class="pay-info">
             <div class="pay-row">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              <span><strong>MercadoPago:</strong> 3 cuotas sin interés</span>
+              <span id="heroMpText"><strong>MercadoPago:</strong> 3 cuotas sin interés</span>
             </div>
             <div class="pay-row">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              <span><strong>Transferencia:</strong> 10% de descuento</span>
+              <span id="heroTransferText"><strong>Transferencia:</strong> 10% de descuento</span>
             </div>
             <div class="pay-row">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.07 7.54 19.79 19.79 0 011 3.18 2 2 0 012.96 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-              <span><strong>WhatsApp:</strong> atención personalizada</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.1-.198.05-.372-.025-.521-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.075-.792.372-.272.297-1.04 1.016-1.04 2.48 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 2C6.555 2 2.1 6.455 2.1 11.95c0 1.76.46 3.414 1.265 4.848L2 22l5.348-1.402a9.909 9.909 0 0 0 4.702 1.19h.004c5.492 0 9.95-4.455 9.95-9.95S17.546 2 12.05 2Z"/></svg>
+              <span id="heroWhatsAppText"><strong>WhatsApp:</strong> atención personalizada</span>
             </div>
           </div>
         </div>
 
         <div class="hero-promo-card fade-up">
-          <div class="promo-label" id="featuredCapsuleLabel">✦ Drop destacado</div>
-          <h2 class="promo-title" id="featuredCapsuleTitle">Cápsula &quot;Memoria y archivo&quot; — activa ahora</h2>
+          <div class="promo-label" id="featuredCapsuleLabel">✦ Drop Destacado</div>
+          <h2 class="promo-title" id="featuredCapsuleTitle">Cápsula &quot;Memoria y archivo&quot;</h2>
           <p class="promo-body" id="featuredCapsuleBody">Prendas que trabajan con imágenes, hitos y tensiones culturales. Edición corta, diseño con intención.</p>
           <a class="btn-ghost-white" href="#catalogo" id="featuredCapsuleCta" onclick="handleFeaturedCapsuleCta(event)">
             <span id="featuredCapsuleCtaText">Ver cápsula</span>
@@ -2171,6 +2171,8 @@
     transferOwner: 'Lucas Matias Faga',
     transferCBU: '0000003100065142182346',
     transferDiscount: 10,
+    installmentsCount: 3,
+    freeShippingMinItems: 3,
     mpMode: 'backend', // 'direct_links' o 'backend'
     mpEnvironment: 'sandbox', // 'sandbox' mientras uses credenciales de prueba; luego 'production'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
@@ -2384,6 +2386,7 @@
 
   let capsulesData = [];
   let featuredCapsule = null;
+  let storeMetrics = { activeDrops: 0, activeCapsules: 0, customersCount: null };
   let currentProduct = null;
   let selectedSize = null;
   let selectedFit = 'unisex';
@@ -2678,10 +2681,11 @@
     const title = document.getElementById('featuredCapsuleTitle');
     const body = document.getElementById('featuredCapsuleBody');
     const ctaText = document.getElementById('featuredCapsuleCtaText');
-    if (label) label.textContent = `✦ ${featuredCapsule.tag || 'Drop destacado'}`;
-    if (title) title.textContent = featuredCapsule.heroTitle || `Cápsula "${featuredCapsule.name}" — activa ahora`;
+    if (label) label.textContent = '✦ Drop Destacado';
+    if (title) title.textContent = `Cápsula "${featuredCapsule.name}"`;
     if (body) body.textContent = featuredCapsule.heroBody || featuredCapsule.desc || '';
     if (ctaText) ctaText.textContent = featuredCapsule.heroCtaText || 'Ver cápsula';
+    renderAnnounceFeaturedCapsule();
   };
 
   const handleFeaturedCapsuleCta = (event) => {
@@ -2690,12 +2694,75 @@
     filterByCapsule(featuredCapsule.name);
   };
 
+  const renderAnnounceFeaturedCapsule = () => {
+    const capsuleName = featuredCapsule?.name ? featuredCapsule.name.toUpperCase() : '';
+    const textValue = capsuleName ? `CÁPSULA DESTACADA DEL MES · ${capsuleName}` : 'CÁPSULA DESTACADA DEL MES';
+    document.querySelectorAll('.announce-featured-capsule').forEach(node => {
+      node.textContent = textValue;
+    });
+  };
+
+  const computeLocalStoreMetrics = () => {
+    const activeProducts = products.filter(product => getTotalStock(product) > 0);
+    const activeCapsuleNames = new Set(activeProducts.map(product => product.capsule).filter(Boolean));
+    const activeCapsules = capsulesData.length
+      ? capsulesData.filter(capsule => capsule.isActive !== false && activeCapsuleNames.has(capsule.name)).length
+      : activeCapsuleNames.size;
+
+    return {
+      activeDrops: activeProducts.length,
+      activeCapsules,
+      customersCount: null
+    };
+  };
+
+  const loadPublicStoreMetrics = async () => {
+    const localMetrics = computeLocalStoreMetrics();
+    const client = initSupabaseClient();
+    if (!client) return localMetrics;
+
+    try {
+      const { data, error } = await client.rpc('get_store_public_metrics');
+      if (error) throw error;
+      const row = Array.isArray(data) ? data[0] : data;
+      return {
+        activeDrops: Number(row?.active_products ?? localMetrics.activeDrops ?? 0),
+        activeCapsules: Number(row?.active_capsules ?? localMetrics.activeCapsules ?? 0),
+        customersCount: row?.total_orders == null ? localMetrics.customersCount : Number(row.total_orders)
+      };
+    } catch (error) {
+      console.warn('No se pudieron cargar las métricas públicas de la tienda:', error);
+      return localMetrics;
+    }
+  };
+
+  const renderHeroStats = () => {
+    const activeDropsNode = document.getElementById('statActiveDrops');
+    const activeCapsulesNode = document.getElementById('statActiveCapsules');
+    const customersNode = document.getElementById('statCustomers');
+    const installmentsNode = document.getElementById('statInstallments');
+    const mpTextNode = document.getElementById('heroMpText');
+    const transferTextNode = document.getElementById('heroTransferText');
+
+    if (activeDropsNode) activeDropsNode.textContent = String(storeMetrics.activeDrops ?? 0);
+    if (activeCapsulesNode) activeCapsulesNode.textContent = String(storeMetrics.activeCapsules ?? 0);
+    if (customersNode) {
+      const customersCount = Number(storeMetrics.customersCount ?? 0);
+      customersNode.textContent = customersCount > 0 ? `+${customersCount}` : '0';
+    }
+    if (installmentsNode) installmentsNode.textContent = `${STORE_CONFIG.installmentsCount || 3}x`;
+    if (mpTextNode) mpTextNode.innerHTML = `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`;
+    if (transferTextNode) transferTextNode.innerHTML = `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`;
+  };
+
+
   const refreshCatalogData = () => {
     const { allCapsules, allCuts, allSizes } = getFilterLists();
     renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
     renderCheckboxes(allCuts, 'cutFilters', 'cuts');
     renderCheckboxes(allSizes, 'sizeFilters', 'sizes');
     renderFeaturedCapsule();
+    renderHeroStats();
     renderCapsules();
     applyFilters();
     updateCartUI();
@@ -2725,6 +2792,7 @@
       console.error('Error cargando catálogo desde Supabase:', error);
       capsulesData = getCapsuleFallbackData();
     } finally {
+      storeMetrics = await loadPublicStoreMetrics();
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
       refreshCatalogData();
