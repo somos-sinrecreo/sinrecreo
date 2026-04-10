@@ -1860,11 +1860,11 @@
         </div>
 
         <div class="hero-promo-card fade-up">
-          <div class="promo-label">✦ Drop destacado</div>
-          <h2 class="promo-title">Cápsula "Memoria y archivo" — activa ahora</h2>
-          <p class="promo-body">Prendas que trabajan con imágenes, hitos y tensiones culturales. Edición corta, diseño con intención.</p>
-          <a class="btn-ghost-white" href="#capsulas">
-            Ver cápsula
+          <div class="promo-label" id="featuredCapsuleLabel">✦ Drop destacado</div>
+          <h2 class="promo-title" id="featuredCapsuleTitle">Cápsula &quot;Memoria y archivo&quot; — activa ahora</h2>
+          <p class="promo-body" id="featuredCapsuleBody">Prendas que trabajan con imágenes, hitos y tensiones culturales. Edición corta, diseño con intención.</p>
+          <a class="btn-ghost-white" href="#catalogo" id="featuredCapsuleCta" onclick="handleFeaturedCapsuleCta(event)">
+            <span id="featuredCapsuleCtaText">Ver cápsula</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
@@ -2336,16 +2336,54 @@
     }
   ];
 
-  const capsuleInfo = {
-    'Memoria y archivo': { tag:'Activa ahora', desc:'Prendas que trabajan con imágenes, hitos y tensiones culturales.' },
-    'Íconos desplazados': { tag:'Edición corta', desc:'Retratos, símbolos y relecturas con estética de afiche contemporáneo.' },
-    'Ruido pop': { tag:'Más buscada', desc:'Gráfica de alto contraste para piezas que piden calle y conversación.' },
-    'Ensayo visual': { tag:'Muy SIN RECREO', desc:'Cuando una remera funciona como toma de posición, no solo como look.' }
+  const capsuleInfoFallback = {
+    'Memoria y archivo': {
+      name:'Memoria y archivo',
+      tag:'Activa ahora',
+      desc:'Prendas que trabajan con imágenes, hitos y tensiones culturales.',
+      heroTitle:'Cápsula "Memoria y archivo" — activa ahora',
+      heroBody:'Prendas que trabajan con imágenes, hitos y tensiones culturales. Edición corta, diseño con intención.',
+      heroCtaText:'Ver cápsula',
+      featured:true,
+      isActive:true
+    },
+    'Íconos desplazados': {
+      name:'Íconos desplazados',
+      tag:'Edición corta',
+      desc:'Retratos, símbolos y relecturas con estética de afiche contemporáneo.',
+      heroTitle:'Cápsula "Íconos desplazados" — activa ahora',
+      heroBody:'Retratos, símbolos y relecturas con estética de afiche contemporáneo.',
+      heroCtaText:'Ver cápsula',
+      featured:false,
+      isActive:true
+    },
+    'Ruido pop': {
+      name:'Ruido pop',
+      tag:'Más buscada',
+      desc:'Gráfica de alto contraste para piezas que piden calle y conversación.',
+      heroTitle:'Cápsula "Ruido pop" — activa ahora',
+      heroBody:'Gráfica de alto contraste para piezas que piden calle y conversación.',
+      heroCtaText:'Ver cápsula',
+      featured:false,
+      isActive:true
+    },
+    'Ensayo visual': {
+      name:'Ensayo visual',
+      tag:'Muy SIN RECREO',
+      desc:'Cuando una remera funciona como toma de posición, no solo como look.',
+      heroTitle:'Cápsula "Ensayo visual" — activa ahora',
+      heroBody:'Cuando una remera funciona como toma de posición, no solo como look.',
+      heroCtaText:'Ver cápsula',
+      featured:false,
+      isActive:true
+    }
   };
 
   const state = { query:'', sort:'featured', capsules:new Set(), cuts:new Set(), sizes:new Set(), minPrice:'', maxPrice:'' };
   const cart = [];
 
+  let capsulesData = [];
+  let featuredCapsule = null;
   let currentProduct = null;
   let selectedSize = null;
   let selectedFit = 'unisex';
@@ -2580,11 +2618,84 @@
     });
   };
 
+  const normalizeCapsuleRecord = (row = {}, count = 0) => ({
+    id: row.id || row.slug || row.name || '',
+    name: row.name || row.capsule || '',
+    slug: row.slug || '',
+    tag: row.badge_label || row.tag || 'Activa ahora',
+    desc: row.short_description || row.desc || '',
+    heroTitle: row.hero_title || `Cápsula "${row.name || row.capsule || ''}" — activa ahora`,
+    heroBody: row.hero_body || row.short_description || row.desc || '',
+    heroCtaText: row.hero_cta_text || 'Ver cápsula',
+    featured: Boolean(row.is_featured_drop || row.featured),
+    isActive: row.is_active !== false,
+    productCount: Number(count || 0)
+  });
+
+  const getCapsuleFallbackData = () => {
+    const counts = products.reduce((acc, product) => {
+      acc[product.capsule] = (acc[product.capsule] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.keys(counts).map(name => normalizeCapsuleRecord(capsuleInfoFallback[name] || { name }, counts[name]));
+  };
+
+  const loadCapsulesFromSupabase = async () => {
+    const client = initSupabaseClient();
+    if (!client) return getCapsuleFallbackData();
+
+    const [{ data: capsuleRows, error: capsulesError }, { data: productRows, error: productsError }] = await Promise.all([
+      client
+        .from('capsules')
+        .select('id, name, slug, badge_label, short_description, hero_title, hero_body, hero_cta_text, is_active, is_featured_drop')
+        .eq('is_active', true)
+        .order('is_featured_drop', { ascending: false })
+        .order('name', { ascending: true }),
+      client
+        .from('products')
+        .select('capsule, is_active')
+        .eq('is_active', true)
+    ]);
+
+    if (capsulesError) throw capsulesError;
+    if (productsError) throw productsError;
+
+    const counts = (productRows || []).reduce((acc, row) => {
+      if (!row.capsule) return acc;
+      acc[row.capsule] = (acc[row.capsule] || 0) + 1;
+      return acc;
+    }, {});
+
+    const normalized = (capsuleRows || []).map(row => normalizeCapsuleRecord(row, counts[row.name] || 0));
+    return normalized.length ? normalized : getCapsuleFallbackData();
+  };
+
+  const renderFeaturedCapsule = () => {
+    const list = capsulesData.length ? capsulesData : getCapsuleFallbackData();
+    featuredCapsule = list.find(item => item.featured) || list[0] || null;
+    if (!featuredCapsule) return;
+    const label = document.getElementById('featuredCapsuleLabel');
+    const title = document.getElementById('featuredCapsuleTitle');
+    const body = document.getElementById('featuredCapsuleBody');
+    const ctaText = document.getElementById('featuredCapsuleCtaText');
+    if (label) label.textContent = `✦ ${featuredCapsule.tag || 'Drop destacado'}`;
+    if (title) title.textContent = featuredCapsule.heroTitle || `Cápsula "${featuredCapsule.name}" — activa ahora`;
+    if (body) body.textContent = featuredCapsule.heroBody || featuredCapsule.desc || '';
+    if (ctaText) ctaText.textContent = featuredCapsule.heroCtaText || 'Ver cápsula';
+  };
+
+  const handleFeaturedCapsuleCta = (event) => {
+    if (!featuredCapsule?.name) return;
+    event.preventDefault();
+    filterByCapsule(featuredCapsule.name);
+  };
+
   const refreshCatalogData = () => {
     const { allCapsules, allCuts, allSizes } = getFilterLists();
     renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
     renderCheckboxes(allCuts, 'cutFilters', 'cuts');
     renderCheckboxes(allSizes, 'sizeFilters', 'sizes');
+    renderFeaturedCapsule();
     renderCapsules();
     applyFilters();
     updateCartUI();
@@ -2593,17 +2704,26 @@
   const initStore = async () => {
     try {
       if (isSupabaseConfigured()) {
-        const remoteProducts = await loadProductsFromSupabase();
+        const [remoteProducts, remoteCapsules] = await Promise.all([
+          loadProductsFromSupabase(),
+          loadCapsulesFromSupabase().catch(error => {
+            console.error('Error cargando cápsulas desde Supabase:', error);
+            return getCapsuleFallbackData();
+          })
+        ]);
         if (remoteProducts?.length) {
           products = remoteProducts;
         } else {
           console.warn('Supabase no devolvió productos activos. Se mantienen los productos de ejemplo.');
         }
+        capsulesData = remoteCapsules?.length ? remoteCapsules : getCapsuleFallbackData();
       } else {
         console.warn('Supabase no está configurado. Se muestran los productos de ejemplo.');
+        capsulesData = getCapsuleFallbackData();
       }
     } catch (error) {
       console.error('Error cargando catálogo desde Supabase:', error);
+      capsulesData = getCapsuleFallbackData();
     } finally {
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
@@ -2792,15 +2912,17 @@
 
   /* ─── CAPSULES ─── */
   const renderCapsules = () => {
-    const caps = [...new Set(products.map(p => p.capsule))];
     const grid = document.getElementById('capsuleGrid');
-    grid.innerHTML = caps.map(cap => {
-      const info = capsuleInfo[cap] || { tag:'Activa', desc:'' };
-      const count = products.filter(p => p.capsule === cap).length;
-      return `<article class="capsule-card fade-up" onclick="filterByCapsule('${cap}')">
-        <div class="capsule-tag">✦ ${info.tag}</div>
-        <h3 class="capsule-name">${cap}</h3>
-        <p class="capsule-desc">${info.desc}</p>
+    const activeCapsules = (capsulesData.length ? capsulesData : getCapsuleFallbackData())
+      .filter(item => item.isActive !== false)
+      .filter(item => (item.productCount || products.filter(product => product.capsule === item.name).length) > 0);
+    grid.innerHTML = activeCapsules.map(capsule => {
+      const count = capsule.productCount || products.filter(product => product.capsule === capsule.name).length;
+      const capsuleArg = encodeURIComponent(capsule.name || '');
+      return `<article class="capsule-card fade-up" onclick="filterByCapsule(decodeURIComponent('${capsuleArg}'))">
+        <div class="capsule-tag">✦ ${escapeHtml(capsule.tag || 'Activa')}</div>
+        <h3 class="capsule-name">${escapeHtml(capsule.name)}</h3>
+        <p class="capsule-desc">${escapeHtml(capsule.desc || '')}</p>
         <div style="margin-top:14px;font-size:.8rem;font-weight:600;color:var(--accent)">${count} prendas →</div>
       </article>`;
     }).join('');
