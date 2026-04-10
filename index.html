@@ -1497,22 +1497,49 @@
     .trust-item span { font-size: .8rem; color: var(--muted); line-height: 1.5; }
 
     /* ── FLOATING WA ── */
-    .float-wa {
+    .float-wa, .float-cart {
       position: fixed;
-      bottom: 22px;
       right: 22px;
       width: 58px;
       height: 58px;
       border-radius: 50%;
-      background: #25D366;
       display: grid;
       place-items: center;
-      box-shadow: 0 8px 28px rgba(37,211,102,.4);
       z-index: 80;
       transition: transform .2s, box-shadow .2s;
+      border: 0;
+      cursor: pointer;
+    }
+    .float-wa {
+      bottom: 22px;
+      background: #25D366;
+      box-shadow: 0 8px 28px rgba(37,211,102,.4);
+    }
+    .float-cart {
+      bottom: 92px;
+      background: var(--ink);
+      box-shadow: 0 8px 28px rgba(14,14,16,.28);
+      color: #fff;
     }
     .float-wa:hover { transform: scale(1.08); box-shadow: 0 12px 36px rgba(37,211,102,.5); }
-    .float-wa svg { fill: #fff; }
+    .float-cart:hover { transform: scale(1.08); box-shadow: 0 12px 36px rgba(14,14,16,.34); }
+    .float-wa svg, .float-cart svg { fill: #fff; }
+    .float-cart .count {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: .68rem;
+      font-weight: 800;
+      line-height: 1;
+      border: 2px solid var(--cream);
+    }
 
     /* ── FOOTER ── */
     .footer {
@@ -1728,6 +1755,237 @@
         overflow-wrap: anywhere;
         word-break: break-word;
       }
+      .float-wa, .float-cart {
+        right: 14px;
+      }
+      .float-wa { bottom: 14px; }
+      .float-cart { bottom: 82px; }
+    }
+
+
+    /* ── UI/UX REWORK · CÁPSULAS + CATÁLOGO EDITORIAL ── */
+    .capsule-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .capsule-card {
+      padding: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      min-height: 300px;
+      overflow: hidden;
+    }
+    .capsule-card::after { display: none; }
+    .capsule-media {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 8px;
+      min-height: 100%;
+      padding: 12px;
+      background: linear-gradient(160deg, #f3efe8, #ebe5db);
+      border-right: 1px solid var(--line);
+    }
+    .capsule-media-main,
+    .capsule-media-side img,
+    .capsule-media-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .capsule-media-main {
+      min-height: 276px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(14,14,16,.06);
+      box-shadow: var(--sh);
+    }
+    .capsule-media-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .capsule-media-side .thumb {
+      border-radius: 18px;
+      overflow: hidden;
+      min-height: 128px;
+      background: #fff;
+      border: 1px solid rgba(14,14,16,.06);
+      box-shadow: var(--sh);
+    }
+    .capsule-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 26px 24px 26px 10px;
+    }
+    .capsule-copy-top { display:flex; flex-direction:column; gap:12px; }
+    .capsule-copy .capsule-name { font-size: 2.05rem; margin-bottom: 0; }
+    .capsule-desc { font-size: .92rem; line-height: 1.75; }
+    .capsule-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+    .capsule-count {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .capsule-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: .84rem;
+      font-weight: 700;
+      border: 1px solid var(--ink);
+      cursor: pointer;
+    }
+    .capsule-open:hover { background:#222; }
+
+    .catalog-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none !important; }
+    .editorial-toolbar {
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px;
+    }
+    .catalog-controls { width: 100%; display:flex; justify-content:flex-end; }
+    .catalog-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 999px;
+      background: #f1ece4;
+      border: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+    .catalog-pill {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .84rem;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .catalog-pill.active {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: var(--sh);
+    }
+    .products-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .modal-wide {
+      max-width: min(1260px, calc(100vw - 36px));
+      width: 100%;
+    }
+    .capsule-modal-shell {
+      max-height: 92vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .capsule-modal-header {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .capsule-modal-sub {
+      max-width: 72ch;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: .92rem;
+      margin-top: 8px;
+    }
+    .capsule-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .capsule-modal-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: var(--sh);
+    }
+    .capsule-modal-topbar-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .capsule-modal-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-pale);
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+    .capsule-modal-count {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: .03em;
+      line-height: 1;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .capsule-modal-subtle {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.7;
+    }
+    .capsule-modal-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    @media (max-width: 1180px) {
+      .capsule-card { grid-template-columns: 1fr; }
+      .capsule-copy { padding: 24px; }
+      .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .capsule-modal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      .capsule-grid { grid-template-columns: 1fr; }
+      .capsule-copy { padding: 18px; }
+      .capsule-copy .capsule-name { font-size: 1.7rem; }
+      .capsule-media-side { grid-template-columns: repeat(2, 1fr); }
+      .catalog-controls { justify-content: flex-start; }
+      .catalog-switch { width: 100%; }
+      .catalog-pill { flex: 1; min-width: 0; }
+      .products-grid,
+      .capsule-modal-grid { grid-template-columns: 1fr; }
+      .modal-wide { max-width: calc(100vw - 16px); }
+      .capsule-modal-topbar { align-items: flex-start; }
     }
 
     /* ── SCROLL ANIMATE ── */
@@ -1799,10 +2057,8 @@
 
   <nav class="nav-strip" aria-label="Navegación principal">
     <div class="container nav-scroll">
-      <a class="nav-link active" href="#catalogo">Catálogo</a>
       <a class="nav-link" href="#capsulas">Cápsulas</a>
-      <a class="nav-link" href="#catalogo" data-sort="newest">Nuevos drops</a>
-      <a class="nav-link" href="#catalogo" data-sort="featured">Destacados</a>
+      <a class="nav-link" href="#catalogo">Destacadas</a>
       <a class="nav-link" href="https://instagram.com/somos.sinrecreo" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
     </div>
   </nav>
@@ -1821,7 +2077,7 @@
       <article class="hero-main">
         <div class="hero-deco" aria-hidden="true">SR</div>
         <div class="hero-main-content">
-          <div class="eyebrow">Nueva temporada · Abril 2026</div>
+          <div class="eyebrow">TEMPORADA 2026</div>
           <h1 class="hero-title">Vestite con<br>una <em>idea,</em><br>no con una<br>excusa.</h1>
           <p class="hero-body">Cápsulas editoriales con concepto, memoria y actitud. Diseño premium para gente que no quiere vestirse en automático.</p>
           <div class="cta-row">
@@ -1921,8 +2177,8 @@
     <div class="container">
       <div class="catalog-layout">
 
-        <!-- Sidebar -->
-        <aside class="sidebar" aria-label="Filtros">
+        <!-- Sidebar escondido: se conserva en DOM por compatibilidad -->
+        <aside class="sidebar" aria-label="Filtros" hidden>
           <div class="filter-card">
             <h4>Cápsula</h4>
             <div class="filter-stack" id="capsuleFilters"></div>
@@ -1947,22 +2203,10 @@
 
         <!-- Main content -->
         <div class="catalog-main">
-          <div class="catalog-toolbar">
-            <div class="toolbar-left">
-              <h2 class="toolbar-left">Catálogo</h2>
-              <p id="resultsCount">Mostrando todos los productos</p>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center;">
-              <button class="hbtn mobile-filter-btn" type="button" id="mobileFilterBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-                Filtros
-              </button>
-              <select id="sortSelect" class="sort-select" aria-label="Ordenar por">
-                <option value="featured">Destacados</option>
-                <option value="newest">Más nuevos</option>
-                <option value="price-asc">Precio ↑</option>
-                <option value="price-desc">Precio ↓</option>
-              </select>
+          <div class="catalog-toolbar editorial-toolbar fade-up">
+            <div class="toolbar-copy">
+              <h2 class="section-title" style="font-size:clamp(1.7rem,2.6vw,2.35rem)">Destacados del Catálogo</h2>
+              <p id="resultsCount" class="section-sub" style="max-width:72ch">Te presentamos nuestras prendas destacadas del mes.</p>
             </div>
           </div>
           <div class="products-grid" id="productsGrid"></div>
@@ -2008,6 +2252,12 @@
     </div>
   </div>
 </footer>
+
+<!-- ── FLOATING CART ── -->
+<button class="float-cart" type="button" onclick="openCartDrawer()" aria-label="Abrir carrito">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
+  <span class="count" id="cartCountFloat">0</span>
+</button>
 
 <!-- ── FLOATING WA ── -->
 <a class="float-wa" href="https://wa.me/5491138614767?text=Hola%20SIN%20RECREO%2C%20quiero%20consultar%20por%20una%20remera." target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp">
@@ -2156,6 +2406,30 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Compra 100% segura · Tus datos están protegidos
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAPSULE MODAL ── -->
+<div class="modal-overlay" id="capsuleModal" role="dialog" aria-modal="true" aria-label="Explorar cápsula">
+  <div class="modal modal-wide capsule-modal-shell">
+    <div class="modal-header capsule-modal-header">
+      <div>
+        <div class="modal-section-title" id="capsuleModalEyebrow">Cápsula editorial</div>
+        <h2 class="modal-title" id="capsuleModalTitle">Cápsula</h2>
+        <p class="capsule-modal-sub" id="capsuleModalDescription">Descripción de la cápsula</p>
+      </div>
+      <button class="modal-close" onclick="closeCapsuleModal()" aria-label="Cerrar cápsula">✕</button>
+    </div>
+    <div class="modal-body capsule-modal-body">
+      <div class="capsule-modal-topbar">
+        <div class="capsule-modal-topbar-copy">
+          <div class="capsule-modal-kicker" id="capsuleModalTag">Activa ahora</div>
+          <p class="capsule-modal-subtle">Todas las prendas de esta cápsula se muestran con la misma grilla del catálogo.</p>
+        </div>
+        <div class="capsule-modal-count" id="capsuleModalCount">0 prendas</div>
+      </div>
+      <div class="capsule-modal-grid products-grid" id="capsuleModalGrid"></div>
     </div>
   </div>
 </div>
@@ -2381,11 +2655,16 @@
     }
   };
 
-  const state = { query:'', sort:'featured', capsules:new Set(), cuts:new Set(), sizes:new Set(), minPrice:'', maxPrice:'' };
+  const state = { query:'', catalogView:'featured', sort:'featured', capsules:new Set(), cuts:new Set(), sizes:new Set(), minPrice:'', maxPrice:'' };
   const cart = [];
 
   let capsulesData = [];
   let featuredCapsule = null;
+  let currentCapsuleView = null;
+  let pendingCapsuleReturn = null;
+  let productSalesMap = {};
+  let bestsellerProducts = [];
+  let productSalesSource = 'fallback';
   let storeMetrics = { activeDrops: 0, activeCapsules: 0, customersCount: null };
   let currentProduct = null;
   let selectedSize = null;
@@ -2491,6 +2770,11 @@
   /* ─── HELPERS ─── */
   const fmt = v => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(v);
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]));
+  const normalizeTextKey = value => String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
   const getWhatsAppBase = () => `https://wa.me/${STORE_CONFIG.whatsappNumber}`;
   const getTransferPrice = p => p.transferPrice ?? Math.round(p.price * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
   const normalizeFit = fit => ({ femenino:'femenino', femenina:'femenino', masculino:'masculino', masculina:'masculino', unisex:'unisex' }[String(fit || '').toLowerCase()] || 'unisex');
@@ -2524,6 +2808,12 @@
         link.setAttribute('href', adminUrl);
       }
     });
+  };
+
+  const refreshBodyScrollLock = () => {
+    const hasOpenLayer = ['buyModal', 'capsuleModal'].some(id => document.getElementById(id)?.classList.contains('open'))
+      || document.getElementById('cartDrawer')?.classList.contains('open');
+    document.body.style.overflow = hasOpenLayer ? 'hidden' : '';
   };
 
 
@@ -2756,14 +3046,219 @@
   };
 
 
+  const isApprovedOrderRecord = (order = {}) => {
+    const values = [
+      order.status,
+      order.payment_status,
+      order.mp_status,
+      order.collection_status,
+      order.status_detail
+    ].map(normalizeTextKey).filter(Boolean);
+
+    return values.some(value => (
+      value === 'approved' ||
+      value === 'accredited' ||
+      value === 'paid' ||
+      value === 'pagado' ||
+      value === 'completed' ||
+      value === 'complete' ||
+      value.includes('approved') ||
+      value.includes('accredited')
+    ));
+  };
+
+  const getProductLookupData = () => {
+    const variantToProductId = {};
+    const productsIndex = products.map(product => {
+      const normalizedTitle = normalizeTextKey(product.title);
+      const normalizedSku = normalizeTextKey(product.sku);
+      const entry = {
+        product,
+        productId: String(product.id || '').trim(),
+        dbId: String(product.dbId || '').trim(),
+        sku: String(product.sku || '').trim(),
+        normalizedTitle,
+        normalizedSku
+      };
+
+      Object.values(product.variantIdsByKey || {}).forEach(variantId => {
+        if (!variantId) return;
+        variantToProductId[String(variantId).trim()] = entry.productId || entry.dbId;
+      });
+
+      return entry;
+    });
+
+    return { productsIndex, variantToProductId };
+  };
+
+  const resolveOrderItemProduct = (item = {}, lookup = {}) => {
+    const { productsIndex = [], variantToProductId = {} } = lookup;
+    const rawVariantId = String(item.variant_id || '').trim();
+    const rawProductId = String(item.product_id || item.db_product_id || '').trim();
+    const rawTitle = String(item.product_title || item.title || item.name || '').trim();
+    const normalizedTitle = normalizeTextKey(rawTitle);
+    const normalizedSku = normalizeTextKey(item.sku || '');
+
+    if (rawVariantId && variantToProductId[rawVariantId]) {
+      return products.find(product => String(product.id || '').trim() === variantToProductId[rawVariantId] || String(product.dbId || '').trim() === variantToProductId[rawVariantId]) || null;
+    }
+
+    if (rawProductId) {
+      return products.find(product => String(product.id || '').trim() === rawProductId || String(product.dbId || '').trim() === rawProductId) || null;
+    }
+
+    if (normalizedSku) {
+      const skuMatch = productsIndex.find(entry => entry.normalizedSku && entry.normalizedSku === normalizedSku);
+      if (skuMatch) return skuMatch.product;
+    }
+
+    if (normalizedTitle) {
+      const exactMatch = productsIndex.find(entry => entry.normalizedTitle && entry.normalizedTitle === normalizedTitle);
+      if (exactMatch) return exactMatch.product;
+
+      const containsMatch = productsIndex.find(entry => {
+        if (!entry.normalizedTitle) return false;
+        return normalizedTitle.includes(entry.normalizedTitle) || entry.normalizedTitle.includes(normalizedTitle);
+      });
+      if (containsMatch) return containsMatch.product;
+    }
+
+    return null;
+  };
+
+  const loadBestSellerData = async () => {
+    const client = initSupabaseClient();
+    if (!client) return { counts: {}, products: [] };
+
+    try {
+      const { data: orderItems, error: itemsError } = await client
+        .from('order_items')
+        .select('product_title');
+      if (itemsError) throw itemsError;
+
+      const countsByTitle = {};
+      (orderItems || []).forEach(item => {
+        const rawTitle = String(item?.product_title || '').trim();
+        const titleKey = normalizeTextKey(rawTitle);
+        if (!titleKey) return;
+        countsByTitle[titleKey] = (countsByTitle[titleKey] || 0) + 1;
+      });
+
+      const rankedTitleKeys = Object.entries(countsByTitle)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es'))
+        .slice(0, 6);
+
+      const rankedProducts = [];
+      const usedProductKeys = new Set();
+
+      rankedTitleKeys.forEach(([titleKey]) => {
+        const matchedProduct = products.find(product => {
+          const productKey = String(product.id || product.dbId || '').trim();
+          const normalizedProductTitle = normalizeTextKey(product.title || '');
+          if (!productKey || usedProductKeys.has(productKey) || !normalizedProductTitle) return false;
+          return normalizedProductTitle === titleKey
+            || normalizedProductTitle.includes(titleKey)
+            || titleKey.includes(normalizedProductTitle);
+        });
+
+        if (matchedProduct) {
+          usedProductKeys.add(String(matchedProduct.id || matchedProduct.dbId || '').trim());
+          rankedProducts.push(matchedProduct);
+        }
+      });
+
+      const counts = {};
+      products.forEach(product => {
+        const productId = String(product.id || product.dbId || '').trim();
+        const titleKey = normalizeTextKey(product.title || '');
+        if (!productId || !titleKey) return;
+        counts[productId] = countsByTitle[titleKey] || 0;
+      });
+
+      productSalesSource = 'sales';
+      return { counts, products: rankedProducts };
+    } catch (error) {
+      productSalesSource = 'fallback';
+      console.warn('No se pudo cargar el ranking de ventas desde order_items.', error);
+      return { counts: {}, products: [] };
+    }
+  };
+
+  const getProductSalesCount = (product) => {
+    const productId = String(product.id || product.dbId || '').trim();
+    return Math.max(0, Number(productSalesMap[productId] || 0));
+  };
+
+  const getCatalogCollections = () => {
+    const active = products.filter(product => getTotalStock(product) > 0);
+    const byNewest = [...active].sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
+    const featured = byNewest.filter(product => Boolean(product.featured));
+    return { featured };
+  };
+
+  const getCapsuleProducts = (capsuleName = '') => {
+    const wanted = normalizeTextKey(capsuleName);
+    return products
+      .filter(product => normalizeTextKey(product.capsule) === wanted)
+      .sort((a, b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
+  };
+
+  const getCapsulePreviewImages = (capsuleName = '') => {
+    const capsuleProducts = getCapsuleProducts(capsuleName);
+    const images = [];
+    capsuleProducts.forEach(product => {
+      getImageList(product).forEach(image => {
+        if (images.length < 5) images.push(image);
+      });
+    });
+    while (images.length < 5) {
+      images.push(placeholderImage(capsuleName || 'Cápsula', images.length + 1));
+    }
+    return images.slice(0, 5);
+  };
+
+  const openCapsuleModal = (capsuleName) => {
+    const capsule = (capsulesData.length ? capsulesData : getCapsuleFallbackData()).find(item => normalizeTextKey(item.name) === normalizeTextKey(capsuleName));
+    if (!capsule) return;
+    currentCapsuleView = capsule.name;
+
+    const productsInCapsule = getCapsuleProducts(capsule.name);
+
+    document.getElementById('capsuleModalEyebrow').textContent = 'Cápsula editorial';
+    document.getElementById('capsuleModalTitle').textContent = capsule.name;
+    document.getElementById('capsuleModalDescription').textContent = capsule.desc || capsule.heroBody || 'Explorá las prendas de esta cápsula.';
+    document.getElementById('capsuleModalTag').textContent = capsule.tag || 'Activa ahora';
+    document.getElementById('capsuleModalCount').textContent = `${productsInCapsule.length} ${productsInCapsule.length === 1 ? 'prenda' : 'prendas'}`;
+
+    if (productsInCapsule.length) {
+      renderProducts(productsInCapsule, 'capsuleModalGrid');
+    } else {
+      document.getElementById('capsuleModalGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)"><div style="font-size:2rem;margin-bottom:12px">🧵</div><strong>Esta cápsula todavía no tiene prendas visibles</strong><p style="margin-top:6px">Cuando cargues productos vinculados a esta cápsula en Supabase, van a aparecer acá automáticamente.</p></div>`;
+    }
+    document.getElementById('capsuleModal').classList.add('open');
+    refreshBodyScrollLock();
+  };
+
+  const closeCapsuleModal = () => {
+    document.getElementById('capsuleModal').classList.remove('open');
+    refreshBodyScrollLock();
+  };
+
   const refreshCatalogData = () => {
     const { allCapsules, allCuts, allSizes } = getFilterLists();
-    renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
-    renderCheckboxes(allCuts, 'cutFilters', 'cuts');
-    renderCheckboxes(allSizes, 'sizeFilters', 'sizes');
+    if (document.getElementById('capsuleFilters')) renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
+    if (document.getElementById('cutFilters')) renderCheckboxes(allCuts, 'cutFilters', 'cuts');
+    if (document.getElementById('sizeFilters')) renderCheckboxes(allSizes, 'sizeFilters', 'sizes');
     renderFeaturedCapsule();
     renderHeroStats();
     renderCapsules();
+    document.querySelectorAll('.catalog-pill[data-catalog-view]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.catalogView === state.catalogView);
+    });
+    document.querySelectorAll('.nav-link[data-catalog-view]').forEach(link => {
+      link.classList.toggle('active', link.dataset.catalogView === state.catalogView);
+    });
     applyFilters();
     updateCartUI();
   };
@@ -2792,6 +3287,8 @@
       console.error('Error cargando catálogo desde Supabase:', error);
       capsulesData = getCapsuleFallbackData();
     } finally {
+      productSalesMap = {};
+      bestsellerProducts = [];
       storeMetrics = await loadPublicStoreMetrics();
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
@@ -2983,15 +3480,32 @@
     const grid = document.getElementById('capsuleGrid');
     const activeCapsules = (capsulesData.length ? capsulesData : getCapsuleFallbackData())
       .filter(item => item.isActive !== false)
-      .filter(item => (item.productCount || products.filter(product => product.capsule === item.name).length) > 0);
+      .filter(item => (item.productCount || getCapsuleProducts(item.name).length) > 0);
+
     grid.innerHTML = activeCapsules.map(capsule => {
-      const count = capsule.productCount || products.filter(product => product.capsule === capsule.name).length;
-      const capsuleArg = encodeURIComponent(capsule.name || '');
-      return `<article class="capsule-card fade-up" onclick="filterByCapsule(decodeURIComponent('${capsuleArg}'))">
-        <div class="capsule-tag">✦ ${escapeHtml(capsule.tag || 'Activa')}</div>
-        <h3 class="capsule-name">${escapeHtml(capsule.name)}</h3>
-        <p class="capsule-desc">${escapeHtml(capsule.desc || '')}</p>
-        <div style="margin-top:14px;font-size:.8rem;font-weight:600;color:var(--accent)">${count} prendas →</div>
+      const count = capsule.productCount || getCapsuleProducts(capsule.name).length;
+      const previewImages = getCapsulePreviewImages(capsule.name);
+      const capsuleArg = JSON.stringify(capsule.name || '');
+      return `<article class="capsule-card fade-up" onclick='openCapsuleModal(${capsuleArg})'>
+        <div class="capsule-media">
+          <div class="capsule-media-main"><img src="${previewImages[0]}" alt="${escapeHtml(capsule.name)} principal" /></div>
+          <div class="capsule-media-side">
+            ${previewImages.slice(1, 5).map((image, idx) => `<div class="thumb"><img src="${image}" alt="${escapeHtml(capsule.name)} vista ${idx + 2}" /></div>`).join('')}
+          </div>
+        </div>
+        <div class="capsule-copy">
+          <div class="capsule-copy-top">
+            <div class="capsule-tag">✦ ${escapeHtml(capsule.tag || 'Activa')}</div>
+            <h3 class="capsule-name">${escapeHtml(capsule.name)}</h3>
+            <p class="capsule-desc">${escapeHtml(capsule.desc || capsule.heroBody || '')}</p>
+          </div>
+          <div class="capsule-meta-row">
+            <span class="capsule-count">${count} ${count === 1 ? 'prenda' : 'prendas'} disponibles</span>
+            <button class="capsule-open" type="button" onclick='event.stopPropagation(); openCapsuleModal(${capsuleArg})'>Abrir cápsula
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
       </article>`;
     }).join('');
     observeElements();
@@ -3022,49 +3536,33 @@
   };
 
   const filterByCapsule = (cap) => {
-    state.capsules = new Set([cap]);
-    document.querySelectorAll(`input[data-group="capsules"]`).forEach(cb => { cb.checked = cb.value === cap; });
-    applyFilters();
-    document.getElementById('catalogo').scrollIntoView({ behavior:'smooth', block:'start' });
+    openCapsuleModal(cap);
   };
 
   const applyFilters = () => {
-    let filtered = products.filter(p => {
-      const q = !state.query || `${p.title} ${p.capsule} ${p.description} ${p.sku || ''}`.toLowerCase().includes(state.query.toLowerCase());
-      const c = state.capsules.size === 0 || state.capsules.has(p.capsule);
-      const cu = state.cuts.size === 0 || state.cuts.has(p.cut);
-      const s = state.sizes.size === 0 || getAvailableSizes(p).some(sz => state.sizes.has(sz));
-      const mn = state.minPrice === '' || p.price >= +state.minPrice;
-      const mx = state.maxPrice === '' || p.price <= +state.maxPrice;
-      return q && c && cu && s && mn && mx;
+    const collections = getCatalogCollections();
+    const base = collections.featured;
+
+    const filtered = base.filter(product => {
+      if (!state.query) return true;
+      return `${product.title} ${product.capsule} ${product.description} ${product.sku || ''}`.toLowerCase().includes(state.query.toLowerCase());
     });
 
-    switch(state.sort) {
-      case 'newest':
-        filtered.sort((a,b) => new Date(b.sortDate) - new Date(a.sortDate));
-        break;
-      case 'price-asc':
-        filtered.sort((a,b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered.sort((a,b) => b.price - a.price);
-        break;
-      default:
-        filtered.sort((a,b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate) - new Date(a.sortDate));
-    }
-
-    renderProducts(filtered);
+    renderProducts(filtered, 'productsGrid');
     const rc = document.getElementById('resultsCount');
-    if (rc) rc.textContent = filtered.length === products.length ? 'Mostrando todos los productos' : `${filtered.length} producto${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}`;
+    if (rc) rc.textContent = 'Te presentamos nuestras prendas destacadas del mes.';
   };
 
-  const renderProducts = (items) => {
-    const grid = document.getElementById('productsGrid');
+  const renderProducts = (items, targetId = 'productsGrid') => {
+    const grid = document.getElementById(targetId);
+    if (!grid) return;
     if (!items.length) {
+      const emptyTitle = 'Sin resultados';
+      const emptyBody = 'Probá con otra búsqueda.';
       grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)">
         <div style="font-size:2rem;margin-bottom:12px">🔍</div>
-        <strong>Sin resultados</strong>
-        <p style="margin-top:6px">Probá limpiando los filtros o buscando otra cápsula.</p>
+        <strong>${emptyTitle}</strong>
+        <p style="margin-top:6px">${emptyBody}</p>
       </div>`;
       return;
     }
@@ -3141,6 +3639,12 @@
 
   const openBuyModal = (id, e) => {
     if (e) e.stopPropagation();
+    if (document.getElementById('capsuleModal')?.classList.contains('open')) {
+      pendingCapsuleReturn = currentCapsuleView;
+      closeCapsuleModal();
+    } else {
+      pendingCapsuleReturn = null;
+    }
     currentProduct = products.find(p => p.id === id);
     selectedPayMethod = 'mp';
     if (!currentProduct) return;
@@ -3182,12 +3686,17 @@
     hideCustomerPrompt();
     updateModalTotal();
     document.getElementById('buyModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    refreshBodyScrollLock();
   };
 
-  const closeModal = () => {
+  const closeModal = ({ restoreCapsule = true } = {}) => {
     document.getElementById('buyModal').classList.remove('open');
-    document.body.style.overflow = '';
+    refreshBodyScrollLock();
+    if (restoreCapsule && pendingCapsuleReturn) {
+      const capsuleToRestore = pendingCapsuleReturn;
+      pendingCapsuleReturn = null;
+      openCapsuleModal(capsuleToRestore);
+    }
   };
 
   const selectFit = (btn, fit) => {
@@ -3221,8 +3730,13 @@
     if (existing) existing.qty += 1;
     else cart.push({ ...currentProduct, qty: 1, selectedSize, selectedFit, selectedVariantId });
     updateCartUI();
+
+    if (closeAfter) {
+      closeModal();
+      return;
+    }
+
     openCartDrawer();
-    if (closeAfter) closeModal();
   };
 
   const selectPayMethod = (btn, method) => {
@@ -3571,6 +4085,8 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   const updateCartUI = () => {
     const count = cart.reduce((sum, item) => sum + item.qty, 0);
     document.getElementById('cartCount').textContent = count;
+    const floatingCount = document.getElementById('cartCountFloat');
+    if (floatingCount) floatingCount.textContent = count;
     const body = document.getElementById('cartBody');
     const footer = document.getElementById('cartFooter');
 
@@ -3603,13 +4119,13 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   const openCartDrawer = () => {
     document.getElementById('cartDrawer').classList.add('open');
     document.getElementById('drawerBackdrop').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    refreshBodyScrollLock();
   };
 
   const closeCartDrawer = () => {
     document.getElementById('cartDrawer').classList.remove('open');
     document.getElementById('drawerBackdrop').classList.remove('open');
-    document.body.style.overflow = '';
+    refreshBodyScrollLock();
   };
 
   const goBackToCatalogFromCart = () => {
@@ -3703,19 +4219,12 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     applyFilters();
   });
 
-  document.getElementById('sortSelect').addEventListener('change', e => {
-    state.sort = e.target.value;
-    applyFilters();
-  });
-
-  document.getElementById('minPrice').addEventListener('input', e => {
+  document.getElementById('minPrice')?.addEventListener('input', e => {
     state.minPrice = e.target.value;
-    applyFilters();
   });
 
-  document.getElementById('maxPrice').addEventListener('input', e => {
+  document.getElementById('maxPrice')?.addEventListener('input', e => {
     state.maxPrice = e.target.value;
-    applyFilters();
   });
 
   document.addEventListener('change', e => {
@@ -3724,11 +4233,11 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     const v = e.target.value;
     if (e.target.checked) state[g].add(v);
     else state[g].delete(v);
-    applyFilters();
   });
 
-  document.getElementById('resetFilters').addEventListener('click', () => {
+  document.getElementById('resetFilters')?.addEventListener('click', () => {
     state.query = '';
+    state.catalogView = 'featured';
     state.sort = 'featured';
     state.capsules.clear();
     state.cuts.clear();
@@ -3736,28 +4245,51 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     state.minPrice = '';
     state.maxPrice = '';
     document.getElementById('searchInput').value = '';
-    document.getElementById('sortSelect').value = 'featured';
     document.getElementById('minPrice').value = '';
     document.getElementById('maxPrice').value = '';
     document.querySelectorAll('input[type="checkbox"][data-group]').forEach(i => { i.checked = false; });
+    document.querySelectorAll('.catalog-pill[data-catalog-view]').forEach(btn => btn.classList.toggle('active', btn.dataset.catalogView === 'featured'));
+    document.querySelectorAll('.nav-link[data-catalog-view]').forEach(link => link.classList.toggle('active', link.dataset.catalogView === 'featured'));
     applyFilters();
+  });
+
+  document.querySelectorAll('.catalog-pill[data-catalog-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.catalogView = btn.dataset.catalogView || 'featured';
+      document.querySelectorAll('.catalog-pill[data-catalog-view]').forEach(item => item.classList.toggle('active', item.dataset.catalogView === state.catalogView));
+      document.querySelectorAll('.nav-link[data-catalog-view]').forEach(link => link.classList.toggle('active', link.dataset.catalogView === state.catalogView));
+      applyFilters();
+    });
   });
 
   document.getElementById('buyModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
 
+  document.getElementById('capsuleModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeCapsuleModal();
+  });
+
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('buyModal')?.classList.contains('open')) {
       closeModal();
+      return;
+    }
+    if (document.getElementById('capsuleModal')?.classList.contains('open')) {
+      closeCapsuleModal();
+      return;
+    }
+    if (document.getElementById('cartDrawer')?.classList.contains('open')) {
       closeCartDrawer();
     }
   });
 
-  document.querySelectorAll('.nav-link[data-sort]').forEach(link => {
+  document.querySelectorAll('.nav-link[data-catalog-view]').forEach(link => {
     link.addEventListener('click', () => {
-      state.sort = link.dataset.sort;
-      document.getElementById('sortSelect').value = state.sort;
+      state.catalogView = link.dataset.catalogView || 'featured';
+      document.querySelectorAll('.nav-link[data-catalog-view]').forEach(item => item.classList.toggle('active', item.dataset.catalogView === state.catalogView));
+      document.querySelectorAll('.catalog-pill[data-catalog-view]').forEach(btn => btn.classList.toggle('active', btn.dataset.catalogView === state.catalogView));
       applyFilters();
     });
   });
