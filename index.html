@@ -3441,28 +3441,29 @@
     </svg>`;
   };
 
-  const renderCardMedia = (p) => {
+  const renderCardMedia = (p, instanceKey = 'productsGrid') => {
     const images = getImageList(p);
+    const photoId = `card-photo-${instanceKey}-${p.id}`;
     const thumbs = images.map((img, idx) => `
-      <button class="pcard-thumb ${idx === 0 ? 'active' : ''}" type="button" onclick="setCardImage(event,'${p.id}',${idx})" aria-label="Ver foto ${idx + 1}">
+      <button class="pcard-thumb ${idx === 0 ? 'active' : ''}" type="button" onclick="setCardImage(event,'${p.id}',${idx},'${instanceKey}')" aria-label="Ver foto ${idx + 1}">
         <img src="${img}" alt="${escapeHtml(p.title)} foto ${idx + 1}" />
       </button>
     `).join('');
     return `
       <div class="pcard-media">
-        <img class="pcard-photo" id="card-photo-${p.id}" src="${images[0]}" alt="${escapeHtml(p.title)}" />
+        <img class="pcard-photo" id="${photoId}" src="${images[0]}" alt="${escapeHtml(p.title)}" />
         <span class="pcard-media-count">${images.length} fotos</span>
         <div class="pcard-thumbs">${thumbs}</div>
       </div>
     `;
   };
 
-  const setCardImage = (event, productId, index) => {
+  const setCardImage = (event, productId, index, instanceKey = 'productsGrid') => {
     event.stopPropagation();
     const product = products.find(item => item.id === productId);
     if (!product) return;
     const images = getImageList(product);
-    const img = document.getElementById(`card-photo-${productId}`);
+    const img = document.getElementById(`card-photo-${instanceKey}-${productId}`);
     if (img && images[index]) img.src = images[index];
     const wrap = event.currentTarget.parentElement;
     if (wrap) wrap.querySelectorAll('.pcard-thumb').forEach((thumb, idx) => thumb.classList.toggle('active', idx === index));
@@ -3574,7 +3575,7 @@
       return `
         <article class="pcard" data-id="${p.id}" id="${p.id}">
           <div class="pcard-figure">
-            ${renderCardMedia(p)}
+            ${renderCardMedia(p, targetId)}
             <span class="pcard-badge ${p.featured ? 'badge-featured' : 'badge-new'}">${p.featured ? 'Destacado' : 'Nuevo drop'}</span>
             <span class="stock-badge ${stock <= 3 ? 'low' : ''}">${stock <= 3 ? '⚠ Solo ' + stock + ' restantes' : 'Stock: ' + stock}</span>
             <div class="pcard-overlay">
