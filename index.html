@@ -1763,6 +1763,87 @@
     }
 
 
+    /* ── CÓMO COMPRAR ── */
+    .how-steps {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--r-xl);
+      padding: 40px 36px;
+      margin-bottom: 0;
+    }
+    .how-step {
+      flex: 1;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .how-step-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .how-step-body { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+    .how-step-body strong { font-size: .96rem; font-weight: 700; color: var(--ink); }
+    .how-step-body span { font-size: .84rem; line-height: 1.65; color: var(--muted); }
+    .how-step-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+      align-self: center;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── QUIÉNES SOMOS ── */
+    .who-card {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 48px;
+      align-items: start;
+      background: var(--ink);
+      border-radius: var(--r-xl);
+      padding: 48px;
+      color: #fff;
+    }
+    .who-text .section-label { color: var(--accent-light); }
+    .who-text .section-title { color: #fff; }
+    .who-values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding-top: 8px;
+    }
+    .who-value {
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .who-value strong { font-size: .88rem; font-weight: 700; color: #fff; }
+    .who-value span { font-size: .8rem; color: rgba(255,255,255,.55); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .how-steps { flex-direction: column; gap: 24px; padding: 28px 24px; }
+      .how-step-arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 10px; padding: 0; }
+      .who-card { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px; }
+      .who-values { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .who-values { grid-template-columns: 1fr; }
+      .how-step-arrow { display: none; }
+    }
+
     /* ── UI/UX REWORK · CÁPSULAS + CATÁLOGO EDITORIAL ── */
     .capsule-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2059,6 +2140,8 @@
     <div class="container nav-scroll">
       <a class="nav-link" href="#capsulas">Cápsulas</a>
       <a class="nav-link" href="#catalogo">Destacadas</a>
+      <a class="nav-link" href="#como-comprar">Cómo comprar</a>
+      <a class="nav-link" href="#quienes-somos">Quiénes somos</a>
       <a class="nav-link" href="https://instagram.com/somos.sinrecreo" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
     </div>
   </nav>
@@ -2155,6 +2238,75 @@
     </div>
   </div>
 
+  <!-- ── CÓMO COMPRAR ── -->
+  <section class="section" id="como-comprar" style="padding-bottom: 0;">
+    <div class="container">
+      <div class="section-head fade-up">
+        <div>
+          <div class="section-label">Comprar es fácil</div>
+          <h2 class="section-title">Cómo funciona</h2>
+          <p class="section-sub">Tres pasos, sin vueltas.</p>
+        </div>
+      </div>
+      <div class="how-steps fade-up">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div class="how-step-body">
+            <strong>Explorá las cápsulas</strong>
+            <span>Cada colección tiene una temática. Entrá a la que te habla y elegí tu modelo.</span>
+          </div>
+        </div>
+        <div class="how-step-arrow">→</div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-body">
+            <strong>Elegí talle y forma de pago</strong>
+            <span>MercadoPago en 3 cuotas sin interés, o 10% de descuento pagando por transferencia.</span>
+          </div>
+        </div>
+        <div class="how-step-arrow">→</div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-body">
+            <strong>Confirmás por WhatsApp</strong>
+            <span>El pedido se arma solo y lo recibís listo en tu chat. Te respondemos en menos de 24 horas.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUIÉNES SOMOS ── -->
+  <section class="section" id="quienes-somos" style="padding-top: 48px; padding-bottom: 0;">
+    <div class="container">
+      <div class="who-card fade-up">
+        <div class="who-text">
+          <div class="section-label">Detrás de cada estampa</div>
+          <h2 class="section-title" style="margin-bottom: 16px;">Diseño que enseña algo, siempre.</h2>
+          <p style="font-size: 1rem; line-height: 1.8; color: var(--muted); max-width: 54ch;">No hacemos remeras decorativas. Cada estampa está construida alrededor de una idea, una imagen o un hito cultural. Cápsulas editoriales de edición corta, para gente que no se viste en automático.</p>
+        </div>
+        <div class="who-values">
+          <div class="who-value">
+            <strong>Intención antes que estética</strong>
+            <span>El diseño sirve a la idea, no al revés.</span>
+          </div>
+          <div class="who-value">
+            <strong>Edición limitada</strong>
+            <span>Lo que existe hoy puede no existir mañana.</span>
+          </div>
+          <div class="who-value">
+            <strong>Memoria activa</strong>
+            <span>Estampas que trabajan con hitos e imágenes que valen recordar.</span>
+          </div>
+          <div class="who-value">
+            <strong>Atención real</strong>
+            <span>Precios claros, respuesta rápida, sin marketing vacío.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── CAPSULES ── -->
   <section class="section" id="capsulas">
     <div class="container">
@@ -2237,7 +2389,7 @@
         <h5>Contacto</h5>
         <a href="https://instagram.com/somos.sinrecreo" target="_blank" rel="noopener noreferrer">@somos.sinrecreo</a>
         <a href="https://wa.me/5491138614767" target="_blank" rel="noopener noreferrer">WhatsApp 11 3861-4767</a>
-        <a href="mailto:hola@sinrecreo.com.ar">hola@sinrecreo.com.ar</a>
+        <a href="/cdn-cgi/l/email-protection#cca4a3a0ad8cbfa5a2bea9afbea9a3e2afa3a1e2adbe"><span class="__cf_email__" data-cfemail="e1898e8d80a192888f93848293848ecf828e8ccf8093">[email&#160;protected]</span></a>
         <a id="adminFooterLink" href="./admin.html">Acceso admin</a>
       </div>
     </div>
@@ -2434,7 +2586,7 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 
   /* ─── CONFIGURACIÓN GENERAL ─── */
@@ -4304,10 +4456,9 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-up:not(.visible)').forEach(el => io.observe(el));
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
   };
-
   observeElements();
 
 </script>
