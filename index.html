@@ -2069,6 +2069,24 @@
       .capsule-modal-topbar { align-items: flex-start; }
     }
 
+
+    .products-modal-shell {
+      max-height: 92vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    #productsModalGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (max-width: 680px) {
+      #productsModalGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     /* ── SCROLL ANIMATE ── */
     .fade-up {
       opacity: 0;
@@ -2139,7 +2157,7 @@
   <nav class="nav-strip" aria-label="Navegación principal">
     <div class="container nav-scroll">
       <a class="nav-link" href="#capsulas">Cápsulas</a>
-      <a class="nav-link" href="#catalogo">Destacadas</a>
+      <a class="nav-link" href="#productos" onclick="openProductsModal(event)">Productos</a>
       <a class="nav-link" href="#como-comprar">Cómo comprar</a>
       <a class="nav-link" href="#quienes-somos">Quiénes somos</a>
       <a class="nav-link" href="https://instagram.com/somos.sinrecreo" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
@@ -2586,6 +2604,30 @@
   </div>
 </div>
 
+<!-- ── PRODUCTS MODAL ── -->
+<div class="modal-overlay" id="productsModal" role="dialog" aria-modal="true" aria-label="Explorar productos">
+  <div class="modal modal-wide products-modal-shell">
+    <div class="modal-header capsule-modal-header">
+      <div>
+        <div class="modal-section-title">Productos</div>
+        <h2 class="modal-title">Todas las prendas activas</h2>
+        <p class="capsule-modal-sub">Explorá todas las prendas activas de la tienda en una sola grilla.</p>
+      </div>
+      <button class="modal-close" onclick="closeProductsModal()" aria-label="Cerrar productos">✕</button>
+    </div>
+    <div class="modal-body capsule-modal-body">
+      <div class="capsule-modal-topbar">
+        <div class="capsule-modal-topbar-copy">
+          <div class="capsule-modal-kicker">Activas ahora</div>
+          <p class="capsule-modal-subtle">Todas las prendas disponibles de SIN RECREO, en una vista rápida.</p>
+        </div>
+        <div class="capsule-modal-count" id="productsModalCount">0 prendas</div>
+      </div>
+      <div class="products-grid products-modal-grid" id="productsModalGrid"></div>
+    </div>
+  </div>
+</div>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 
@@ -2814,6 +2856,7 @@
   let featuredCapsule = null;
   let currentCapsuleView = null;
   let pendingCapsuleReturn = null;
+  let pendingProductsReturn = false;
   let productSalesMap = {};
   let bestsellerProducts = [];
   let productSalesSource = 'fallback';
@@ -2963,7 +3006,7 @@
   };
 
   const refreshBodyScrollLock = () => {
-    const hasOpenLayer = ['buyModal', 'capsuleModal'].some(id => document.getElementById(id)?.classList.contains('open'))
+    const hasOpenLayer = ['buyModal', 'capsuleModal', 'productsModal'].some(id => document.getElementById(id)?.classList.contains('open'))
       || document.getElementById('cartDrawer')?.classList.contains('open');
     document.body.style.overflow = hasOpenLayer ? 'hidden' : '';
   };
@@ -3397,6 +3440,30 @@
     refreshBodyScrollLock();
   };
 
+  const getProductsModalItems = () => products
+    .filter(product => getTotalStock(product) > 0)
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
+
+  const openProductsModal = (event) => {
+    if (event) event.preventDefault();
+    const activeProducts = getProductsModalItems();
+    document.getElementById('productsModalCount').textContent = `${activeProducts.length} ${activeProducts.length === 1 ? 'prenda' : 'prendas'}`;
+
+    if (activeProducts.length) {
+      renderProducts(activeProducts, 'productsModalGrid');
+    } else {
+      document.getElementById('productsModalGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)"><div style="font-size:2rem;margin-bottom:12px">🧵</div><strong>No hay prendas activas para mostrar</strong><p style="margin-top:6px">Cuando cargues productos activos en Supabase, van a aparecer acá automáticamente.</p></div>`;
+    }
+
+    document.getElementById('productsModal').classList.add('open');
+    refreshBodyScrollLock();
+  };
+
+  const closeProductsModal = () => {
+    document.getElementById('productsModal').classList.remove('open');
+    refreshBodyScrollLock();
+  };
+
   const refreshCatalogData = () => {
     const { allCapsules, allCuts, allSizes } = getFilterLists();
     if (document.getElementById('capsuleFilters')) renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
@@ -3794,9 +3861,15 @@
     if (e) e.stopPropagation();
     if (document.getElementById('capsuleModal')?.classList.contains('open')) {
       pendingCapsuleReturn = currentCapsuleView;
+      pendingProductsReturn = false;
       closeCapsuleModal();
+    } else if (document.getElementById('productsModal')?.classList.contains('open')) {
+      pendingCapsuleReturn = null;
+      pendingProductsReturn = true;
+      closeProductsModal();
     } else {
       pendingCapsuleReturn = null;
+      pendingProductsReturn = false;
     }
     currentProduct = products.find(p => p.id === id);
     selectedPayMethod = 'mp';
@@ -3848,7 +3921,13 @@
     if (restoreCapsule && pendingCapsuleReturn) {
       const capsuleToRestore = pendingCapsuleReturn;
       pendingCapsuleReturn = null;
+      pendingProductsReturn = false;
       openCapsuleModal(capsuleToRestore);
+      return;
+    }
+    if (restoreCapsule && pendingProductsReturn) {
+      pendingProductsReturn = false;
+      openProductsModal();
     }
   };
 
@@ -4423,6 +4502,10 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     if (e.target === e.currentTarget) closeCapsuleModal();
   });
 
+  document.getElementById('productsModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeProductsModal();
+  });
+
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (document.getElementById('buyModal')?.classList.contains('open')) {
@@ -4431,6 +4514,10 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     }
     if (document.getElementById('capsuleModal')?.classList.contains('open')) {
       closeCapsuleModal();
+      return;
+    }
+    if (document.getElementById('productsModal')?.classList.contains('open')) {
+      closeProductsModal();
       return;
     }
     if (document.getElementById('cartDrawer')?.classList.contains('open')) {
