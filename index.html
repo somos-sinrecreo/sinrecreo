@@ -778,6 +778,25 @@
       color: var(--muted);
       flex: 1;
     }
+    .pcard-desc-inline {
+      display: inline;
+    }
+    .pcard-desc-toggle {
+      display: inline;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin-left: 6px;
+      color: var(--ink);
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .pcard-desc-toggle:hover {
+      color: var(--accent);
+    }
     .pcard-price-block { }
     .pcard-price {
       font-family: var(--font-display);
@@ -2083,7 +2102,7 @@
 
     @media (max-width: 680px) {
       #productsModalGrid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
       }
     }
 
@@ -2993,6 +3012,17 @@
   const getVariantId = (p, size, fit = 'unisex') => (p.variantIdsByKey && p.variantIdsByKey[`${normalizeFit(fit)}|${size}`]) || (normalizeFit(fit) === 'unisex' ? (p.variantIdsBySize?.[size] || '') : '');
   const describeFitAndSize = (fit, size) => `${getFitLabel(fit)} · Talle ${size}`;
   const getProductUrl = p => `${location.origin}${location.pathname}#${p.id}`;
+  const truncateWords = (text, maxWords = 10) => {
+    const normalized = String(text || '').trim().replace(/\s+/g, ' ');
+    if (!normalized) return { short: '', full: '', truncated: false };
+    const words = normalized.split(' ');
+    if (words.length <= maxWords) return { short: normalized, full: normalized, truncated: false };
+    return {
+      short: `${words.slice(0, maxWords).join(' ')}…`,
+      full: normalized,
+      truncated: true
+    };
+  };
 
   const wireAdminAccessLinks = () => {
     const adminUrl = STORE_CONFIG.adminUrl || './admin.html';
@@ -3787,10 +3817,16 @@
       return;
     }
 
+    const isProductsModal = targetId === 'productsModalGrid';
+
     grid.innerHTML = items.map(p => {
       const sizes = getAvailableSizes(p);
       const stock = getTotalStock(p);
       const transferPrice = getTransferPrice(p);
+      const descData = truncateWords(p.description, 10);
+      const descriptionHtml = isProductsModal && descData.truncated
+        ? `<p class="pcard-desc"><span class="pcard-desc-inline" data-desc-role="text" data-full="${escapeHtml(descData.full)}" data-short="${escapeHtml(descData.short)}">${escapeHtml(descData.short)}</span><button class="pcard-desc-toggle" type="button" data-desc-role="toggle" data-expanded="false" onclick="toggleProductDescription(event)">ver más...</button></p>`
+        : `<p class="pcard-desc">${escapeHtml(p.description)}</p>`;
       return `
         <article class="pcard" data-id="${p.id}" id="${p.id}">
           <div class="pcard-figure">
@@ -3807,8 +3843,8 @@
           </div>
           <div class="pcard-body">
             <div class="pcard-cap">${p.capsule}</div>
-            <h3 class="pcard-name">${p.title}</h3>
-            <p class="pcard-desc">${p.description}</p>
+            <h3 class="pcard-name">${escapeHtml(p.title)}</h3>
+            ${descriptionHtml}
             ${getAvailableFits(p).length > 1 ? `<div class="pcard-transfer" style="margin-top:-4px">Disponible en femenino, masculino o unisex según talle</div>` : ``}
             <div class="pcard-price-block">
               <div class="pcard-price">${fmt(p.price)}</div>
@@ -3816,8 +3852,9 @@
               <div class="pcard-transfer">💸 ${fmt(transferPrice)} por transferencia</div>
             </div>
             <div class="size-row">${sizes.map(sz => {
-              const low = (p.stockBySize?.[sz] || 0) <= 1;
-              return `<span class="size-chip ${low ? 'low' : ''}">${sz}</span>`;
+              const parsedSize = parseVariantSizeKey(sz);
+              const low = Number((p.fitStockBySize?.[parsedSize.fit]?.[parsedSize.size]) ?? (p.stockBySize?.[sz] || 0)) <= 1;
+              return `<span class="size-chip ${low ? 'low' : ''}">${escapeHtml(sz)}</span>`;
             }).join('')}</div>
             <div class="pcard-actions">
               <button class="action-buy" onclick="openBuyModal('${p.id}',event)">
@@ -3833,6 +3870,19 @@
       `;
     }).join('');
     observeElements();
+  };
+
+  const toggleProductDescription = (event) => {
+    event.stopPropagation();
+    const btn = event.currentTarget;
+    const wrapper = btn.closest('.pcard-desc');
+    const textNode = wrapper?.querySelector('[data-desc-role="text"]');
+    if (!textNode) return;
+
+    const isExpanded = btn.dataset.expanded === 'true';
+    textNode.textContent = isExpanded ? textNode.dataset.short || '' : textNode.dataset.full || '';
+    btn.textContent = isExpanded ? 'ver más...' : 'ver menos';
+    btn.dataset.expanded = isExpanded ? 'false' : 'true';
   };
 
   /* ─── BUY MODAL ─── */
