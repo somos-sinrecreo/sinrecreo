@@ -798,6 +798,23 @@
       color: var(--accent);
     }
     .pcard-price-block { }
+    .pcard-soon {
+      font-size: .84rem;
+      line-height: 1.6;
+      color: #2f5d46;
+      font-weight: 700;
+      padding: 12px 14px;
+      background: rgba(196, 232, 205, .85);
+      border: 1px solid rgba(98, 154, 117, .28);
+      border-radius: var(--r-md);
+    }
+    .pcard-soon.is-modal {
+      font-size: .9rem;
+      padding: 10px 12px;
+      background: rgba(196, 232, 205, .85);
+      border: 1px solid rgba(98, 154, 117, .28);
+      color: #2f5d46;
+    }
     .pcard-price {
       font-family: var(--font-display);
       font-size: 1.7rem;
@@ -837,6 +854,22 @@
       transition: background .18s;
     }
     .action-buy:hover { background: #222; }
+    .action-buy[disabled],
+    .overlay-btn[disabled] {
+      cursor: not-allowed;
+      opacity: 1;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .action-buy[disabled] {
+      background: #d8d3ca;
+      color: #5f5954;
+    }
+    .overlay-btn.primary[disabled] {
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+    }
+    .commerce-hidden { display: none !important; }
     .action-wa {
       display: inline-flex;
       align-items: center;
@@ -2155,7 +2188,7 @@
     </a>
 
     <div class="header-right">
-      <button class="hbtn" type="button" onclick="openCartDrawer()" aria-label="Carrito">
+      <button id="headerCartButton" class="hbtn" type="button" onclick="openCartDrawer()" aria-label="Carrito">
         <span class="cart-badge">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
           <span class="count" id="cartCount">0</span>
@@ -2201,7 +2234,7 @@
           <h1 class="hero-title">Vestite con<br>una <em>idea,</em><br>no con una<br>excusa.</h1>
           <p class="hero-body">Cápsulas editoriales con concepto, memoria y actitud. Diseño premium para gente que no quiere vestirse en automático.</p>
           <div class="cta-row">
-            <a class="btn-primary" href="#catalogo">
+            <a class="btn-primary" href="#productos" onclick="openProductsModal(event)">
               Explorar catálogo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
@@ -2443,7 +2476,7 @@
 </footer>
 
 <!-- ── FLOATING CART ── -->
-<button class="float-cart" type="button" onclick="openCartDrawer()" aria-label="Abrir carrito">
+<button id="floatingCartButton" class="float-cart" type="button" onclick="openCartDrawer()" aria-label="Abrir carrito">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
   <span class="count" id="cartCountFloat">0</span>
 </button>
@@ -2518,8 +2551,8 @@
       <div id="modalCustomerPrompt" class="modal-customer-prompt hidden">Complete nombre y correo para continuar.</div>
 
       <!-- Payment methods -->
-      <div class="modal-section-title">Medio de pago</div>
-      <div class="pay-methods">
+      <div class="modal-section-title" id="paymentMethodsTitle">Medio de pago</div>
+      <div class="pay-methods" id="paymentMethodsWrap">
         <button class="pay-method-btn selected" onclick="selectPayMethod(this, 'mp')" type="button">
           <div class="pay-method-icon mp">
             <svg width="22" height="22" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="white"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#009ee3" font-family="Arial">MP</text></svg>
@@ -2579,7 +2612,7 @@
       </div>
 
       <!-- Total -->
-      <div class="modal-total">
+      <div class="modal-total" id="modalTotalWrap">
         <span class="modal-total-label">Total a pagar</span>
         <span class="modal-total-price" id="modalTotal">$0</span>
       </div>
@@ -2591,7 +2624,7 @@
       <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
         Agregar al carrito y seguir comprando
       </button>
-      <div class="modal-secure">
+      <div class="modal-secure" id="modalSecureNote">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Compra 100% segura · Tus datos están protegidos
       </div>
@@ -2671,6 +2704,9 @@
     supabaseStorageBucket: 'product-images',
     adminUrl: './admin.html'
   };
+
+  const COMING_SOON_MODE = true;
+  const COMING_SOON_TEXT = 'Pronto podrás disfrutar nuestras remeras';
 
   /*
     PARA CARGAR UN PRODUCTO NUEVO EN EL CATÁLOGO:
@@ -3039,6 +3075,14 @@
     const hasOpenLayer = ['buyModal', 'capsuleModal', 'productsModal'].some(id => document.getElementById(id)?.classList.contains('open'))
       || document.getElementById('cartDrawer')?.classList.contains('open');
     document.body.style.overflow = hasOpenLayer ? 'hidden' : '';
+  };
+
+  const applyComingSoonMode = () => {
+    if (!COMING_SOON_MODE) return;
+    document.getElementById('headerCartButton')?.classList.add('commerce-hidden');
+    document.getElementById('floatingCartButton')?.classList.add('commerce-hidden');
+    document.getElementById('cartDrawer')?.classList.add('commerce-hidden');
+    document.getElementById('drawerBackdrop')?.classList.add('commerce-hidden');
   };
 
 
@@ -3541,6 +3585,7 @@
       storeMetrics = await loadPublicStoreMetrics();
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
+      applyComingSoonMode();
       refreshCatalogData();
       renderPaymentStatusBanner();
       observeElements();
@@ -3822,45 +3867,55 @@
     grid.innerHTML = items.map(p => {
       const sizes = getAvailableSizes(p);
       const stock = getTotalStock(p);
-      const transferPrice = getTransferPrice(p);
       const descData = truncateWords(p.description, 10);
       const descriptionHtml = isProductsModal && descData.truncated
         ? `<p class="pcard-desc"><span class="pcard-desc-inline" data-desc-role="text" data-full="${escapeHtml(descData.full)}" data-short="${escapeHtml(descData.short)}">${escapeHtml(descData.short)}</span><button class="pcard-desc-toggle" type="button" data-desc-role="toggle" data-expanded="false" onclick="toggleProductDescription(event)">ver más...</button></p>`
         : `<p class="pcard-desc">${escapeHtml(p.description)}</p>`;
+      const overlayHtml = COMING_SOON_MODE
+        ? `<div class="pcard-overlay">
+              <button class="overlay-btn primary" type="button" disabled>Próximamente</button>
+            </div>`
+        : `<div class="pcard-overlay">
+              <button class="overlay-btn primary" onclick="openBuyModal('${p.id}',event)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
+                Elegir opciones
+              </button>
+              <button class="overlay-btn ghost" onclick="addToCart('${p.id}',event)">+ Agregar al carrito</button>
+            </div>`;
+      const priceHtml = COMING_SOON_MODE
+        ? `<div class="pcard-soon">${COMING_SOON_TEXT}</div>`
+        : `<div class="pcard-price-block">
+              <div class="pcard-price">${fmt(p.price)}</div>
+              <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
+              <div class="pcard-transfer">💸 ${fmt(getTransferPrice(p))} por transferencia</div>
+            </div>`;
+      const actionHtml = COMING_SOON_MODE
+        ? `<button class="action-buy" type="button" disabled>Próximamente</button>`
+        : `<button class="action-buy" onclick="openBuyModal('${p.id}',event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
+                Elegir
+              </button>`;
       return `
         <article class="pcard" data-id="${p.id}" id="${p.id}">
           <div class="pcard-figure">
             ${renderCardMedia(p, targetId)}
             <span class="pcard-badge ${p.featured ? 'badge-featured' : 'badge-new'}">${p.featured ? 'Destacado' : 'Nuevo drop'}</span>
             <span class="stock-badge ${stock <= 3 ? 'low' : ''}">${stock <= 3 ? '⚠ Solo ' + stock + ' restantes' : 'Stock: ' + stock}</span>
-            <div class="pcard-overlay">
-              <button class="overlay-btn primary" onclick="openBuyModal('${p.id}',event)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Elegir opciones
-              </button>
-              <button class="overlay-btn ghost" onclick="addToCart('${p.id}',event)">+ Agregar al carrito</button>
-            </div>
+            ${overlayHtml}
           </div>
           <div class="pcard-body">
             <div class="pcard-cap">${p.capsule}</div>
             <h3 class="pcard-name">${escapeHtml(p.title)}</h3>
             ${descriptionHtml}
             ${getAvailableFits(p).length > 1 ? `<div class="pcard-transfer" style="margin-top:-4px">Disponible en femenino, masculino o unisex según talle</div>` : ``}
-            <div class="pcard-price-block">
-              <div class="pcard-price">${fmt(p.price)}</div>
-              <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
-              <div class="pcard-transfer">💸 ${fmt(transferPrice)} por transferencia</div>
-            </div>
+            ${priceHtml}
             <div class="size-row">${sizes.map(sz => {
               const parsedSize = parseVariantSizeKey(sz);
               const low = Number((p.fitStockBySize?.[parsedSize.fit]?.[parsedSize.size]) ?? (p.stockBySize?.[sz] || 0)) <= 1;
               return `<span class="size-chip ${low ? 'low' : ''}">${escapeHtml(sz)}</span>`;
             }).join('')}</div>
             <div class="pcard-actions">
-              <button class="action-buy" onclick="openBuyModal('${p.id}',event)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Elegir
-              </button>
+              ${actionHtml}
               <a class="action-wa" href="${getWhatsAppBase()}?text=${encodeURIComponent(`Hola SIN RECREO, quiero consultar por la remera "${p.title}" (${p.sku}).`)}" target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.76-.87-2.03-.97-.27-.1-.47-.14-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.52.14-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12 2a10 10 0 00-8.5 15.27L2 22l4.86-1.48A10 10 0 1012 2z"/></svg>
               </a>
@@ -3945,7 +4000,7 @@
       <div class="modal-product-info">
         <div class="modal-product-cap">${currentProduct.capsule}</div>
         <div class="modal-product-name">${currentProduct.title}</div>
-        <div class="modal-product-price">${fmt(currentProduct.price)}</div>
+        <div class="modal-product-price pcard-soon is-modal">${COMING_SOON_TEXT}</div>
         <div class="modal-note" style="margin-top:8px">
           Código ${currentProduct.sku} · ${currentProduct.cut} · ${getTotalStock(currentProduct)} unidades disponibles
         </div>
@@ -3960,7 +4015,26 @@
     if (first) first.classList.add('selected');
 
     hideCustomerPrompt();
-    updateModalTotal();
+    if (COMING_SOON_MODE) {
+      document.querySelector('#buyModal .modal-title').textContent = 'Próximamente';
+      document.getElementById('paymentMethodsTitle')?.classList.add('commerce-hidden');
+      document.getElementById('paymentMethodsWrap')?.classList.add('commerce-hidden');
+      document.getElementById('transferPanel')?.classList.add('commerce-hidden');
+      document.getElementById('modalTotalWrap')?.classList.add('commerce-hidden');
+      document.getElementById('modalCta')?.classList.add('commerce-hidden');
+      document.getElementById('modalAddCartCta')?.classList.add('commerce-hidden');
+      const secure = document.getElementById('modalSecureNote');
+      if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> ${COMING_SOON_TEXT}. Podés escribirnos por WhatsApp para enterarte antes que nadie.`;
+    } else {
+      document.querySelector('#buyModal .modal-title').textContent = 'Elegí tu talle y medio de pago';
+      document.getElementById('paymentMethodsTitle')?.classList.remove('commerce-hidden');
+      document.getElementById('paymentMethodsWrap')?.classList.remove('commerce-hidden');
+      document.getElementById('transferPanel')?.classList.remove('commerce-hidden');
+      document.getElementById('modalTotalWrap')?.classList.remove('commerce-hidden');
+      document.getElementById('modalCta')?.classList.remove('commerce-hidden');
+      document.getElementById('modalAddCartCta')?.classList.remove('commerce-hidden');
+      updateModalTotal();
+    }
     document.getElementById('buyModal').classList.add('open');
     refreshBodyScrollLock();
   };
@@ -3997,6 +4071,7 @@
   };
 
   const addConfiguredToCart = (closeAfter = false) => {
+    if (COMING_SOON_MODE) return;
     if (!currentProduct || !selectedSize) {
       alert('Elegí modelo y talle antes de agregar al carrito.');
       return;
@@ -4022,6 +4097,7 @@
   };
 
   const selectPayMethod = (btn, method) => {
+    if (COMING_SOON_MODE) return;
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedPayMethod = method;
@@ -4029,6 +4105,7 @@
   };
 
   const updateTransferPanel = () => {
+    if (COMING_SOON_MODE) return;
     const panel = document.getElementById('transferPanel');
     if (!panel) return;
     const show = selectedPayMethod === 'transfer';
@@ -4040,6 +4117,7 @@
   };
 
   const updateModalTotal = () => {
+    if (COMING_SOON_MODE) return;
     if (!currentProduct) return;
     const price = selectedPayMethod === 'transfer' ? getTransferPrice(currentProduct) : currentProduct.price;
     document.getElementById('modalTotal').textContent = fmt(price);
@@ -4260,6 +4338,7 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
   };
 
   const processPayment = async () => {
+    if (COMING_SOON_MODE) return;
     if (!currentProduct) return;
     if (!selectedSize) {
       alert('Elegí un talle antes de continuar.');
@@ -4337,6 +4416,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
 
   /* ─── CART ─── */
   const addToCart = (id, e) => {
+    if (COMING_SOON_MODE) return;
     if (e) e.stopPropagation();
     const storedCustomer = getStoredCheckoutCustomer();
     if (!storedCustomer.name || !storedCustomer.email) {
@@ -4359,12 +4439,19 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   };
 
   const removeFromCart = (id, size) => {
+    if (COMING_SOON_MODE) return;
     const idx = cart.findIndex(c => c.id === id && c.selectedSize === size);
     if (idx !== -1) cart.splice(idx, 1);
     updateCartUI();
   };
 
   const updateCartUI = () => {
+    if (COMING_SOON_MODE) {
+      document.getElementById('cartCount').textContent = '0';
+      const floatingCount = document.getElementById('cartCountFloat');
+      if (floatingCount) floatingCount.textContent = '0';
+      return;
+    }
     const count = cart.reduce((sum, item) => sum + item.qty, 0);
     document.getElementById('cartCount').textContent = count;
     const floatingCount = document.getElementById('cartCountFloat');
@@ -4399,6 +4486,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   };
 
   const openCartDrawer = () => {
+    if (COMING_SOON_MODE) return;
     document.getElementById('cartDrawer').classList.add('open');
     document.getElementById('drawerBackdrop').classList.add('open');
     refreshBodyScrollLock();
@@ -4421,6 +4509,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   };
 
   const checkoutWhatsApp = async () => {
+    if (COMING_SOON_MODE) return;
     if (!cart.length) return;
 
     const customer = collectCartCustomer();
@@ -4465,6 +4554,7 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
   };
 
   const checkoutMP = async () => {
+    if (COMING_SOON_MODE) return;
     if (!cart.length) return;
 
     const customer = collectCartCustomer();
