@@ -92,13 +92,13 @@
     <div class="hero">
       <div>
         <div class="brand">SIN RECREO</div>
-        <p class="sub">Panel de gestión para catálogo y pedidos. Cargá productos, controlá stock por talle y mirá en claro lo que entra por Mercado Pago.</p>
+        <p class="sub">Panel de gestión para catálogo, stock base y pedidos. Cargá productos sin stock propio, administrá remeras lisas por talle, corte y color, y mirá en claro lo que entra por Mercado Pago.</p>
       </div>
       <div class="mini">Hecho para GitHub Pages + Supabase</div>
     </div>
 
     <div class="notice">
-      Entrá con tu usuario administrador. Desde acá podés cargar catálogo y revisar pedidos de forma clara, con stock por talle e imágenes por producto.
+      Entrá con tu usuario administrador. Desde acá podés cargar catálogo, administrar stock general de remeras lisas y revisar pedidos. Las prendas estampadas descuentan del stock base compartido.
     </div>
 
     <div id="statusBox" class="hidden"></div>
@@ -129,6 +129,7 @@
         <div class="segmented">
           <button class="seg-btn active" id="catalogViewBtn">Catálogo</button>
           <button class="seg-btn" id="capsulesViewBtn">Cápsulas</button>
+          <button class="seg-btn" id="stockViewBtn">Stock base</button>
           <button class="seg-btn" id="ordersViewBtn">Pedidos</button>
           <button class="btn btn-soft" id="logoutBtn">Salir</button>
         </div>
@@ -219,14 +220,14 @@
 
           <div class="divider"></div>
           <h3 class="title" style="font-size:1.35rem">Imágenes</h3>
-          <p class="mini">Podés pegar URLs o subir archivos al bucket <strong>product-images</strong>. Cargá hasta 3 imágenes por prenda.</p>
+          <p class="mini">Podés pegar URLs públicas o subir archivos a <strong>Cloudflare R2</strong>. Cargá hasta 3 imágenes por prenda.</p>
 
           <div class="img-grid" id="imagesGrid"></div>
 
           <div class="divider"></div>
-          <h3 class="title" style="font-size:1.35rem">Stock por talle y tipo de corte</h3>
-          <p class="mini">Cargá stock unisex, femenino o masculino por cada talle. El panel ya no pide links de pago: solo disponibilidad real.</p>
-          <div class="variant-grid" id="variantsGrid"></div>
+          <div class="notice" style="margin-top:16px">
+            Este producto no tiene stock propio. La disponibilidad se toma del <strong>Stock base</strong>: remeras lisas por corte, color y talle. Cuando se vende una prenda estampada, se descuenta una remera lisa de ese stock general.
+          </div>
 
           <div class="divider"></div>
           <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap">
@@ -322,6 +323,71 @@
         </section>
       </div>
 
+
+      <div id="stockView" class="grid hidden">
+        <aside class="card p20">
+          <h2 class="title" style="margin:0 0 12px">Stock base</h2>
+          <p class="mini" style="line-height:1.6;margin-bottom:14px">Cargá acá las remeras lisas disponibles. Este stock sirve para todas las estampas del catálogo.</p>
+          <div class="toolbar" style="margin-bottom:12px">
+            <button class="btn btn-soft" id="reloadStockBtn">Recargar</button>
+          </div>
+          <div id="stockSummary" class="summary-grid" style="grid-template-columns:1fr"></div>
+        </aside>
+
+        <section class="card p24">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div>
+              <h2 class="title" style="margin:0">Remeras lisas</h2>
+              <div class="mini">Alta y actualización por corte, color y talle. Ejemplo: Oversize · Hueso · M · 12 unidades.</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <label class="field"><span class="label">Corte</span>
+              <select id="stockCut">
+                <option value="unisex">Unisex</option>
+                <option value="oversize">Oversize</option>
+                <option value="femenina">Femenina</option>
+              </select>
+            </label>
+            <label class="field"><span class="label">Color</span><input id="stockColor" placeholder="Hueso" /></label>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <label class="field"><span class="label">Talle</span>
+              <select id="stockSize">
+                <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option>
+              </select>
+            </label>
+            <label class="field"><span class="label">Stock disponible</span><input id="stockQty" type="number" min="0" step="1" value="0" /></label>
+          </div>
+          <div class="toolbar" style="margin-top:14px">
+            <button class="btn btn-dark" id="saveStockBtn" type="button">Guardar stock</button>
+            <button class="btn btn-soft" id="clearStockFormBtn" type="button">Limpiar</button>
+          </div>
+
+          <div class="divider"></div>
+          <h3 class="title" style="font-size:1.35rem">Stock cargado</h3>
+          <p class="mini">Las filas con stock 0 quedan inactivas para la tienda, pero se conservan para poder reactivarlas.</p>
+          <div style="overflow:auto">
+            <table class="order-items-table">
+              <thead>
+                <tr>
+                  <th>Corte</th>
+                  <th>Color</th>
+                  <th>Talle</th>
+                  <th>Stock</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="stockRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
       <div id="ordersView" class="orders-grid hidden">
         <aside class="card p20">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
@@ -359,14 +425,17 @@
 
   <script>
     const CONFIG = {
-      SUPABASE_URL: 'https://xedhdojvynmwaadmkcby.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZGhkb2p2eW5td2FhZG1rY2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ4MjYsImV4cCI6MjA5MTI0MDgyNn0.Keaskg8KUqFz4JyuUJJxGCjIDdD6iaDnEAUyvwPgZrA',
-      STORAGE_BUCKET: 'product-images'
+      SUPABASE_URL: 'https://bhzwcevmeqzofuwnwpnm.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJoendjZXZtZXF6b2Z1d253cG5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTExNzksImV4cCI6MjA5MjU2NzE3OX0.LGDbzUNprkAfbiOC7oFuew0EpCOPll9ckdGL-LidhGA',
+      STORAGE_BUCKET: 'product-images', // legado: ya no se usa para subir nuevas imágenes
+      R2_PUBLIC_BASE_URL: 'https://cdn.sinrecreo.com.ar',
+      R2_UPLOAD_ENDPOINT: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/upload-product-image',
+      PUDO_CREATE_ORDER_ENDPOINT: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/pudo-create-order'
     };
 
     const SIZE_ORDER = ['XS','S','M','L','XL','XXL'];
-    const FIT_ORDER = ['unisex','femenino','masculino'];
-    const FIT_LABELS = { unisex:'Unisex', femenino:'Femenino', masculino:'Masculino' };
+    const CUT_ORDER = ['unisex','oversize','femenina'];
+    const CUT_LABELS = { unisex:'Unisex', oversize:'Oversize', femenina:'Femenina' };
     const IMAGE_SLOTS = [1,2,3];
     let sb = null;
     let currentUser = null;
@@ -379,8 +448,10 @@
     let currentView = 'catalog';
     let orders = [];
     let currentOrderId = null;
+    let blankStock = [];
     let isSavingProduct = false;
     let isSavingCapsule = false;
+    let isSavingStock = false;
     const MANAGEABLE_ORDER_STATUSES = ['pending','approved','rejected','cancelled','refunded'];
     const MANAGEABLE_PAYMENT_METHODS = ['mercadopago','transferencia','manual','whatsapp'];
 
@@ -427,7 +498,6 @@
       }
       sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
       renderImageInputs();
-      renderVariantInputs();
       wireEvents();
       restoreSession();
     };
@@ -437,12 +507,16 @@
       el('logoutBtn').addEventListener('click', logout);
       el('catalogViewBtn').addEventListener('click', () => switchView('catalog'));
       el('capsulesViewBtn').addEventListener('click', () => switchView('capsules'));
+      el('stockViewBtn').addEventListener('click', () => switchView('stock'));
       el('ordersViewBtn').addEventListener('click', () => switchView('orders'));
       el('newProductBtn').addEventListener('click', newProduct);
       el('reloadBtn').addEventListener('click', loadProducts);
       el('newCapsuleBtn').addEventListener('click', newCapsule);
       el('reloadCapsulesBtn').addEventListener('click', loadCapsules);
       el('reloadOrdersBtn').addEventListener('click', loadOrders);
+      el('reloadStockBtn').addEventListener('click', loadBlankStock);
+      el('saveStockBtn').addEventListener('click', saveBlankStockRow);
+      el('clearStockFormBtn').addEventListener('click', clearStockForm);
       el('orderStatusFilter').addEventListener('change', renderOrderList);
       el('saveBtn').addEventListener('click', saveProduct);
       el('saveBtnBottom').addEventListener('click', saveProduct);
@@ -472,29 +546,25 @@
       });
     };
 
-    const makeVariantSizeKey = (fit, size) => fit === 'unisex' ? size : `${fit.toUpperCase()}__${size}`;
-    const parseVariantSizeKey = raw => {
-      const value = String(raw || '');
-      if (value.includes('__')) {
-        const [fit, size] = value.split('__');
-        return { fit: fit.toLowerCase(), size };
-      }
-      return { fit: 'unisex', size: value };
+    const normalizeCut = value => {
+      const key = String(value || '').trim().toLowerCase();
+      if (['femenino','femenina','corte dama','dama'].includes(key)) return 'femenina';
+      if (['oversize','over'].includes(key)) return 'oversize';
+      return 'unisex';
     };
-
-    const renderVariantInputs = () => {
-      el('variantsGrid').innerHTML = SIZE_ORDER.map(size => `
-        <div class="variant-card">
-          <div class="variant-head">${size}</div>
-          ${FIT_ORDER.map(fit => `
-            <label class="field" style="margin-top:${fit === 'unisex' ? '0' : '8px'}">
-              <span class="label">${FIT_LABELS[fit]}</span>
-              <input id="stock_${fit}_${size}" type="number" min="0" step="1" value="10" />
-            </label>
-          `).join('')}
-        </div>
-      `).join('');
+    const getCutLabel = value => CUT_LABELS[normalizeCut(value)] || 'Unisex';
+    const normalizeColor = value => String(value || '').trim().replace(/\s+/g, ' ') || 'Hueso';
+    const stockSort = (a, b) => {
+      const ci = CUT_ORDER.indexOf(normalizeCut(a.cut));
+      const cj = CUT_ORDER.indexOf(normalizeCut(b.cut));
+      if (ci !== cj) return ci - cj;
+      const colorCompare = normalizeColor(a.color).localeCompare(normalizeColor(b.color), 'es');
+      if (colorCompare) return colorCompare;
+      const si = SIZE_ORDER.indexOf(a.size);
+      const sj = SIZE_ORDER.indexOf(b.size);
+      return (si === -1 ? 999 : si) - (sj === -1 ? 999 : sj);
     };
+    const describeStockVariant = (fit, size, color) => `${getCutLabel(fit)} · ${normalizeColor(color)} · Talle ${size || '—'}`;
 
     const capsuleBlankForm = () => ({
       id:'',
@@ -587,6 +657,126 @@
       });
     };
 
+
+    const renderStockSummary = () => {
+      const wrap = el('stockSummary');
+      if (!wrap) return;
+      const total = blankStock.reduce((acc, row) => acc + Number(row.stock || 0), 0);
+      const activeRows = blankStock.filter(row => row.is_active !== false && Number(row.stock || 0) > 0).length;
+      wrap.innerHTML = `
+        <div class="summary-card"><strong>${total}</strong><span class="mini">remeras lisas disponibles</span></div>
+        <div class="summary-card"><strong>${activeRows}</strong><span class="mini">combinaciones activas</span></div>
+      `;
+    };
+
+    const renderStockRows = () => {
+      const tbody = el('stockRows');
+      if (!tbody) return;
+      if (!blankStock.length) {
+        tbody.innerHTML = '<tr><td colspan="6">Todavía no cargaste stock base.</td></tr>';
+        renderStockSummary();
+        return;
+      }
+      tbody.innerHTML = [...blankStock].sort(stockSort).map(row => `
+        <tr>
+          <td>${getCutLabel(row.cut)}</td>
+          <td>${normalizeColor(row.color)}</td>
+          <td>${row.size || '—'}</td>
+          <td><strong>${Number(row.stock || 0)}</strong></td>
+          <td>${row.is_active !== false && Number(row.stock || 0) > 0 ? '<span class="order-pill pill-approved">Activo</span>' : '<span class="order-pill pill-rejected">Sin stock</span>'}</td>
+          <td>
+            <button class="btn btn-soft" type="button" data-edit-stock="${row.id}">Editar</button>
+            <button class="btn btn-danger" type="button" data-zero-stock="${row.id}">Dejar en 0</button>
+          </td>
+        </tr>
+      `).join('');
+      tbody.querySelectorAll('[data-edit-stock]').forEach(btn => {
+        btn.addEventListener('click', () => fillStockForm(blankStock.find(row => row.id === btn.dataset.editStock)));
+      });
+      tbody.querySelectorAll('[data-zero-stock]').forEach(btn => {
+        btn.addEventListener('click', () => zeroBlankStockRow(btn.dataset.zeroStock));
+      });
+      renderStockSummary();
+    };
+
+    const clearStockForm = () => {
+      el('stockCut').value = 'unisex';
+      el('stockColor').value = 'Hueso';
+      el('stockSize').value = 'M';
+      el('stockQty').value = 0;
+    };
+
+    const fillStockForm = row => {
+      if (!row) return;
+      el('stockCut').value = normalizeCut(row.cut);
+      el('stockColor').value = normalizeColor(row.color);
+      el('stockSize').value = row.size || 'M';
+      el('stockQty').value = Number(row.stock || 0);
+      switchView('stock');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const loadBlankStock = async () => {
+      clearStatus();
+      try {
+        const { data, error } = await sb
+          .from('blank_stock')
+          .select('id, cut, color, size, stock, is_active, updated_at, created_at')
+          .order('cut', { ascending: true })
+          .order('color', { ascending: true })
+          .order('size', { ascending: true });
+        if (error) throw error;
+        blankStock = data || [];
+        renderStockRows();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo cargar el stock base. Revisá que hayas creado la tabla blank_stock en Supabase.', 'err');
+      }
+    };
+
+    const saveBlankStockRow = async () => {
+      if (isSavingStock) return;
+      clearStatus();
+      isSavingStock = true;
+      const btn = el('saveStockBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+      try {
+        const payload = {
+          cut: normalizeCut(el('stockCut').value),
+          color: normalizeColor(el('stockColor').value),
+          size: el('stockSize').value,
+          stock: Math.max(0, parseInt(el('stockQty').value, 10) || 0),
+          is_active: Math.max(0, parseInt(el('stockQty').value, 10) || 0) > 0
+        };
+        if (!payload.color || !payload.size) throw new Error('Completá color y talle.');
+        const { error } = await sb
+          .from('blank_stock')
+          .upsert(payload, { onConflict: 'cut,color,size' });
+        if (error) throw error;
+        showStatus('Stock base guardado correctamente.');
+        await loadBlankStock();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo guardar el stock base.', 'err');
+      } finally {
+        isSavingStock = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Guardar stock'; }
+      }
+    };
+
+    const zeroBlankStockRow = async (id) => {
+      clearStatus();
+      try {
+        const { error } = await sb
+          .from('blank_stock')
+          .update({ stock: 0, is_active: false })
+          .eq('id', id);
+        if (error) throw error;
+        showStatus('Stock base actualizado en 0.');
+        await loadBlankStock();
+      } catch (err) {
+        showStatus(err.message || 'No se pudo actualizar esa fila de stock.', 'err');
+      }
+    };
+
     const openProductFromCapsule = async (productId) => {
       switchView('catalog');
       await editProduct(productId);
@@ -638,18 +828,21 @@
       el('loginCard').classList.add('hidden');
       el('appShell').classList.remove('hidden');
       switchView(currentView);
-      await Promise.all([loadProducts(), loadCapsules(), loadOrders()]);
+      await Promise.all([loadProducts(), loadCapsules(), loadBlankStock(), loadOrders()]);
       newProduct();
       newCapsule();
+      clearStockForm();
     };
 
     const switchView = (view) => {
       currentView = view;
       el('catalogView').classList.toggle('hidden', view !== 'catalog');
       el('capsulesView').classList.toggle('hidden', view !== 'capsules');
+      el('stockView').classList.toggle('hidden', view !== 'stock');
       el('ordersView').classList.toggle('hidden', view !== 'orders');
       el('catalogViewBtn').classList.toggle('active', view === 'catalog');
       el('capsulesViewBtn').classList.toggle('active', view === 'capsules');
+      el('stockViewBtn').classList.toggle('active', view === 'stock');
       el('ordersViewBtn').classList.toggle('active', view === 'orders');
     };
 
@@ -689,7 +882,7 @@
       try {
         const { data: orderRows, error: orderError } = await sb
           .from('orders')
-          .select('id, created_at, status, customer_name, customer_email, customer_phone, payment_method, mp_preference_id, mp_payment_id, mp_external_reference, subtotal, discount, total, notes')
+          .select('id, public_order_number, created_at, status, customer_name, customer_email, customer_phone, payment_method, mp_preference_id, mp_payment_id, mp_external_reference, subtotal, discount, total, notes, shipping_provider, shipping_price, shipping_data, pudo_order_created, pudo_order_created_at, pudo_order_error, pudo_order_response')
           .order('created_at', { ascending: false })
           .limit(100);
         if (orderError) throw orderError;
@@ -699,7 +892,7 @@
         if (orderIds.length) {
           const { data: itemRows, error: itemError } = await sb
             .from('order_items')
-            .select('id, order_id, product_title, size, quantity, unit_price, line_total, variant_id')
+            .select('id, order_id, product_title, size, fit, color, quantity, unit_price, line_total, blank_stock_id')
             .in('order_id', orderIds)
           if (itemError) throw itemError;
           items = itemRows || [];
@@ -757,7 +950,7 @@
         return `
           <div class="order-item ${currentOrderId === order.id ? 'active' : ''}" data-id="${order.id}">
             <div class="order-top">
-              <div class="order-code">#${order.id.slice(0, 8)}</div>
+              <div class="order-code">#${order.public_order_number || order.id.slice(0, 8)}</div>
               <span class="order-pill ${getOrderPillClass(order.status)}">${order.status || 'pending'}</span>
             </div>
             <p style="margin:0 0 6px"><strong>${customer}</strong></p>
@@ -786,7 +979,7 @@
       const itemsRows = order.items.length ? order.items.map(item => `
         <tr>
           <td>${item.product_title}</td>
-          <td>${item.size || '—'}</td>
+          <td>${describeStockVariant(item.fit, item.size, item.color)}</td>
           <td>${item.quantity}</td>
           <td>${fmtMoney(item.unit_price)}</td>
           <td>${fmtMoney(item.line_total)}</td>
@@ -798,7 +991,7 @@
           <div class="detail-card">
             <div class="label" style="margin-bottom:10px">Compra</div>
             <div class="kv">
-              <div>Pedido</div><div>#${order.id}</div>
+              <div>Pedido</div><div>#${order.public_order_number || order.id}</div>
               <div>Estado</div><div><span class="order-pill ${getOrderPillClass(order.status)}">${order.status || 'pending'}</span></div>
               <div>Creado</div><div>${fmtDate(order.created_at)}</div>
               <div>Método</div><div>${order.payment_method || '—'}</div>
@@ -816,6 +1009,15 @@
               <div>Preference ID</div><div>${order.mp_preference_id || '—'}</div>
               <div>Notas</div><div>${order.notes || '—'}</div>
             </div>
+          </div>
+        </div>
+        <div class="detail-card" style="margin-top:14px">
+          <div class="label" style="margin-bottom:10px">Entrega</div>
+          <div class="kv">
+            <div>Método</div><div>${getShippingAdminLabel(order)}</div>
+            <div>Costo cobrado</div><div>${fmtMoney(order.shipping_price || 0)}</div>
+            <div>Proveedor</div><div>${order.shipping_provider || '—'}</div>
+            <div>Orden PUDO</div><div>${order.pudo_order_created ? 'Creada · ' + fmtDate(order.pudo_order_created_at) : (order.pudo_order_error ? 'Error: ' + order.pudo_order_error : 'Pendiente / no aplica')}</div>
           </div>
         </div>
         <div class="detail-card" style="margin-top:14px">
@@ -852,7 +1054,7 @@
             <thead>
               <tr>
                 <th>Producto</th>
-                <th>Talle</th>
+                <th>Variante</th>
                 <th>Cant.</th>
                 <th>Unitario</th>
                 <th>Total</th>
@@ -868,22 +1070,28 @@
     };
 
     const adjustStockForApprovedOrder = async (order) => {
-      const variantItems = (order.items || []).filter(item => item.variant_id);
-      for (const item of variantItems) {
-        const { data: variant, error: variantError } = await sb
-          .from('product_variants')
-          .select('id, stock')
-          .eq('id', item.variant_id)
-          .single();
-        if (variantError) throw variantError;
+      const stockItems = (order.items || []).filter(item => item.blank_stock_id || (item.size && item.fit && item.color));
+      for (const item of stockItems) {
+        let query = sb.from('blank_stock').select('id, stock');
+        if (item.blank_stock_id) {
+          query = query.eq('id', item.blank_stock_id);
+        } else {
+          query = query
+            .eq('cut', normalizeCut(item.fit))
+            .eq('color', normalizeColor(item.color))
+            .eq('size', item.size);
+        }
+        const { data: stockRow, error: stockError } = await query.single();
+        if (stockError) throw stockError;
 
-        const nextStock = Math.max(0, Number(variant.stock || 0) - Number(item.quantity || 0));
-        const { error: updateVariantError } = await sb
-          .from('product_variants')
-          .update({ stock: nextStock })
-          .eq('id', item.variant_id);
-        if (updateVariantError) throw updateVariantError;
+        const nextStock = Math.max(0, Number(stockRow.stock || 0) - Number(item.quantity || 0));
+        const { error: updateStockError } = await sb
+          .from('blank_stock')
+          .update({ stock: nextStock, is_active: nextStock > 0 })
+          .eq('id', stockRow.id);
+        if (updateStockError) throw updateStockError;
       }
+      await loadBlankStock();
     };
 
 
@@ -902,6 +1110,33 @@
         throw new Error(data?.error || 'El pedido se actualizó, pero falló el envío del mail.');
       }
       return data;
+    };
+
+    const triggerPudoOrder = async (orderId) => {
+      const response = await fetch(CONFIG.PUDO_CREATE_ORDER_ENDPOINT || `${CONFIG.SUPABASE_URL}/functions/v1/pudo-create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CONFIG.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({ order_id: orderId })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.ok === false) {
+        throw new Error(data?.error || 'El pedido se aprobó, pero falló la creación de la orden PUDO.');
+      }
+      return data;
+    };
+
+    const getShippingAdminLabel = (order = {}) => {
+      const provider = String(order.shipping_provider || '').toLowerCase();
+      const data = order.shipping_data || {};
+      if (!provider) return '—';
+      if (provider === 'retiro' || provider === 'retiro domicilio' || data.provider === 'RETIRO') return 'Retiro Corimayo · Burzaco';
+      const method = data.shipping_method_name || data.shippingMethodName || data.selectedRate?.shippingMethodName || 'PUDO';
+      const locker = data.locker_name || data.selectedOption?.lockerName || '';
+      return `${method}${locker ? ' · ' + locker : ''}`;
     };
 
     const saveOrderChanges = async () => {
@@ -932,7 +1167,9 @@
 
         if (justApproved) {
           await triggerOrderEmails(order.id);
-          showStatus('Pedido actualizado y mail enviado correctamente.');
+          const pudoResult = await triggerPudoOrder(order.id);
+          const pudoMsg = pudoResult?.skipped ? ' Logística PUDO: no aplica o ya estaba creada.' : ' Orden PUDO creada/revisada correctamente.';
+          showStatus('Pedido actualizado, mail enviado correctamente.' + pudoMsg);
         } else {
           showStatus('Pedido actualizado correctamente.');
         }
@@ -1086,19 +1323,10 @@
       });
     };
 
-    const clearVariants = () => {
-      SIZE_ORDER.forEach(size => {
-        FIT_ORDER.forEach(fit => {
-          el(`stock_${fit}_${size}`).value = 10;
-        });
-      });
-    };
-
     const newProduct = () => {
       currentProduct = blankForm();
       fillForm(currentProduct);
       clearImages();
-      clearVariants();
       renderProductList();
     };
 
@@ -1110,26 +1338,19 @@
         currentProduct = product;
         fillForm(product);
 
-        const [{ data: images, error: imgError }, { data: variants, error: varError }] = await Promise.all([
-          sb.from('product_images').select('id, image_url, position').eq('product_id', id).order('position'),
-          sb.from('product_variants').select('id, size, stock, mp_link, is_active').eq('product_id', id)
-        ]);
+        const { data: images, error: imgError } = await sb
+          .from('product_images')
+          .select('id, image_url, position')
+          .eq('product_id', id)
+          .order('position');
 
         if (imgError) throw imgError;
-        if (varError) throw varError;
 
         clearImages();
         (images || []).forEach(img => {
           currentImages[img.position] = img.image_url;
           el(`imageUrl${img.position}`).value = img.image_url || '';
           el(`imagePreview${img.position}`).src = img.image_url || '';
-        });
-
-        clearVariants();
-        (variants || []).forEach(v => {
-          const parsed = parseVariantSizeKey(v.size);
-          const field = el(`stock_${parsed.fit}_${parsed.size}`);
-          if (field) field.value = Number(v.stock || 0);
         });
 
         renderProductList();
@@ -1172,13 +1393,32 @@
         return urlInput.value.trim() || '';
       }
 
-      const ext = file.name.split('.').pop() || 'jpg';
-      const safeName = `${productSlug}/${Date.now()}-${position}.${ext}`;
-      const { error } = await sb.storage.from(CONFIG.STORAGE_BUCKET).upload(safeName, file, { upsert: true });
-      if (error) throw error;
+      const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (sessionError || !accessToken) {
+        throw new Error('Tu sesión de admin venció. Cerrá sesión y volvé a entrar.');
+      }
 
-      const { data } = sb.storage.from(CONFIG.STORAGE_BUCKET).getPublicUrl(safeName);
-      return data.publicUrl;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('productSlug', productSlug);
+      formData.append('position', String(position));
+
+      const response = await fetch(CONFIG.R2_UPLOAD_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'apikey': CONFIG.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: formData
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result?.ok === false) {
+        throw new Error(result?.error || result?.detail || 'No se pudo subir la imagen a Cloudflare R2.');
+      }
+
+      return result.publicUrl || result.image_url || '';
     };
 
     const saveProduct = async () => {
@@ -1209,7 +1449,7 @@
         for (const position of IMAGE_SLOTS) {
           const imageUrl = await uploadImageIfNeeded(payload.slug, position);
           if (imageUrl) {
-            imageRows.push({ product_id: savedProductId, position, image_url: imageUrl });
+            imageRows.push({ product_id: savedProductId, position, image_url: imageUrl, storage_path: imageUrl.startsWith(CONFIG.R2_PUBLIC_BASE_URL) ? imageUrl.replace((CONFIG.R2_PUBLIC_BASE_URL || '').replace(/\/+$/, '') + '/', '') : null });
           }
         }
 
@@ -1218,37 +1458,6 @@
         if (imageRows.length) {
           const { error: insertImagesError } = await sb.from('product_images').insert(imageRows);
           if (insertImagesError) throw insertImagesError;
-        }
-
-        for (const size of SIZE_ORDER) {
-          for (const fit of FIT_ORDER) {
-            const stockRaw = el(`stock_${fit}_${size}`).value;
-            const stock = parseInt(stockRaw, 10) || 0;
-            const variantSize = makeVariantSizeKey(fit, size);
-
-            if (stock > 0) {
-              const variantPayload = {
-                product_id: savedProductId,
-                size: variantSize,
-                stock,
-                is_active: true
-              };
-
-              const { error: upsertVariantError } = await sb
-                .from('product_variants')
-                .upsert(variantPayload, { onConflict: 'product_id,size' });
-
-              if (upsertVariantError) throw upsertVariantError;
-            } else {
-              const { error: deactivateVariantError } = await sb
-                .from('product_variants')
-                .update({ stock: 0, is_active: false })
-                .eq('product_id', savedProductId)
-                .eq('size', variantSize);
-
-              if (deactivateVariantError) throw deactivateVariantError;
-            }
-          }
         }
 
         await loadProducts();

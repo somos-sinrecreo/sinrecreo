@@ -55,6 +55,69 @@
     .container { width: var(--container); margin: 0 auto; }
     .hidden { display: none !important; }
 
+    /* ── PRELANZAMIENTO / TIENDA EN MODO VIDRIERA ── */
+    .prelaunch-banner {
+      background: #fff7ef;
+      border-bottom: 1px solid rgba(192,90,58,.22);
+      color: #7b3f2d;
+      padding: 14px 0;
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+    .prelaunch-banner strong { color: var(--ink); }
+    .prelaunch-banner .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .prelaunch-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(192,90,58,.12);
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .prelaunch-disabled,
+    button.prelaunch-disabled,
+    .action-buy.prelaunch-disabled,
+    .overlay-btn.prelaunch-disabled,
+    .modal-secondary-cta.prelaunch-disabled,
+    .cart-checkout-btn.prelaunch-disabled,
+    .modal-cta.prelaunch-disabled {
+      background: #e9e2d8 !important;
+      color: #7d746c !important;
+      border-color: #ded4c7 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      transform: none !important;
+      opacity: .92;
+    }
+    .prelaunch-note {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(192,90,58,.09);
+      border: 1px solid rgba(192,90,58,.18);
+      color: #7b3f2d;
+      font-size: .84rem;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+    @media (max-width: 680px) {
+      .prelaunch-banner .container { align-items: flex-start; }
+      .prelaunch-pill { white-space: normal; }
+    }
+
+
     /* ── ANNOUNCE BAR ── */
     .announce {
       background: var(--ink);
@@ -798,23 +861,6 @@
       color: var(--accent);
     }
     .pcard-price-block { }
-    .pcard-soon {
-      font-size: .84rem;
-      line-height: 1.6;
-      color: #2f5d46;
-      font-weight: 700;
-      padding: 12px 14px;
-      background: rgba(196, 232, 205, .85);
-      border: 1px solid rgba(98, 154, 117, .28);
-      border-radius: var(--r-md);
-    }
-    .pcard-soon.is-modal {
-      font-size: .9rem;
-      padding: 10px 12px;
-      background: rgba(196, 232, 205, .85);
-      border: 1px solid rgba(98, 154, 117, .28);
-      color: #2f5d46;
-    }
     .pcard-price {
       font-family: var(--font-display);
       font-size: 1.7rem;
@@ -854,22 +900,6 @@
       transition: background .18s;
     }
     .action-buy:hover { background: #222; }
-    .action-buy[disabled],
-    .overlay-btn[disabled] {
-      cursor: not-allowed;
-      opacity: 1;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    .action-buy[disabled] {
-      background: #d8d3ca;
-      color: #5f5954;
-    }
-    .overlay-btn.primary[disabled] {
-      background: rgba(255,255,255,.92);
-      color: var(--ink);
-    }
-    .commerce-hidden { display: none !important; }
     .action-wa {
       display: inline-flex;
       align-items: center;
@@ -1163,6 +1193,39 @@
       box-shadow: 0 0 0 3px rgba(192,90,58,.08);
     }
 
+
+    /* ── PUDO SHIPPING / ENTREGA ── */
+    .shipping-panel { margin: 8px 0 22px; padding: 16px; border-radius: var(--r-lg); background: #fff; border: 1px solid var(--line); }
+    .shipping-panel.is-cart { margin: 0 0 14px; background: var(--cream); }
+    .shipping-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+    .shipping-head strong { font-size:.92rem; }
+    .shipping-head span { font-size:.78rem; color:var(--muted); line-height:1.45; }
+    .shipping-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .shipping-field { display:flex; flex-direction:column; gap:6px; }
+    .shipping-field.full { grid-column:1/-1; }
+    .shipping-label { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; font-weight:800; color:var(--muted); }
+    .shipping-input { width:100%; border:1px solid var(--line); border-radius:var(--r-md); padding:11px 12px; background:#fff; outline:none; font-size:.88rem; transition:border-color .18s, box-shadow .18s; }
+    .shipping-input:focus { border-color:rgba(14,14,16,.24); box-shadow:0 0 0 3px rgba(192,90,58,.08); }
+    .shipping-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .shipping-calc-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 15px; border-radius:999px; border:1px solid var(--ink); background:var(--ink); color:#fff; cursor:pointer; font-weight:800; font-size:.82rem; transition:all .18s; }
+    .shipping-calc-btn:hover { background:#222; }
+    .shipping-calc-btn[disabled] { opacity:.65; cursor:wait; }
+    .shipping-help { font-size:.76rem; color:var(--muted); line-height:1.55; }
+    .shipping-status { margin-top:10px; padding:10px 12px; border-radius:14px; font-size:.82rem; line-height:1.55; color:var(--muted); background:rgba(14,14,16,.04); border:1px solid rgba(14,14,16,.06); }
+    .shipping-status.error { color:#8a4836; background:rgba(179,92,68,.10); border-color:rgba(179,92,68,.18); }
+    .shipping-options { display:flex; flex-direction:column; gap:9px; margin-top:12px; }
+    .shipping-option { width:100%; border:1.5px solid var(--line); border-radius:18px; background:#fff; padding:13px 14px; display:grid; grid-template-columns:1fr auto; gap:10px; text-align:left; cursor:pointer; transition:all .18s; }
+    .shipping-option:hover, .shipping-option.selected { border-color:var(--accent); background:rgba(192,90,58,.045); }
+    .shipping-option-title { font-weight:800; font-size:.9rem; color:var(--ink); margin-bottom:3px; }
+    .shipping-option-detail { font-size:.78rem; line-height:1.55; color:var(--muted); }
+    .shipping-option-price { font-family:var(--font-display); font-size:1.2rem; letter-spacing:.03em; white-space:nowrap; color:var(--ink); }
+    .shipping-summary { margin:10px 0 16px; padding:12px 14px; border-radius:16px; background:rgba(26,122,58,.06); border:1px solid rgba(26,122,58,.14); color:#1a3a2e; font-size:.84rem; line-height:1.6; }
+    .shipping-summary strong { color:var(--ink); }
+    .cart-grand-total { display:flex; justify-content:space-between; align-items:baseline; padding-top:12px; margin-bottom:14px; border-top:1px solid var(--line); }
+    .cart-grand-total-label { font-size:.88rem; color:var(--muted); font-weight:700; }
+    .cart-grand-total-price { font-family:var(--font-display); font-size:1.8rem; letter-spacing:.03em; }
+    @media (max-width:680px){ .shipping-grid{grid-template-columns:1fr;} .shipping-option{grid-template-columns:1fr;} .shipping-option-price{font-size:1.35rem;} }
+
     /* ── PAYMENT MODAL ── */
     .modal-overlay {
       display: none;
@@ -1259,7 +1322,7 @@
     }
     .size-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
     .sz-btn {
-      min-width: 48px;
+      min-width: 66px;
       padding: 10px 14px;
       border-radius: var(--r-sm);
       border: 1.5px solid var(--line);
@@ -1269,16 +1332,48 @@
       cursor: pointer;
       transition: all .15s;
       text-align: center;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
     }
-    .sz-btn:hover, .sz-btn.selected {
+    .sz-btn small, .fit-btn small {
+      display: block;
+      font-size: .67rem;
+      line-height: 1.2;
+      font-weight: 800;
+      opacity: .78;
+      letter-spacing: .02em;
+    }
+    .sz-btn:hover:not(:disabled), .sz-btn.selected {
       border-color: var(--ink);
       background: var(--ink);
-      color: #fff;
+      color: var(--paper);
+      box-shadow: 0 10px 24px rgba(14,14,16,.16);
     }
+    .fit-btn.selected,
+    .sz-btn.selected {
+      border-color: var(--ink) !important;
+      background: var(--ink) !important;
+      color: var(--paper) !important;
+      box-shadow: 0 10px 24px rgba(14,14,16,.16);
+    }
+    .sz-btn.selected small, .fit-btn.selected small { color: inherit; opacity: .9; }
+    .sz-btn:disabled, .fit-btn:disabled {
+      cursor: not-allowed;
+      opacity: .48;
+      background: #f3efe8;
+      color: #9d968e;
+      border-color: #e2dcd3;
+    }
+    .sz-btn.stock-low, .fit-btn.stock-low { border-color: rgba(192,90,58,.34); background: rgba(192,90,58,.08); }
+    .sz-btn.stock-mid, .fit-btn.stock-mid { border-color: rgba(190,127,79,.34); background: rgba(190,127,79,.10); }
+    .sz-btn.stock-high, .fit-btn.stock-high { border-color: rgba(28,127,79,.28); background: rgba(28,127,79,.08); }
 
     .fit-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
     .fit-btn {
-      min-width: 92px;
+      min-width: 108px;
       padding: 10px 14px;
       border-radius: var(--r-sm);
       border: 1.5px solid var(--line);
@@ -1288,12 +1383,28 @@
       cursor: pointer;
       transition: all .15s;
       text-align: center;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
     }
-    .fit-btn:hover, .fit-btn.selected {
+    .fit-btn:hover:not(:disabled) {
       border-color: var(--accent);
       background: rgba(192,90,58,.08);
       color: var(--ink);
     }
+    .modal-stock-note {
+      margin: -8px 0 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(14,14,16,.04);
+      border: 1px solid rgba(14,14,16,.06);
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.55;
+    }
+    .modal-stock-note strong { color: var(--ink); }
     .modal-secondary-cta {
       width: 100%;
       display: flex;
@@ -2139,6 +2250,22 @@
       }
     }
 
+
+    /* ── CART CHECKOUT REWORK ── */
+    .cart-drawer { overflow: hidden; }
+    .cart-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .cart-footer { flex: 0 0 auto; max-height: 72vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    .cart-checkout-panel { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .cart-customer-grid { margin-bottom: 12px; }
+    .delivery-choice-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .delivery-choice { border:1.5px solid var(--line); background:#fff; border-radius:18px; padding:13px 14px; text-align:left; cursor:pointer; transition:all .18s; }
+    .delivery-choice strong { display:block; font-size:.92rem; margin-bottom:4px; color:var(--ink); }
+    .delivery-choice span { display:block; font-size:.78rem; line-height:1.45; color:var(--muted); }
+    .delivery-choice:hover, .delivery-choice.selected { border-color:var(--accent); background:rgba(192,90,58,.045); }
+    .pickup-summary { background:rgba(26,122,58,.06); border-color:rgba(26,122,58,.14); color:#1a3a2e; }
+    .cart-pay-methods { margin-bottom: 14px; }
+    @media (max-width:680px){ .cart-footer { max-height: 78vh; } .delivery-choice-row { grid-template-columns:1fr; } }
+
     /* ── SCROLL ANIMATE ── */
     .fade-up {
       opacity: 0;
@@ -2153,19 +2280,19 @@
 <!-- Announce bar -->
 <div class="announce" aria-label="Novedades">
   <div class="announce-track">
-    <span>ENVÍO GRATIS COMPRANDO 3 PRENDAS O MAS</span>
+    <span>PRÓXIMAMENTE COMPRA ONLINE</span>
     <span class="dot">✦</span>
-    <span>3 CUOTAS SIN INTERÉS CON MERCADOPAGO</span>
+    <span>YA PODÉS CHUSMEAR EL CATÁLOGO</span>
     <span class="dot">✦</span>
-    <span>10% OFF PAGANDO POR TRANSFERENCIA</span>
+    <span>LANZAMIENTO OFICIAL MUY PRONTO</span>
     <span class="dot">✦</span>
     <span class="announce-featured-capsule">CÁPSULA DESTACADA DEL MES</span>
     <span class="dot">✦</span>
-    <span>ENVÍO GRATIS COMPRANDO 3 PRENDAS O MAS</span>
+    <span>PRÓXIMAMENTE COMPRA ONLINE</span>
     <span class="dot">✦</span>
-    <span>3 CUOTAS SIN INTERÉS CON MERCADOPAGO</span>
+    <span>YA PODÉS CHUSMEAR EL CATÁLOGO</span>
     <span class="dot">✦</span>
-    <span>10% OFF PAGANDO POR TRANSFERENCIA</span>
+    <span>LANZAMIENTO OFICIAL MUY PRONTO</span>
     <span class="dot">✦</span>
     <span class="announce-featured-capsule">CÁPSULA DESTACADA DEL MES</span>
     <span class="dot">✦</span>
@@ -2188,7 +2315,7 @@
     </a>
 
     <div class="header-right">
-      <button id="headerCartButton" class="hbtn" type="button" onclick="openCartDrawer()" aria-label="Carrito">
+      <button class="hbtn" type="button" onclick="openCartDrawer()" aria-label="Carrito">
         <span class="cart-badge">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
           <span class="count" id="cartCount">0</span>
@@ -2221,6 +2348,13 @@
   <div class="container" id="paymentStatusInner"></div>
 </div>
 
+<div id="preLaunchBanner" class="prelaunch-banner">
+  <div class="container">
+    <div><strong>Vista previa de SIN RECREO.</strong> Ya podés chusmear cápsulas, diseños, talles y universo de la marca. La compra online se habilitará muy pronto.</div>
+    <span class="prelaunch-pill">Próximamente tienda abierta</span>
+  </div>
+</div>
+
 <main>
 
   <!-- ── HERO ── -->
@@ -2234,7 +2368,7 @@
           <h1 class="hero-title">Vestite con<br>una <em>idea,</em><br>no con una<br>excusa.</h1>
           <p class="hero-body">Cápsulas editoriales con concepto, memoria y actitud. Diseño premium para gente que no quiere vestirse en automático.</p>
           <div class="cta-row">
-            <a class="btn-primary" href="#productos" onclick="openProductsModal(event)">
+            <a class="btn-primary" href="#catalogo">
               Explorar catálogo
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
@@ -2313,9 +2447,9 @@
     <div class="container">
       <div class="section-head fade-up">
         <div>
-          <div class="section-label">Comprar es fácil</div>
-          <h2 class="section-title">Cómo funciona</h2>
-          <p class="section-sub">Tres pasos, sin vueltas.</p>
+          <div class="section-label">Muy pronto vas a poder comprar</div>
+          <h2 class="section-title">Así va a funcionar</h2>
+          <p class="section-sub">Por ahora podés recorrer la tienda completa. La compra online se habilita próximamente.</p>
         </div>
       </div>
       <div class="how-steps fade-up">
@@ -2331,15 +2465,15 @@
           <div class="how-step-num">2</div>
           <div class="how-step-body">
             <strong>Elegí talle y forma de pago</strong>
-            <span>MercadoPago en 3 cuotas sin interés, o 10% de descuento pagando por transferencia.</span>
+            <span>Cuando abramos la tienda, vas a poder pagar con MercadoPago o transferencia.</span>
           </div>
         </div>
         <div class="how-step-arrow">→</div>
         <div class="how-step">
           <div class="how-step-num">3</div>
           <div class="how-step-body">
-            <strong>Confirmás por WhatsApp</strong>
-            <span>El pedido se arma solo y lo recibís listo en tu chat. Te respondemos en menos de 24 horas.</span>
+            <strong>Confirmás la compra</strong>
+            <span>Al lanzarla oficialmente, el pedido se va a registrar desde la tienda y te acompañamos por WhatsApp.</span>
           </div>
         </div>
       </div>
@@ -2476,7 +2610,7 @@
 </footer>
 
 <!-- ── FLOATING CART ── -->
-<button id="floatingCartButton" class="float-cart" type="button" onclick="openCartDrawer()" aria-label="Abrir carrito">
+<button class="float-cart" type="button" onclick="openCartDrawer()" aria-label="Abrir carrito">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
   <span class="count" id="cartCountFloat">0</span>
 </button>
@@ -2503,136 +2637,89 @@
   </div>
   <div class="cart-footer" id="cartFooter" style="display:none">
     <div class="cart-subtotal">
-      <span class="cart-subtotal-label">Subtotal</span>
+      <span class="cart-subtotal-label">Subtotal prendas</span>
       <span class="cart-subtotal-price" id="cartTotal">$0</span>
     </div>
+
+    <div class="cart-grand-total">
+      <span class="cart-grand-total-label">Total a pagar</span>
+      <span class="cart-grand-total-price" id="cartGrandTotal">$0</span>
+    </div>
+
     <button class="cart-browse-btn" onclick="goBackToCatalogFromCart()">Ver más prendas</button>
-    <button class="cart-checkout-btn" onclick="checkoutWhatsApp()">Enviar pedido por WhatsApp</button>
-    <button class="cart-mp-btn" onclick="checkoutMP()">
-      <svg width="20" height="20" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="#009ee3"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="white" font-family="Arial">MP</text></svg>
-      Pagar con MercadoPago
-    </button>
+    <button class="cart-checkout-btn prelaunch-disabled" id="cartOpenCheckoutButton" type="button" onclick="showPreLaunchNotice()" disabled aria-disabled="true">Próximamente podrás comprar</button>
+
+    <div class="cart-checkout-panel hidden" id="cartCheckoutPanel">
+      <div class="modal-section-title">Tus datos</div>
+      <div class="customer-grid cart-customer-grid">
+        <label class="customer-field"><span class="customer-label">Nombre</span><input id="customerName" class="customer-input" type="text" placeholder="Cómo te llamás" /></label>
+        <label class="customer-field"><span class="customer-label">Teléfono</span><input id="customerPhone" class="customer-input" type="tel" placeholder="11 1234 5678" /></label>
+        <label class="customer-field full"><span class="customer-label">Email</span><input id="customerEmail" class="customer-input" type="email" placeholder="tuemail@dominio.com" /></label>
+      </div>
+      <div id="modalCustomerPrompt" class="modal-customer-prompt hidden">Complete nombre y correo para continuar.</div>
+
+      <div class="modal-section-title">Entrega</div>
+      <div class="delivery-choice-row">
+        <button class="delivery-choice selected" id="deliveryChoicePudo" type="button" onclick="selectCartDeliveryMethod('pudo')"><strong>PUDO</strong><span>Domicilio o Smart Locker</span></button>
+        <button class="delivery-choice" id="deliveryChoicePickup" type="button" onclick="selectCartDeliveryMethod('pickup')"><strong>Retiro</strong><span>Zona Corimayo · Burzaco</span></button>
+      </div>
+
+      <div class="shipping-panel is-cart" id="cartShippingPanel">
+        <div class="shipping-head"><div><strong>Entrega PUDO</strong><br><span>Calculá domicilio o Smart Locker antes de pagar.</span></div></div>
+        <div class="shipping-grid">
+          <label class="shipping-field full"><span class="shipping-label">Calle</span><input id="cartShippingAddress" class="shipping-input" type="text" placeholder="Av. Belgrano" /></label>
+          <label class="shipping-field"><span class="shipping-label">Número</span><input id="cartShippingNumber" class="shipping-input" type="text" placeholder="123" /></label>
+          <label class="shipping-field"><span class="shipping-label">Piso / depto</span><input id="cartShippingFloor" class="shipping-input" type="text" placeholder="Opcional" /></label>
+          <label class="shipping-field"><span class="shipping-label">Distrito</span><input id="cartShippingLocality" class="shipping-input" type="text" placeholder="Adrogué" /></label>
+          <label class="shipping-field"><span class="shipping-label">Ciudad</span><input id="cartShippingCity" class="shipping-input" type="text" placeholder="Adrogué" /></label>
+          <label class="shipping-field"><span class="shipping-label">Provincia</span><input id="cartShippingProvince" class="shipping-input" type="text" placeholder="Buenos Aires" /></label>
+          <label class="shipping-field"><span class="shipping-label">Código postal</span><input id="cartShippingPostalCode" class="shipping-input" type="text" inputmode="numeric" placeholder="1846" /></label>
+        </div>
+        <div class="shipping-actions"><button class="shipping-calc-btn" type="button" onclick="quotePudoShipping('cart')">Calcular envío PUDO</button><span class="shipping-help">Hasta 7 remeras por envío. Desde 3 prendas, SIN RECREO bonifica el envío.</span></div>
+        <div id="cartShippingStatus" class="shipping-status hidden"></div>
+        <div id="cartShippingOptions" class="shipping-options"></div>
+      </div>
+      <div class="shipping-summary pickup-summary hidden" id="cartPickupSummary"><strong>Retiro seleccionado:</strong> zona Corimayo · Burzaco.<br>Sin costo de envío. Coordinamos día y horario por WhatsApp después de la compra.</div>
+      <div id="cartShippingSummary" class="shipping-summary hidden"></div>
+
+      <div class="modal-section-title">Medio de pago</div>
+      <div class="pay-methods cart-pay-methods">
+        <button class="pay-method-btn selected" onclick="selectPayMethod(this, 'mp')" type="button"><div class="pay-method-icon mp"><svg width="22" height="22" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="white"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#009ee3" font-family="Arial">MP</text></svg></div><div class="pay-method-info"><div class="pay-method-name">MercadoPago</div><div class="pay-method-detail">Débito, crédito, saldo MP</div></div><span class="pay-method-badge badge-cuotas">3 cuotas s/i</span></button>
+        <button class="pay-method-btn" onclick="selectPayMethod(this, 'card')" type="button"><div class="pay-method-icon card"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Tarjeta de crédito/débito</div><div class="pay-method-detail">Visa, Mastercard, American Express</div></div><span class="pay-method-badge badge-cuotas">3 cuotas</span></button>
+        <button class="pay-method-btn" onclick="selectPayMethod(this, 'transfer')" type="button"><div class="pay-method-icon transfer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Transferencia bancaria</div><div class="pay-method-detail">CVU / Alias · Pago inmediato</div></div><span class="pay-method-badge badge-discount">10% OFF</span></button>
+      </div>
+
+      <div class="transfer-panel" id="transferPanel" hidden>
+        <div class="transfer-head"><strong>Transferencia con contacto directo</strong><span id="transferDiscountBadge">10% OFF</span></div>
+        <div class="transfer-grid"><div class="transfer-item"><label>Alias</label><strong id="transferAliasValue">SINRECREO.TIENDA</strong></div><div class="transfer-item"><label>Titular</label><span id="transferOwnerValue">SIN RECREO</span></div><div class="transfer-item"><label>CVU</label><span id="transferCbuValue">0000003100000000000000</span></div></div>
+        <div class="transfer-actions"><button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button><button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button></div>
+        <div class="modal-note">Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante.</div>
+      </div>
+
+      <button class="modal-cta mp-style prelaunch-disabled" id="cartFinalCheckoutButton" type="button" onclick="showPreLaunchNotice()" disabled aria-disabled="true">Próximamente podrás comprar</button>
+      <div class="modal-secure" id="cartSecureNote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Compra segura · Producto, entrega y pago se definen desde el carrito</div>
+    </div>
   </div>
 </div>
 
 <!-- ── BUY MODAL ── -->
-<div class="modal-overlay" id="buyModal" role="dialog" aria-modal="true" aria-label="Comprar producto">
+<div class="modal-overlay" id="buyModal" role="dialog" aria-modal="true" aria-label="Elegir producto">
   <div class="modal" id="modalInner">
-    <div class="modal-header">
-      <h2 class="modal-title">Elegí tu talle y medio de pago</h2>
-      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button>
-    </div>
+    <div class="modal-header"><h2 class="modal-title">Elegí modelo y talle</h2><button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button></div>
     <div class="modal-body">
-      <!-- Product row -->
       <div class="modal-product-row" id="modalProductRow"></div>
-
-      <!-- Size -->
-      <div class="modal-section-title">Modelo</div>
-      <div class="fit-selector" id="modalFits"></div>
-
-      <div class="modal-section-title">Talle</div>
-      <div class="size-selector" id="modalSizes"></div>
-
-      <div class="modal-section-title">Tus datos</div>
-      <div class="customer-grid">
-        <label class="customer-field">
-          <span class="customer-label">Nombre</span>
-          <input id="customerName" class="customer-input" type="text" placeholder="Cómo te llamás" />
-        </label>
-        <label class="customer-field">
-          <span class="customer-label">Teléfono</span>
-          <input id="customerPhone" class="customer-input" type="tel" placeholder="11 1234 5678" />
-        </label>
-        <label class="customer-field full">
-          <span class="customer-label">Email</span>
-          <input id="customerEmail" class="customer-input" type="email" placeholder="tuemail@dominio.com" />
-        </label>
-      </div>
-      <div id="modalCustomerPrompt" class="modal-customer-prompt hidden">Complete nombre y correo para continuar.</div>
-
-      <!-- Payment methods -->
-      <div class="modal-section-title" id="paymentMethodsTitle">Medio de pago</div>
-      <div class="pay-methods" id="paymentMethodsWrap">
-        <button class="pay-method-btn selected" onclick="selectPayMethod(this, 'mp')" type="button">
-          <div class="pay-method-icon mp">
-            <svg width="22" height="22" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="white"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#009ee3" font-family="Arial">MP</text></svg>
-          </div>
-          <div class="pay-method-info">
-            <div class="pay-method-name">MercadoPago</div>
-            <div class="pay-method-detail">Débito, crédito, saldo MP</div>
-          </div>
-          <span class="pay-method-badge badge-cuotas">3 cuotas s/i</span>
-        </button>
-        <button class="pay-method-btn" onclick="selectPayMethod(this, 'card')" type="button">
-          <div class="pay-method-icon card">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          </div>
-          <div class="pay-method-info">
-            <div class="pay-method-name">Tarjeta de crédito/débito</div>
-            <div class="pay-method-detail">Visa, Mastercard, American Express</div>
-          </div>
-          <span class="pay-method-badge badge-cuotas">3 cuotas</span>
-        </button>
-        <button class="pay-method-btn" onclick="selectPayMethod(this, 'transfer')" type="button">
-          <div class="pay-method-icon transfer">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          </div>
-          <div class="pay-method-info">
-            <div class="pay-method-name">Transferencia bancaria</div>
-            <div class="pay-method-detail">CVU / Alias · Pago inmediato</div>
-          </div>
-          <span class="pay-method-badge badge-discount">10% OFF</span>
-        </button>
-      </div>
-
-      <div class="transfer-panel" id="transferPanel" hidden>
-        <div class="transfer-head">
-          <strong>Transferencia con contacto directo</strong>
-          <span id="transferDiscountBadge">10% OFF</span>
-        </div>
-        <div class="transfer-grid">
-          <div class="transfer-item">
-            <label>Alias</label>
-            <strong id="transferAliasValue">SINRECREO.TIENDA</strong>
-          </div>
-          <div class="transfer-item">
-            <label>Titular</label>
-            <span id="transferOwnerValue">SIN RECREO</span>
-          </div>
-          <div class="transfer-item">
-            <label>CVU</label>
-            <span id="transferCbuValue">0000003100000000000000</span>
-          </div>
-        </div>
-        <div class="transfer-actions">
-          <button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button>
-          <button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button>
-        </div>
-        <div class="modal-note">Vas a ver el alias y el CVU para transferir. Cuando confirmes la compra de esta prenda, te abrimos WhatsApp con el pedido ya armado para que nos envíes el comprobante.</div>
-      </div>
-
-      <!-- Total -->
-      <div class="modal-total" id="modalTotalWrap">
-        <span class="modal-total-label">Total a pagar</span>
-        <span class="modal-total-price" id="modalTotal">$0</span>
-      </div>
-
-      <!-- CTA -->
-      <button class="modal-cta mp-style" id="modalCta" onclick="processPayment()">
-        Pagar esta prenda con Mercado Pago
-      </button>
-      <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">
-        Agregar al carrito y seguir comprando
-      </button>
-      <div class="modal-secure" id="modalSecureNote">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Compra 100% segura · Tus datos están protegidos
-      </div>
+      <div class="modal-section-title">Modelo</div><div class="fit-selector" id="modalFits"></div>
+      <div class="modal-section-title">Color</div><div class="fit-selector" id="modalColors"></div>
+      <div class="modal-section-title">Talle</div><div class="size-selector" id="modalSizes"></div>
+      <div class="modal-stock-note" id="modalStockNote"></div>
+      <div id="modalSizePrompt" class="modal-customer-prompt hidden">Elegí modelo, color y talle para continuar.</div><span id="modalTotal" class="hidden">$0</span>
+      <button class="modal-secondary-cta prelaunch-disabled" id="modalAddCartCta" type="button" onclick="showPreLaunchNotice()" disabled aria-disabled="true">Próximamente podrás comprar</button>
+      <div class="modal-secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> La compra online se habilitará próximamente. Por ahora podés chusmear diseños, talles y cápsulas.</div>
     </div>
   </div>
 </div>
 
-<!-- ── CAPSULE MODAL ── -->
+
 <div class="modal-overlay" id="capsuleModal" role="dialog" aria-modal="true" aria-label="Explorar cápsula">
   <div class="modal modal-wide capsule-modal-shell">
     <div class="modal-header capsule-modal-header">
@@ -2693,20 +2780,27 @@
     transferDiscount: 10,
     installmentsCount: 3,
     freeShippingMinItems: 3,
+    preLaunchMode: true,
+    preLaunchMessage: 'Próximamente podrás comprar nuestras remeras en la tienda. Por ahora podés chusmear el catálogo completo y escribirnos por WhatsApp si querés consultar algo.',
     mpMode: 'backend', // 'direct_links' o 'backend'
     mpEnvironment: 'sandbox', // 'sandbox' mientras uses credenciales de prueba; luego 'production'
     mpGenericLink: '',      // opcional: link general de Mercado Pago
-    mpPreferenceEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-mp-preference',// endpoint seguro de backend para crear preferencias
-    transferOrderEndpoint: 'https://xedhdojvynmwaadmkcby.supabase.co/functions/v1/create-transfer-order',// endpoint seguro para pedidos por transferencia
+    mpPreferenceEndpoint: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/create-mp-preference',// endpoint seguro de backend para crear preferencias
+    transferOrderEndpoint: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/create-transfer-order',// endpoint seguro para pedidos por transferencia
+    pudoQuoteEndpoint: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/pudo-shipping-rates',// endpoint seguro para cotizar PUDO
+    pudoOrderEndpoint: 'https://bhzwcevmeqzofuwnwpnm.supabase.co/functions/v1/pudo-create-order',// endpoint seguro para crear orden PUDO luego del pago
+    pudoMaxItemsPerShipment: 7,
+    pudoBoxBaseMm: 280,
+    pudoBoxHeightPerItemMm: 50,
+    pudoWeightPerItemGrams: 400,
+    pickupLabel: 'Retiro en zona Corimayo · Burzaco',
+    pickupDetails: 'Sin costo de envío. Coordinamos día y horario por WhatsApp después de la compra.',
     useSupabase: true,
-    supabaseUrl: 'https://xedhdojvynmwaadmkcby.supabase.co',
-    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlZGhkb2p2eW5td2FhZG1rY2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjQ4MjYsImV4cCI6MjA5MTI0MDgyNn0.Keaskg8KUqFz4JyuUJJxGCjIDdD6iaDnEAUyvwPgZrA',
-    supabaseStorageBucket: 'product-images',
+    supabaseUrl: 'https://bhzwcevmeqzofuwnwpnm.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJoendjZXZtZXF6b2Z1d253cG5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTExNzksImV4cCI6MjA5MjU2NzE3OX0.LGDbzUNprkAfbiOC7oFuew0EpCOPll9ckdGL-LidhGA',
+    supabaseStorageBucket: 'product-images', // legado: imágenes nuevas en Cloudflare R2
     adminUrl: './admin.html'
   };
-
-  const COMING_SOON_MODE = true;
-  const COMING_SOON_TEXT = 'Pronto podrás disfrutar nuestras remeras';
 
   /*
     PARA CARGAR UN PRODUCTO NUEVO EN EL CATÁLOGO:
@@ -2907,6 +3001,11 @@
   const state = { query:'', catalogView:'featured', sort:'featured', capsules:new Set(), cuts:new Set(), sizes:new Set(), minPrice:'', maxPrice:'' };
   const cart = [];
 
+  const isPreLaunchMode = () => Boolean(STORE_CONFIG.preLaunchMode);
+  const showPreLaunchNotice = () => {
+    alert(STORE_CONFIG.preLaunchMessage || 'Próximamente podrás comprar nuestras remeras en la tienda.');
+  };
+
   let capsulesData = [];
   let featuredCapsule = null;
   let currentCapsuleView = null;
@@ -2919,9 +3018,18 @@
   let currentProduct = null;
   let selectedSize = null;
   let selectedFit = 'unisex';
+  let selectedColor = 'Hueso';
   let selectedPayMethod = 'mp';
   let sbClient = null;
+  let blankStockRows = [];
   const CHECKOUT_CUSTOMER_STORAGE_KEY = 'sinrecreo_checkout_customer_v1';
+  const CHECKOUT_DELIVERY_STORAGE_KEY = 'sinrecreo_checkout_delivery_v1';
+  let singleShippingQuotes = [];
+  let cartShippingQuotes = [];
+  let selectedShippingOption = null;
+  let selectedCartShippingOption = null;
+  let cartCheckoutOpen = false;
+  let cartDeliveryMethod = 'pudo';
 
   const normalizeCustomer = (customer = {}) => ({
     name: String(customer.name || '').trim(),
@@ -3017,6 +3125,343 @@
     return saveCheckoutCustomer(customer);
   };
 
+
+  /* ─── PUDO SHIPPING / ENTREGA ─── */
+  const normalizeDeliveryAddress = (address = {}) => ({
+    address: String(address.address || '').trim(),
+    number: String(address.number || '').trim(),
+    floor: String(address.floor || '').trim(),
+    apartment: String(address.apartment || '').trim(),
+    locality: String(address.locality || '').trim(),
+    city: String(address.city || '').trim(),
+    province: String(address.province || '').trim(),
+    country: 'AR',
+    postalCode: String(address.postalCode || '').trim()
+  });
+
+  const getStoredDeliveryAddress = () => {
+    try {
+      const raw = localStorage.getItem(CHECKOUT_DELIVERY_STORAGE_KEY);
+      return raw ? normalizeDeliveryAddress(JSON.parse(raw)) : normalizeDeliveryAddress();
+    } catch (error) {
+      return normalizeDeliveryAddress();
+    }
+  };
+
+  const saveDeliveryAddress = (address = {}) => {
+    const normalized = normalizeDeliveryAddress(address);
+    try {
+      localStorage.setItem(CHECKOUT_DELIVERY_STORAGE_KEY, JSON.stringify(normalized));
+    } catch (error) {}
+    return normalized;
+  };
+
+  const getDeliveryFieldPrefix = context => context === 'cart' ? 'cartShipping' : 'shipping';
+
+  const fillDeliveryInputs = (context = 'single', address = getStoredDeliveryAddress()) => {
+    const prefix = getDeliveryFieldPrefix(context);
+    const normalized = normalizeDeliveryAddress(address);
+    const map = {
+      Address: normalized.address,
+      Number: normalized.number,
+      Floor: normalized.floor,
+      Locality: normalized.locality,
+      City: normalized.city,
+      Province: normalized.province,
+      PostalCode: normalized.postalCode
+    };
+    Object.entries(map).forEach(([suffix, value]) => {
+      const input = document.getElementById(`${prefix}${suffix}`);
+      if (input && !input.value.trim()) input.value = value;
+    });
+  };
+
+  const collectDeliveryAddress = (context = 'single') => {
+    const prefix = getDeliveryFieldPrefix(context);
+    const stored = getStoredDeliveryAddress();
+    return normalizeDeliveryAddress({
+      address: document.getElementById(`${prefix}Address`)?.value || stored.address,
+      number: document.getElementById(`${prefix}Number`)?.value || stored.number,
+      floor: document.getElementById(`${prefix}Floor`)?.value || stored.floor,
+      locality: document.getElementById(`${prefix}Locality`)?.value || stored.locality,
+      city: document.getElementById(`${prefix}City`)?.value || stored.city,
+      province: document.getElementById(`${prefix}Province`)?.value || stored.province,
+      postalCode: document.getElementById(`${prefix}PostalCode`)?.value || stored.postalCode
+    });
+  };
+
+  const wireDeliveryInputs = () => {
+    ['single', 'cart'].forEach(context => fillDeliveryInputs(context));
+    ['shipping', 'cartShipping'].forEach(prefix => {
+      ['Address','Number','Floor','Locality','City','Province','PostalCode'].forEach(suffix => {
+        const input = document.getElementById(`${prefix}${suffix}`);
+        if (!input) return;
+        input.addEventListener('input', () => {
+          const context = prefix === 'cartShipping' ? 'cart' : 'single';
+          saveDeliveryAddress(collectDeliveryAddress(context));
+          if (context === 'single') {
+            selectedShippingOption = null;
+            singleShippingQuotes = [];
+            renderShippingOptions('single', []);
+            renderShippingSummary('single');
+            updateModalTotal();
+          } else {
+            selectedCartShippingOption = null;
+            cartShippingQuotes = [];
+            renderShippingOptions('cart', []);
+            renderShippingSummary('cart');
+            updateCartUI();
+          }
+        });
+      });
+    });
+  };
+
+  const validateDeliveryAddress = (address = {}) => {
+    if (!address.address) return 'Completá la calle para calcular el envío.';
+    if (!address.number) return 'Completá el número de la dirección.';
+    if (!address.locality && !address.city) return 'Completá localidad o ciudad.';
+    if (!address.province) return 'Completá la provincia.';
+    if (!address.postalCode) return 'Completá el código postal.';
+    return '';
+  };
+
+  const getContextItems = (context = 'single') => {
+    if (context === 'cart') {
+      return cart.map(item => ({
+        title: item.title,
+        sku: item.sku,
+        price: Number(item.price || 0),
+        quantity: Number(item.qty || 1)
+      }));
+    }
+    if (!currentProduct) return [];
+    return [{
+      title: currentProduct.title,
+      sku: currentProduct.sku,
+      price: Number(currentProduct.price || 0),
+      quantity: 1
+    }];
+  };
+
+  const getContextQuantity = (context = 'single') => getContextItems(context).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const getContextSubtotal = (context = 'single', useTransfer = false) => {
+    if (context === 'cart') return cart.reduce((sum, item) => sum + Number(useTransfer ? getTransferPrice(item) : item.price || 0) * Number(item.qty || 1), 0);
+    if (!currentProduct) return 0;
+    return Number(useTransfer ? getTransferPrice(currentProduct) : currentProduct.price || 0);
+  };
+
+  const buildPudoPackageItem = (context = 'single') => {
+    const quantity = getContextQuantity(context);
+    if (!quantity) return null;
+    const cappedQuantity = Math.min(quantity, Number(STORE_CONFIG.pudoMaxItemsPerShipment || 7));
+    return {
+      sku: `SINRECREO-ENVIO-${cappedQuantity}`,
+      name: `Pedido SIN RECREO x${cappedQuantity}`,
+      price: getContextSubtotal(context, false),
+      widthInMm: Number(STORE_CONFIG.pudoBoxBaseMm || 280),
+      heightInMm: cappedQuantity * Number(STORE_CONFIG.pudoBoxHeightPerItemMm || 50),
+      depthInMm: Number(STORE_CONFIG.pudoBoxBaseMm || 280),
+      weightInGrams: cappedQuantity * Number(STORE_CONFIG.pudoWeightPerItemGrams || 400),
+      quantity: 1,
+      freeShipping: quantity >= Number(STORE_CONFIG.freeShippingMinItems || 3)
+    };
+  };
+
+  const getShippingStatusNode = context => document.getElementById(context === 'cart' ? 'cartShippingStatus' : 'shippingStatus');
+  const getShippingOptionsNode = context => document.getElementById(context === 'cart' ? 'cartShippingOptions' : 'shippingOptions');
+  const getShippingSummaryNode = context => document.getElementById(context === 'cart' ? 'cartShippingSummary' : 'shippingSummary');
+  const getShippingQuotesArray = context => context === 'cart' ? cartShippingQuotes : singleShippingQuotes;
+  const setShippingQuotesArray = (context, quotes) => { if (context === 'cart') cartShippingQuotes = quotes; else singleShippingQuotes = quotes; };
+  const getSelectedShipping = context => context === 'cart' ? selectedCartShippingOption : selectedShippingOption;
+  const setSelectedShipping = (context, option) => { if (context === 'cart') selectedCartShippingOption = option; else selectedShippingOption = option; };
+
+  const showShippingStatus = (context, message, type = 'info') => {
+    const node = getShippingStatusNode(context);
+    if (!node) return;
+    node.textContent = message;
+    node.classList.toggle('error', type === 'error');
+    node.classList.remove('hidden');
+  };
+
+  const hideShippingStatus = context => {
+    const node = getShippingStatusNode(context);
+    if (!node) return;
+    node.classList.add('hidden');
+    node.textContent = '';
+    node.classList.remove('error');
+  };
+
+  const formatPudoDate = value => {
+    if (!value) return '';
+    const parsed = new Date(String(value).replace(/([+-]\d{2})(\d{2})$/, '$1:$2'));
+    if (Number.isNaN(parsed.getTime())) return '';
+    return new Intl.DateTimeFormat('es-AR', { day:'2-digit', month:'2-digit' }).format(parsed);
+  };
+
+  const normalizePudoRates = (rates = [], destination = {}, packageItem = {}, context = 'single') => {
+    const quantity = getContextQuantity(context);
+    const freeByRule = quantity >= Number(STORE_CONFIG.freeShippingMinItems || 3);
+    const normalized = [];
+    (Array.isArray(rates) ? rates : []).forEach(method => {
+      const methodId = Number(method.shippingMethodId || method.id || 0);
+      const methodName = method.shippingMethodName || method.name || (methodId === 1 ? 'PUDO Smart Locker' : 'PUDO Envío a Domicilio');
+      const realPrice = Number(method.price ?? method.cost ?? 0);
+      const options = Array.isArray(method.options) && method.options.length ? method.options : [{}];
+      options.forEach(option => {
+        const isLocker = methodId === 1 || option.lockerId;
+        normalized.push({
+          type: isLocker ? 'locker' : 'home',
+          shippingMethodId: methodId,
+          shippingMethodName: methodName,
+          lockerId: option.lockerId ?? null,
+          lockerName: option.lockerName || '',
+          lockerLocationDetails: option.lockerLocationDetails || '',
+          address: option.address || '',
+          city: option.city || '',
+          province: option.province || '',
+          postalCode: option.zipcode || option.postalCode || '',
+          latitude: option.latitude ?? null,
+          longitude: option.longitude ?? null,
+          minDeliveryDate: option.minDeliveryDate || '',
+          maxDeliveryDate: option.maxDeliveryDate || '',
+          realPrice,
+          charge: freeByRule ? 0 : realPrice,
+          isFree: freeByRule,
+          destination,
+          packageItem
+        });
+      });
+    });
+    return normalized;
+  };
+
+  const renderShippingOptions = (context = 'single', quotes = getShippingQuotesArray(context)) => {
+    const wrap = getShippingOptionsNode(context);
+    if (!wrap) return;
+    if (!quotes.length) {
+      wrap.innerHTML = '';
+      return;
+    }
+    const selected = getSelectedShipping(context);
+    wrap.innerHTML = quotes.map((option, idx) => {
+      const dates = [formatPudoDate(option.minDeliveryDate), formatPudoDate(option.maxDeliveryDate)].filter(Boolean).join(' al ');
+      const title = option.type === 'locker'
+        ? `${option.shippingMethodName}${option.lockerName ? ' · ' + option.lockerName : ''}`
+        : option.shippingMethodName;
+      const detail = option.type === 'locker'
+        ? `${option.address || 'Punto PUDO'}${option.city ? ' · ' + option.city : ''}${option.lockerLocationDetails ? ' · ' + option.lockerLocationDetails : ''}${dates ? ' · Entrega estimada: ' + dates : ''}`
+        : `Entrega a domicilio${dates ? ' · Estimada: ' + dates : ''}`;
+      const selectedClass = selected && selected.shippingMethodId === option.shippingMethodId && String(selected.lockerId || '') === String(option.lockerId || '') ? 'selected' : '';
+      return `<button class="shipping-option ${selectedClass}" type="button" onclick="selectShippingOption('${context}', ${idx})">
+        <div>
+          <div class="shipping-option-title">${escapeHtml(title)}</div>
+          <div class="shipping-option-detail">${escapeHtml(detail)}</div>
+        </div>
+        <div class="shipping-option-price">${option.isFree ? 'BONIFICADO' : fmt(option.charge)}</div>
+      </button>`;
+    }).join('');
+  };
+
+  const selectShippingOption = (context = 'single', index = 0) => {
+    const quotes = getShippingQuotesArray(context);
+    const option = quotes[index];
+    if (!option) return;
+    setSelectedShipping(context, option);
+    renderShippingOptions(context, quotes);
+    renderShippingSummary(context);
+    if (context === 'cart') updateCartUI();
+    else updateModalTotal();
+  };
+
+  const renderShippingSummary = (context = 'single') => {
+    const node = getShippingSummaryNode(context);
+    if (!node) return;
+    if (context === 'cart' && cartDeliveryMethod === 'pickup') { node.classList.add('hidden'); node.innerHTML = ''; return; }
+    const option = getSelectedShipping(context);
+    if (!option) { node.classList.add('hidden'); node.innerHTML = ''; return; }
+    const destination = option.destination || {};
+    const method = option.type === 'locker' ? (option.shippingMethodName + (option.lockerName ? ' · ' + option.lockerName : '')) : option.shippingMethodName;
+    const destinationText = option.type === 'locker' ? ((option.address || 'Punto PUDO') + (option.city ? ', ' + option.city : '')) : ((destination.address || '') + ' ' + (destination.number || '') + (destination.city ? ', ' + destination.city : ''));
+    node.innerHTML = '<strong>Entrega seleccionada:</strong> ' + escapeHtml(method) + '<br>' + escapeHtml(destinationText) + '<br>' + (option.isFree ? ('Envío bonificado por SIN RECREO. Costo real: ' + fmt(option.realPrice) + '.') : ('Costo de envío: ' + fmt(option.charge) + '.'));
+    node.classList.remove('hidden');
+  };
+  const quotePudoShipping = async (context = 'single') => {
+    const quantity = getContextQuantity(context);
+    if (!quantity) {
+      showShippingStatus(context, 'Agregá al menos una prenda para calcular el envío.', 'error');
+      return;
+    }
+    if (quantity > Number(STORE_CONFIG.pudoMaxItemsPerShipment || 7)) {
+      showShippingStatus(context, `El máximo es de ${STORE_CONFIG.pudoMaxItemsPerShipment || 7} remeras por envío. Para pedidos grandes, escribinos por WhatsApp.`, 'error');
+      return;
+    }
+    const destination = saveDeliveryAddress(collectDeliveryAddress(context));
+    const validation = validateDeliveryAddress(destination);
+    if (validation) {
+      showShippingStatus(context, validation, 'error');
+      return;
+    }
+    const packageItem = buildPudoPackageItem(context);
+    if (!STORE_CONFIG.pudoQuoteEndpoint) {
+      showShippingStatus(context, 'Falta configurar el endpoint seguro de cotización PUDO en Supabase.', 'error');
+      return;
+    }
+    showShippingStatus(context, 'Consultando opciones de envío en PUDO…');
+    setSelectedShipping(context, null);
+    renderShippingSummary(context);
+    try {
+      const response = await fetch(STORE_CONFIG.pudoQuoteEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': STORE_CONFIG.supabaseAnonKey,
+          'Authorization': `Bearer ${STORE_CONFIG.supabaseAnonKey}`
+        },
+        body: JSON.stringify({ destination, items: [packageItem], quantity })
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
+      const rates = Array.isArray(data) ? data : (Array.isArray(data?.rates) ? data.rates : []);
+      const quotes = normalizePudoRates(rates, destination, packageItem, context);
+      setShippingQuotesArray(context, quotes);
+      renderShippingOptions(context, quotes);
+      if (!quotes.length) {
+        showShippingStatus(context, 'PUDO no devolvió opciones para esa dirección. Revisá los datos o probá otro código postal.', 'error');
+        return;
+      }
+      hideShippingStatus(context);
+      selectShippingOption(context, 0);
+    } catch (error) {
+      console.error('Error cotizando PUDO:', error);
+      setShippingQuotesArray(context, []);
+      renderShippingOptions(context, []);
+      showShippingStatus(context, 'No se pudo calcular el envío PUDO. Revisá que la Edge Function pudo-shipping-rates esté desplegada y que las credenciales PUDO estén activas.', 'error');
+    }
+  };
+
+  const validateSelectedShipping = (context = 'single') => {
+    if (context === 'cart' && cartDeliveryMethod === 'pickup') return getPickupShippingOption();
+    const option = getSelectedShipping(context);
+    if (!option) { showShippingStatus(context, 'Calculá y elegí una opción de entrega PUDO antes de continuar.', 'error'); getShippingStatusNode(context)?.scrollIntoView({ behavior:'smooth', block:'nearest' }); return null; }
+    return option;
+  };
+
+  const serializeShippingOption = (option = null) => {
+    if (!option) return null;
+    if (option.provider === 'RETIRO') return { provider:'RETIRO', type:'pickup', shipping_method_name: option.shippingMethodName, price:0, real_price:0, is_free:true, pickup_label: STORE_CONFIG.pickupLabel, pickup_details: STORE_CONFIG.pickupDetails };
+    return { provider: 'PUDO', type: option.type, shipping_method_id: option.shippingMethodId, shipping_method_name: option.shippingMethodName, locker_id: option.lockerId, locker_name: option.lockerName, locker_address: option.address, locker_details: option.lockerLocationDetails, price: option.charge, real_price: option.realPrice, is_free: option.isFree, destination: option.destination, package: option.packageItem, min_delivery_date: option.minDeliveryDate, max_delivery_date: option.maxDeliveryDate };
+  };
+
+  const describeShippingForMessage = (shipping = null) => {
+    if (!shipping) return '• Entrega: A coordinar';
+    if (shipping.provider === 'RETIRO' || shipping.type === 'pickup') return '• Método: ' + (shipping.shippingMethodName || STORE_CONFIG.pickupLabel) + '\n• Destino: ' + STORE_CONFIG.pickupDetails + '\n• Envío: Sin costo';
+    const method = shipping.type === 'locker' ? (shipping.shippingMethodName + (shipping.lockerName ? ' · ' + shipping.lockerName : '')) : shipping.shippingMethodName;
+    const destination = shipping.destination || {};
+    const place = shipping.type === 'locker' ? ((shipping.address || 'Punto PUDO') + (shipping.city ? ', ' + shipping.city : '') + (shipping.province ? ', ' + shipping.province : '')) : ((destination.address || '') + ' ' + (destination.number || '') + (destination.floor ? ' Piso/Depto ' + destination.floor : '') + ', ' + (destination.city || destination.locality || '') + ', ' + (destination.province || '') + ', CP ' + (destination.postalCode || ''));
+    return '• Método: ' + method + '\n• Destino: ' + place + '\n• Envío: ' + (shipping.isFree ? ('Bonificado (costo real ' + fmt(shipping.realPrice) + ')') : fmt(shipping.charge));
+  };
+
   /* ─── HELPERS ─── */
   const fmt = v => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(v);
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]));
@@ -3027,7 +3472,13 @@
     .replace(/[̀-ͯ]/g, '');
   const getWhatsAppBase = () => `https://wa.me/${STORE_CONFIG.whatsappNumber}`;
   const getTransferPrice = p => p.transferPrice ?? Math.round(p.price * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
-  const normalizeFit = fit => ({ femenino:'femenino', femenina:'femenino', masculino:'masculino', masculina:'masculino', unisex:'unisex' }[String(fit || '').toLowerCase()] || 'unisex');
+  const normalizeFit = fit => {
+    const key = String(fit || '').trim().toLowerCase();
+    if (['femenino','femenina','corte dama','dama'].includes(key)) return 'femenina';
+    if (['oversize','over'].includes(key)) return 'oversize';
+    return 'unisex';
+  };
+  const normalizeColor = color => String(color || '').trim().replace(/\s+/g, ' ') || 'Hueso';
   const parseVariantSizeKey = raw => {
     const value = String(raw || '');
     if (value.includes('__')) {
@@ -3037,16 +3488,70 @@
     return { fit: 'unisex', size: value };
   };
   const makeVariantSizeKey = (fit, size) => normalizeFit(fit) === 'unisex' ? String(size || '') : `${normalizeFit(fit).toUpperCase()}__${String(size || '')}`;
-  const getFitLabel = fit => ({ unisex:'Unisex', femenino:'Femenino', masculino:'Masculino' }[normalizeFit(fit)] || 'Unisex');
-  const getFitOrder = fit => ({ unisex:0, femenino:1, masculino:2 }[normalizeFit(fit)] ?? 9);
-  const getAvailableFits = p => Object.entries(p.fitStockBySize || {}).filter(([, sizes]) => Object.values(sizes || {}).some(qty => Number(qty || 0) > 0)).map(([fit]) => fit).sort((a,b) => getFitOrder(a) - getFitOrder(b));
-  const getSizesForFit = (p, fit = 'unisex') => Object.entries((p.fitStockBySize || {})[normalizeFit(fit)] || {}).filter(([, qty]) => Number(qty || 0) > 0).map(([size]) => size);
-  const getAvailableSizes = p => [...new Set(Object.values(p.fitStockBySize || {}).flatMap(sizes => Object.entries(sizes || {}).filter(([, qty]) => Number(qty || 0) > 0).map(([size]) => size)))];
-  const getDefaultFit = p => getAvailableFits(p)[0] || 'unisex';
-  const getTotalStock = p => Object.values(p.fitStockBySize || {}).reduce((acc, sizes) => acc + Object.values(sizes || {}).reduce((sum, qty) => sum + Number(qty || 0), 0), 0);
+  const SIZE_ORDER = ['XS','S','M','L','XL','XXL'];
+  const getFitLabel = fit => ({ unisex:'Unisex', oversize:'Oversize', femenina:'Femenina' }[normalizeFit(fit)] || 'Unisex');
+  const getFitOrder = fit => ({ unisex:0, oversize:1, femenina:2 }[normalizeFit(fit)] ?? 9);
+  const buildBlankStockSnapshot = (rows = []) => {
+    const byFitColorSize = {};
+    const fitStockBySize = {};
+    const blankStockIdsByKey = {};
+    const variantIdsByKey = {};
+    const variantIdsBySize = {};
+    rows.forEach(row => {
+      const fit = normalizeFit(row.cut || row.fit);
+      const color = normalizeColor(row.color);
+      const size = String(row.size || '').trim();
+      if (!size) return;
+      const qty = Number(row.stock || 0);
+      if (!byFitColorSize[fit]) byFitColorSize[fit] = {};
+      if (!byFitColorSize[fit][color]) byFitColorSize[fit][color] = {};
+      byFitColorSize[fit][color][size] = qty;
+      if (!fitStockBySize[fit]) fitStockBySize[fit] = {};
+      fitStockBySize[fit][size] = Number(fitStockBySize[fit][size] || 0) + qty;
+      const key = `${fit}|${color}|${size}`;
+      blankStockIdsByKey[key] = row.id || '';
+      variantIdsByKey[`${fit}|${size}`] = row.id || '';
+      if (fit === 'unisex') variantIdsBySize[size] = row.id || '';
+    });
+    return { byFitColorSize, fitStockBySize, blankStockIdsByKey, variantIdsByKey, variantIdsBySize };
+  };
+  const getAllFits = p => Object.keys(p.blankStockByFitColorSize || {}).sort((a,b) => getFitOrder(a) - getFitOrder(b));
+  const getAvailableFits = p => Object.entries(p.blankStockByFitColorSize || {})
+    .filter(([, colors]) => Object.values(colors || {}).some(sizes => Object.values(sizes || {}).some(qty => Number(qty || 0) > 0)))
+    .map(([fit]) => fit)
+    .sort((a,b) => getFitOrder(a) - getFitOrder(b));
+  const getAllColorsForFit = (p, fit = 'unisex') => Object.keys((p.blankStockByFitColorSize || {})[normalizeFit(fit)] || {})
+    .sort((a,b) => a.localeCompare(b, 'es'));
+  const getAvailableColorsForFit = (p, fit = 'unisex') => Object.entries((p.blankStockByFitColorSize || {})[normalizeFit(fit)] || {})
+    .filter(([, sizes]) => Object.values(sizes || {}).some(qty => Number(qty || 0) > 0))
+    .map(([color]) => color)
+    .sort((a,b) => a.localeCompare(b, 'es'));
+  const sortSizes = sizes => [...sizes].sort((a,b) => {
+      const ai = SIZE_ORDER.indexOf(a); const bi = SIZE_ORDER.indexOf(b);
+      if (ai === -1 && bi === -1) return a.localeCompare(b, 'es');
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+  const getAllSizesForFitColor = (p, fit = 'unisex', color = 'Hueso') => sortSizes(Object.keys((((p.blankStockByFitColorSize || {})[normalizeFit(fit)] || {})[normalizeColor(color)] || {})));
+  const getSizesForFitColor = (p, fit = 'unisex', color = 'Hueso') => sortSizes(Object.entries(((p.blankStockByFitColorSize || {})[normalizeFit(fit)] || {})[normalizeColor(color)] || {})
+    .filter(([, qty]) => Number(qty || 0) > 0)
+    .map(([size]) => size));
+  const getSizesForFit = (p, fit = 'unisex') => [...new Set(getAvailableColorsForFit(p, fit).flatMap(color => getSizesForFitColor(p, fit, color)))];
+  const getAvailableSizes = p => [...new Set(getAvailableFits(p).flatMap(fit => getSizesForFit(p, fit)))];
+  const getDefaultFit = p => getAvailableFits(p)[0] || getAllFits(p)[0] || 'unisex';
+  const getDefaultColor = (p, fit = 'unisex') => getAvailableColorsForFit(p, fit)[0] || getAllColorsForFit(p, fit)[0] || 'Hueso';
+  const getTotalStock = p => Object.values(p.blankStockByFitColorSize || {}).reduce((acc, colors) => acc + Object.values(colors || {}).reduce((colorSum, sizes) => colorSum + Object.values(sizes || {}).reduce((sum, qty) => sum + Number(qty || 0), 0), 0), 0);
+  const getStockForSelection = (p, size, fit = 'unisex', color = 'Hueso') => Number((((p.blankStockByFitColorSize || {})[normalizeFit(fit)] || {})[normalizeColor(color)] || {})[size] || 0);
+  const getStockForSize = (p, size) => getAllFits(p).reduce((acc, fit) => acc + getAllColorsForFit(p, fit).reduce((sum, color) => sum + getStockForSelection(p, size, fit, color), 0), 0);
+  const getFitStockTotal = (p, fit = 'unisex') => getAllColorsForFit(p, fit).reduce((sum, color) => sum + getColorStockTotal(p, fit, color), 0);
+  const getColorStockTotal = (p, fit = 'unisex', color = 'Hueso') => getAllSizesForFitColor(p, fit, color).reduce((sum, size) => sum + getStockForSelection(p, size, fit, color), 0);
+  const getStockTone = stock => Number(stock || 0) <= 0 ? 'out' : Number(stock || 0) <= 2 ? 'stock-low' : Number(stock || 0) <= 5 ? 'stock-mid' : 'stock-high';
+  const getStockLabel = stock => Number(stock || 0) <= 0 ? 'Sin stock' : Number(stock || 0) === 1 ? '1 disponible' : `${Number(stock || 0)} disponibles`;
   const getMpLink = (p, size, fit = 'unisex') => (p.mpLinksByKey && p.mpLinksByKey[`${normalizeFit(fit)}|${size}`]) || (p.mpLinks && size && p.mpLinks[size]) || p.mpLink || STORE_CONFIG.mpGenericLink || '';
-  const getVariantId = (p, size, fit = 'unisex') => (p.variantIdsByKey && p.variantIdsByKey[`${normalizeFit(fit)}|${size}`]) || (normalizeFit(fit) === 'unisex' ? (p.variantIdsBySize?.[size] || '') : '');
-  const describeFitAndSize = (fit, size) => `${getFitLabel(fit)} · Talle ${size}`;
+  const getBlankStockId = (p, size, fit = 'unisex', color = 'Hueso') => (p.blankStockIdsByKey && p.blankStockIdsByKey[`${normalizeFit(fit)}|${normalizeColor(color)}|${size}`]) || '';
+  const getVariantId = (p, size, fit = 'unisex') => getBlankStockId(p, size, fit, getDefaultColor(p, fit));
+  const describeFitAndSize = (fit, size, color = '') => `${getFitLabel(fit)}${color ? ' · ' + normalizeColor(color) : ''} · Talle ${size}`;
   const getProductUrl = p => `${location.origin}${location.pathname}#${p.id}`;
   const truncateWords = (text, maxWords = 10) => {
     const normalized = String(text || '').trim().replace(/\s+/g, ' ');
@@ -3077,14 +3582,6 @@
     document.body.style.overflow = hasOpenLayer ? 'hidden' : '';
   };
 
-  const applyComingSoonMode = () => {
-    if (!COMING_SOON_MODE) return;
-    document.getElementById('headerCartButton')?.classList.add('commerce-hidden');
-    document.getElementById('floatingCartButton')?.classList.add('commerce-hidden');
-    document.getElementById('cartDrawer')?.classList.add('commerce-hidden');
-    document.getElementById('drawerBackdrop')?.classList.add('commerce-hidden');
-  };
-
 
   const isSupabaseConfigured = () => {
     return Boolean(
@@ -3108,7 +3605,7 @@
     const client = initSupabaseClient();
     if (!client) return products;
 
-    const [{ data: productRows, error: productsError }, { data: imageRows, error: imagesError }, { data: variantRows, error: variantsError }] = await Promise.all([
+    const [{ data: productRows, error: productsError }, { data: imageRows, error: imagesError }, { data: stockRows, error: stockError }] = await Promise.all([
       client
         .from('products')
         .select('id, slug, sku, capsule, title, description, price, cut, sort_date, featured, art_type, is_active')
@@ -3121,14 +3618,16 @@
         .select('product_id, image_url, position')
         .order('position', { ascending: true }),
       client
-        .from('product_variants')
-        .select('id, product_id, size, stock, mp_link, is_active')
-        .eq('is_active', true)
+        .from('blank_stock')
+        .select('id, cut, color, size, stock, is_active')
     ]);
 
     if (productsError) throw productsError;
     if (imagesError) throw imagesError;
-    if (variantsError) throw variantsError;
+    if (stockError) throw stockError;
+
+    blankStockRows = stockRows || [];
+    const stockSnapshot = buildBlankStockSnapshot(blankStockRows);
 
     const imagesByProduct = {};
     (imageRows || []).forEach(row => {
@@ -3136,29 +3635,8 @@
       imagesByProduct[row.product_id].push(row);
     });
 
-    const variantsByProduct = {};
-    (variantRows || []).forEach(row => {
-      if (!variantsByProduct[row.product_id]) variantsByProduct[row.product_id] = [];
-      variantsByProduct[row.product_id].push(row);
-    });
-
     return (productRows || []).map(row => {
       const rowImages = (imagesByProduct[row.id] || []).sort((a,b) => (a.position || 999) - (b.position || 999));
-      const rowVariants = variantsByProduct[row.id] || [];
-      const fitStockBySize = { unisex: {}, femenino: {}, masculino: {} };
-      const variantIdsByKey = {};
-      const mpLinksByKey = {};
-      const variantIdsBySize = {};
-
-      rowVariants.forEach(variant => {
-        const parsed = parseVariantSizeKey(variant.size);
-        if (!fitStockBySize[parsed.fit]) fitStockBySize[parsed.fit] = {};
-        fitStockBySize[parsed.fit][parsed.size] = Number(variant.stock || 0);
-        variantIdsByKey[`${parsed.fit}|${parsed.size}`] = variant.id || '';
-        mpLinksByKey[`${parsed.fit}|${parsed.size}`] = variant.mp_link || '';
-        if (parsed.fit === 'unisex') variantIdsBySize[parsed.size] = variant.id || '';
-      });
-
       return {
         id: row.slug || row.id,
         dbId: row.id,
@@ -3172,10 +3650,12 @@
         featured: Boolean(row.featured),
         artType: row.art_type || 'poster',
         images: rowImages.map(img => img.image_url).slice(0, 3),
-        fitStockBySize,
-        mpLinksByKey,
-        variantIdsByKey,
-        variantIdsBySize
+        blankStockByFitColorSize: stockSnapshot.byFitColorSize,
+        fitStockBySize: stockSnapshot.fitStockBySize,
+        blankStockIdsByKey: stockSnapshot.blankStockIdsByKey,
+        variantIdsByKey: stockSnapshot.variantIdsByKey,
+        variantIdsBySize: stockSnapshot.variantIdsBySize,
+        mpLinksByKey: {}
       };
     });
   };
@@ -3538,7 +4018,17 @@
     refreshBodyScrollLock();
   };
 
+
+  const renderPreLaunchMode = () => {
+    const banner = document.getElementById('preLaunchBanner');
+    if (banner) banner.classList.toggle('hidden', !isPreLaunchMode());
+    document.querySelectorAll('.float-cart, .header-right .hbtn:first-child').forEach(node => {
+      if (isPreLaunchMode()) node.setAttribute('title', STORE_CONFIG.preLaunchMessage || 'Próximamente podrás comprar.');
+    });
+  };
+
   const refreshCatalogData = () => {
+    renderPreLaunchMode();
     const { allCapsules, allCuts, allSizes } = getFilterLists();
     if (document.getElementById('capsuleFilters')) renderCheckboxes(allCapsules, 'capsuleFilters', 'capsules');
     if (document.getElementById('cutFilters')) renderCheckboxes(allCuts, 'cutFilters', 'cuts');
@@ -3585,7 +4075,7 @@
       storeMetrics = await loadPublicStoreMetrics();
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
-      applyComingSoonMode();
+      wireDeliveryInputs();
       refreshCatalogData();
       renderPaymentStatusBanner();
       observeElements();
@@ -3867,55 +4357,54 @@
     grid.innerHTML = items.map(p => {
       const sizes = getAvailableSizes(p);
       const stock = getTotalStock(p);
+      const transferPrice = getTransferPrice(p);
       const descData = truncateWords(p.description, 10);
       const descriptionHtml = isProductsModal && descData.truncated
         ? `<p class="pcard-desc"><span class="pcard-desc-inline" data-desc-role="text" data-full="${escapeHtml(descData.full)}" data-short="${escapeHtml(descData.short)}">${escapeHtml(descData.short)}</span><button class="pcard-desc-toggle" type="button" data-desc-role="toggle" data-expanded="false" onclick="toggleProductDescription(event)">ver más...</button></p>`
         : `<p class="pcard-desc">${escapeHtml(p.description)}</p>`;
-      const overlayHtml = COMING_SOON_MODE
-        ? `<div class="pcard-overlay">
-              <button class="overlay-btn primary" type="button" disabled>Próximamente</button>
-            </div>`
-        : `<div class="pcard-overlay">
-              <button class="overlay-btn primary" onclick="openBuyModal('${p.id}',event)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Elegir opciones
-              </button>
-              <button class="overlay-btn ghost" onclick="addToCart('${p.id}',event)">+ Agregar al carrito</button>
-            </div>`;
-      const priceHtml = COMING_SOON_MODE
-        ? `<div class="pcard-soon">${COMING_SOON_TEXT}</div>`
-        : `<div class="pcard-price-block">
-              <div class="pcard-price">${fmt(p.price)}</div>
-              <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
-              <div class="pcard-transfer">💸 ${fmt(getTransferPrice(p))} por transferencia</div>
-            </div>`;
-      const actionHtml = COMING_SOON_MODE
-        ? `<button class="action-buy" type="button" disabled>Próximamente</button>`
-        : `<button class="action-buy" onclick="openBuyModal('${p.id}',event)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
-                Elegir
-              </button>`;
       return `
         <article class="pcard" data-id="${p.id}" id="${p.id}">
           <div class="pcard-figure">
             ${renderCardMedia(p, targetId)}
             <span class="pcard-badge ${p.featured ? 'badge-featured' : 'badge-new'}">${p.featured ? 'Destacado' : 'Nuevo drop'}</span>
             <span class="stock-badge ${stock <= 3 ? 'low' : ''}">${stock <= 3 ? '⚠ Solo ' + stock + ' restantes' : 'Stock: ' + stock}</span>
-            ${overlayHtml}
+            <div class="pcard-overlay">
+              ${isPreLaunchMode() ? `
+              <button class="overlay-btn primary prelaunch-disabled" type="button" disabled aria-disabled="true" title="${escapeHtml(STORE_CONFIG.preLaunchMessage)}">
+                Próximamente
+              </button>
+              <button class="overlay-btn ghost prelaunch-disabled" type="button" disabled aria-disabled="true">Compra no habilitada</button>` : `
+              <button class="overlay-btn primary" onclick="openBuyModal('${p.id}',event)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
+                Elegir opciones
+              </button>
+              <button class="overlay-btn ghost" onclick="addToCart('${p.id}',event)">+ Agregar al carrito</button>`}
+            </div>
           </div>
           <div class="pcard-body">
             <div class="pcard-cap">${p.capsule}</div>
             <h3 class="pcard-name">${escapeHtml(p.title)}</h3>
             ${descriptionHtml}
             ${getAvailableFits(p).length > 1 ? `<div class="pcard-transfer" style="margin-top:-4px">Disponible en femenino, masculino o unisex según talle</div>` : ``}
-            ${priceHtml}
+            <div class="pcard-price-block">
+              <div class="pcard-price">${fmt(p.price)}</div>
+              <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
+              <div class="pcard-transfer">💸 ${fmt(transferPrice)} por transferencia</div>
+            </div>
             <div class="size-row">${sizes.map(sz => {
               const parsedSize = parseVariantSizeKey(sz);
               const low = Number((p.fitStockBySize?.[parsedSize.fit]?.[parsedSize.size]) ?? (p.stockBySize?.[sz] || 0)) <= 1;
               return `<span class="size-chip ${low ? 'low' : ''}">${escapeHtml(sz)}</span>`;
             }).join('')}</div>
             <div class="pcard-actions">
-              ${actionHtml}
+              ${isPreLaunchMode() ? `
+              <button class="action-buy prelaunch-disabled" type="button" disabled aria-disabled="true" title="${escapeHtml(STORE_CONFIG.preLaunchMessage)}">
+                Próximamente
+              </button>` : `
+              <button class="action-buy" onclick="openBuyModal('${p.id}',event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M3 4h2l2.2 10.2a1 1 0 001 .8h8.8a1 1 0 001-.8L21 7H7"/></svg>
+                Elegir
+              </button>`}
               <a class="action-wa" href="${getWhatsAppBase()}?text=${encodeURIComponent(`Hola SIN RECREO, quiero consultar por la remera "${p.title}" (${p.sku}).`)}" target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.76-.87-2.03-.97-.27-.1-.47-.14-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.52.14-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12 2a10 10 0 00-8.5 15.27L2 22l4.86-1.48A10 10 0 1012 2z"/></svg>
               </a>
@@ -3942,28 +4431,81 @@
 
   /* ─── BUY MODAL ─── */
   const renderModalFitOptions = (product) => {
-    const fits = getAvailableFits(product);
     const fitWrap = document.getElementById('modalFits');
     if (!fitWrap) return;
+    const fits = getAllFits(product);
     if (!fits.length) {
       fitWrap.innerHTML = '<div class="mini">Sin stock disponible</div>';
       return;
     }
-    fitWrap.innerHTML = fits.map(fit => `
-      <button class="fit-btn ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')">${getFitLabel(fit)}</button>
-    `).join('');
+    fitWrap.innerHTML = fits.map(fit => {
+      const stock = getFitStockTotal(product, fit);
+      const tone = getStockTone(stock);
+      return `
+      <button class="fit-btn ${tone} ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')" ${stock <= 0 ? 'disabled' : ''}>
+        <span>${getFitLabel(fit)}</span>
+        <small>${getStockLabel(stock)}</small>
+      </button>`;
+    }).join('');
+  };
+
+  const renderModalColorOptions = (product) => {
+    const colorWrap = document.getElementById('modalColors');
+    if (!colorWrap) return;
+    const colors = getAllColorsForFit(product, selectedFit);
+    if (!colors.length) {
+      colorWrap.innerHTML = '<div class="mini">Sin colores cargados para este modelo</div>';
+      return;
+    }
+    const preferredColor = colors.find(color => getColorStockTotal(product, selectedFit, color) > 0) || colors[0] || '';
+    if (!colors.includes(selectedColor)) selectedColor = preferredColor;
+    colorWrap.innerHTML = colors.map(color => {
+      const stock = getColorStockTotal(product, selectedFit, color);
+      const tone = getStockTone(stock);
+      const colorArg = JSON.stringify(color);
+      return `
+      <button class="fit-btn ${tone} ${normalizeColor(selectedColor) === normalizeColor(color) ? 'selected' : ''}" type="button" onclick='selectColor(this,${colorArg})' ${stock <= 0 ? 'disabled' : ''}>
+        <span>${escapeHtml(color)}</span>
+        <small>${getStockLabel(stock)}</small>
+      </button>`;
+    }).join('');
   };
 
   const renderModalSizeOptions = (product) => {
-    const sizes = getSizesForFit(product, selectedFit);
-    if (!sizes.includes(selectedSize)) selectedSize = sizes[0] || null;
-    document.getElementById('modalSizes').innerHTML = sizes.map(sz => `
-      <button class="sz-btn ${selectedSize === sz ? 'selected' : ''}" onclick="selectSize(this,'${sz}')">${sz}</button>
-    `).join('');
+    const sizeWrap = document.getElementById('modalSizes');
+    if (!sizeWrap) return;
+    const sizes = getAllSizesForFitColor(product, selectedFit, selectedColor);
+    if (!sizes.length) {
+      selectedSize = null;
+      sizeWrap.innerHTML = '<div class="mini">Sin talles cargados para este color</div>';
+      return;
+    }
+    const firstAvailable = sizes.find(size => getStockForSelection(product, size, selectedFit, selectedColor) > 0) || null;
+    if (!sizes.includes(selectedSize) || getStockForSelection(product, selectedSize, selectedFit, selectedColor) <= 0) selectedSize = firstAvailable;
+    sizeWrap.innerHTML = sizes.map(sz => {
+      const stock = getStockForSelection(product, sz, selectedFit, selectedColor);
+      const tone = getStockTone(stock);
+      return `
+      <button class="sz-btn ${tone} ${selectedSize === sz ? 'selected' : ''}" type="button" onclick="selectSize(this,'${sz}')" ${stock <= 0 ? 'disabled' : ''}>
+        <span>${sz}</span>
+        <small>${getStockLabel(stock)}</small>
+      </button>`;
+    }).join('');
+    updateModalStockNote();
+  };
+
+  const updateModalStockNote = () => {
+    const note = document.getElementById('modalStockNote');
+    if (!note || !currentProduct) return;
+    const colorText = selectedColor ? ` · ${normalizeColor(selectedColor)}` : '';
+    const sizeText = selectedSize ? ` · Talle ${selectedSize}` : '';
+    const stock = selectedSize ? getStockForSelection(currentProduct, selectedSize, selectedFit, selectedColor) : 0;
+    note.innerHTML = `<strong>Stock real disponible:</strong> ${getFitLabel(selectedFit)}${colorText}${sizeText}${selectedSize ? ` · ${getStockLabel(stock)}` : ' · Elegí un talle para ver la disponibilidad exacta'}.`;
   };
 
   const openBuyModal = (id, e) => {
     if (e) e.stopPropagation();
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
     if (document.getElementById('capsuleModal')?.classList.contains('open')) {
       pendingCapsuleReturn = currentCapsuleView;
       pendingProductsReturn = false;
@@ -3981,7 +4523,14 @@
     if (!currentProduct) return;
 
     selectedFit = getDefaultFit(currentProduct);
-    selectedSize = getSizesForFit(currentProduct, selectedFit)[0] || null;
+    selectedColor = getDefaultColor(currentProduct, selectedFit);
+    selectedSize = getSizesForFitColor(currentProduct, selectedFit, selectedColor)[0] || null;
+    selectedShippingOption = null;
+    singleShippingQuotes = [];
+    renderShippingOptions('single', []);
+    renderShippingSummary('single');
+    fillDeliveryInputs('single');
+    hideShippingStatus('single');
     const images = getImageList(currentProduct);
 
     document.getElementById('modalProductRow').innerHTML = `
@@ -4000,7 +4549,7 @@
       <div class="modal-product-info">
         <div class="modal-product-cap">${currentProduct.capsule}</div>
         <div class="modal-product-name">${currentProduct.title}</div>
-        <div class="modal-product-price pcard-soon is-modal">${COMING_SOON_TEXT}</div>
+        <div class="modal-product-price">${fmt(currentProduct.price)}</div>
         <div class="modal-note" style="margin-top:8px">
           Código ${currentProduct.sku} · ${currentProduct.cut} · ${getTotalStock(currentProduct)} unidades disponibles
         </div>
@@ -4008,6 +4557,7 @@
     `;
 
     renderModalFitOptions(currentProduct);
+    renderModalColorOptions(currentProduct);
     renderModalSizeOptions(currentProduct);
 
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
@@ -4015,26 +4565,7 @@
     if (first) first.classList.add('selected');
 
     hideCustomerPrompt();
-    if (COMING_SOON_MODE) {
-      document.querySelector('#buyModal .modal-title').textContent = 'Próximamente';
-      document.getElementById('paymentMethodsTitle')?.classList.add('commerce-hidden');
-      document.getElementById('paymentMethodsWrap')?.classList.add('commerce-hidden');
-      document.getElementById('transferPanel')?.classList.add('commerce-hidden');
-      document.getElementById('modalTotalWrap')?.classList.add('commerce-hidden');
-      document.getElementById('modalCta')?.classList.add('commerce-hidden');
-      document.getElementById('modalAddCartCta')?.classList.add('commerce-hidden');
-      const secure = document.getElementById('modalSecureNote');
-      if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> ${COMING_SOON_TEXT}. Podés escribirnos por WhatsApp para enterarte antes que nadie.`;
-    } else {
-      document.querySelector('#buyModal .modal-title').textContent = 'Elegí tu talle y medio de pago';
-      document.getElementById('paymentMethodsTitle')?.classList.remove('commerce-hidden');
-      document.getElementById('paymentMethodsWrap')?.classList.remove('commerce-hidden');
-      document.getElementById('transferPanel')?.classList.remove('commerce-hidden');
-      document.getElementById('modalTotalWrap')?.classList.remove('commerce-hidden');
-      document.getElementById('modalCta')?.classList.remove('commerce-hidden');
-      document.getElementById('modalAddCartCta')?.classList.remove('commerce-hidden');
-      updateModalTotal();
-    }
+    updateModalTotal();
     document.getElementById('buyModal').classList.add('open');
     refreshBodyScrollLock();
   };
@@ -4056,84 +4587,59 @@
   };
 
   const selectFit = (btn, fit) => {
+    if (btn.disabled) return;
     document.querySelectorAll('#modalFits .fit-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedFit = normalizeFit(fit);
+    selectedColor = getDefaultColor(currentProduct, selectedFit);
+    renderModalColorOptions(currentProduct);
+    renderModalSizeOptions(currentProduct);
+    updateModalTotal();
+  };
+
+  const selectColor = (btn, color) => {
+    if (btn.disabled) return;
+    document.querySelectorAll('#modalColors .fit-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedColor = normalizeColor(color);
     renderModalSizeOptions(currentProduct);
     updateModalTotal();
   };
 
   const selectSize = (btn, sz) => {
+    if (btn.disabled) return;
     document.querySelectorAll('#modalSizes .sz-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedSize = sz;
+    updateModalStockNote();
     updateModalTotal();
   };
 
   const addConfiguredToCart = (closeAfter = false) => {
-    if (COMING_SOON_MODE) return;
-    if (!currentProduct || !selectedSize) {
-      alert('Elegí modelo y talle antes de agregar al carrito.');
-      return;
-    }
-    const customer = validateCheckoutCustomer();
-    if (!customer) return;
-    const selectedVariantId = getVariantId(currentProduct, selectedSize, selectedFit);
-    if (!selectedVariantId) {
-      alert('No encontramos una variante válida para esa combinación.');
-      return;
-    }
-    const existing = cart.find(item => item.id === currentProduct.id && item.selectedSize === selectedSize && normalizeFit(item.selectedFit) === normalizeFit(selectedFit));
-    if (existing) existing.qty += 1;
-    else cart.push({ ...currentProduct, qty: 1, selectedSize, selectedFit, selectedVariantId });
-    updateCartUI();
-
-    if (closeAfter) {
-      closeModal();
-      return;
-    }
-
-    openCartDrawer();
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
+    if (!currentProduct || !selectedSize) { alert('Elegí modelo y talle antes de agregar al carrito.'); return; }
+    const selectedBlankStockId = getBlankStockId(currentProduct, selectedSize, selectedFit, selectedColor);
+    if (!selectedBlankStockId) { alert('No encontramos stock base válido para esa combinación.'); return; }
+    const existing = cart.find(item => item.id === currentProduct.id && item.selectedSize === selectedSize && normalizeFit(item.selectedFit) === normalizeFit(selectedFit) && normalizeColor(item.selectedColor) === normalizeColor(selectedColor));
+    if (existing) existing.qty += 1; else cart.push({ ...currentProduct, qty: 1, selectedSize, selectedFit, selectedColor, selectedBlankStockId, selectedVariantId: selectedBlankStockId });
+    selectedCartShippingOption = null; cartShippingQuotes = []; renderShippingOptions('cart', []); renderShippingSummary('cart'); updateCartUI();
+    closeModal({ restoreCapsule: false }); openCartDrawer();
   };
 
   const selectPayMethod = (btn, method) => {
-    if (COMING_SOON_MODE) return;
     document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedPayMethod = method;
-    updateModalTotal();
+    btn.classList.add('selected'); selectedPayMethod = method; updateTransferPanel(); updateCartUI(); updateCartCheckoutCta(); updateModalTotal();
   };
 
   const updateTransferPanel = () => {
-    if (COMING_SOON_MODE) return;
-    const panel = document.getElementById('transferPanel');
-    if (!panel) return;
-    const show = selectedPayMethod === 'transfer';
-    panel.hidden = !show;
-    document.getElementById('transferAliasValue').textContent = STORE_CONFIG.transferAlias;
-    document.getElementById('transferOwnerValue').textContent = STORE_CONFIG.transferOwner;
-    document.getElementById('transferCbuValue').textContent = STORE_CONFIG.transferCBU;
-    document.getElementById('transferDiscountBadge').textContent = `${STORE_CONFIG.transferDiscount}% OFF`;
+    const panel = document.getElementById('transferPanel'); if (!panel) return;
+    const show = selectedPayMethod === 'transfer'; panel.hidden = !show;
+    const alias = document.getElementById('transferAliasValue'); const owner = document.getElementById('transferOwnerValue'); const cbu = document.getElementById('transferCbuValue'); const badge = document.getElementById('transferDiscountBadge');
+    if (alias) alias.textContent = STORE_CONFIG.transferAlias; if (owner) owner.textContent = STORE_CONFIG.transferOwner; if (cbu) cbu.textContent = STORE_CONFIG.transferCBU; if (badge) badge.textContent = STORE_CONFIG.transferDiscount + '% OFF';
   };
 
   const updateModalTotal = () => {
-    if (COMING_SOON_MODE) return;
-    if (!currentProduct) return;
-    const price = selectedPayMethod === 'transfer' ? getTransferPrice(currentProduct) : currentProduct.price;
-    document.getElementById('modalTotal').textContent = fmt(price);
-
-    const cta = document.getElementById('modalCta');
-    const secure = document.querySelector('.modal-secure');
-    if (selectedPayMethod === 'mp' || selectedPayMethod === 'card') {
-      cta.className = 'modal-cta mp-style';
-      cta.textContent = 'Pagar esta prenda con Mercado Pago';
-      if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Pago en entorno seguro de Mercado Pago · No expongas datos sensibles por WhatsApp`;
-    } else {
-      cta.className = 'modal-cta';
-      cta.textContent = 'Confirmar transferencia';
-      if (secure) secure.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Reservá la prenda y cerrá el pago con contacto directo por WhatsApp`;
-    }
-    updateTransferPanel();
+    if (!currentProduct) return; const modalTotal = document.getElementById('modalTotal'); if (modalTotal) modalTotal.textContent = fmt(currentProduct.price || 0);
   };
 
   const copyTransferField = async (field) => {
@@ -4195,7 +4701,7 @@ ${value}`);
     window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
   };
 
-  const createTransferOrder = async (items, customer = {}, context = 'single') => {
+  const createTransferOrder = async (items, customer = {}, context = 'single', shipping = null) => {
     if (!STORE_CONFIG.transferOrderEndpoint) return null;
     try {
       const headers = {
@@ -4213,6 +4719,9 @@ ${value}`);
           customer_phone: customer.phone || '',
           payment_method: 'transferencia',
           transfer_discount: STORE_CONFIG.transferDiscount,
+          shipping: serializeShippingOption(shipping),
+          shipping_price: Number(shipping?.charge || 0),
+          shipping_provider: shipping ? (shipping.provider || 'PUDO') : null,
           notes: context === 'cart'
             ? 'Pedido iniciado por transferencia desde el carrito de la tienda'
             : 'Pedido iniciado por transferencia desde la ficha de producto'
@@ -4228,7 +4737,7 @@ ${value}`);
   };
 
 
-  const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '' } = {}) => {
+  const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '', shipping = null } = {}) => {
     const normalizedItems = items.length
       ? items.map(item => {
           const quantity = Number(item.quantity || 1);
@@ -4258,10 +4767,13 @@ ${value}`);
           lineTotal: Number(getTransferPrice(currentProduct || { price: 0 }) || 0)
         }];
 
-    const computedTotal = Number(total || normalizedItems.reduce((acc, item) => acc + Number(item.lineTotal || 0), 0));
+    const shippingCharge = Number(shipping?.charge || 0);
+    const itemsTotal = normalizedItems.reduce((acc, item) => acc + Number(item.lineTotal || 0), 0);
+    const computedTotal = Number(total || (itemsTotal + shippingCharge));
     const computedSubTotal = normalizedItems.reduce((acc, item) => acc + Number(item.subTotal || 0), 0);
     const computedDiscount = normalizedItems.reduce((acc, item) => acc + Number(item.discount || 0), 0);
     const itemsText = normalizedItems.map(buildTransferLineBlock).join('\n\n');
+    const shippingText = describeShippingForMessage(shipping);
 
     return `Hola SIN RECREO 👋
 
@@ -4279,7 +4791,13 @@ RESUMEN
 ━━━━━━━━━━
 • Sub Total: ${fmt(computedSubTotal)}
 • Descuento: ${fmt(computedDiscount)}
+• Envío: ${shipping?.isFree ? 'Bonificado' : fmt(shippingCharge)}
 • Total: ${fmt(computedTotal)}
+
+━━━━━━━━━━
+ENTREGA
+━━━━━━━━━━
+${shippingText}
 
 ━━━━━━━━━━
 MIS DATOS
@@ -4292,22 +4810,10 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
   };
 
   const collectCartCustomer = () => {
-
-    const customer = getStoredCheckoutCustomer();
-    if (!customer.name || !customer.email) {
-      alert('Primero cargá tus datos desde la ventana de una prenda. Después vas a poder cerrar el carrito sin volver a escribirlos.');
-      closeCartDrawer();
-      return null;
-    }
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email);
-    if (!emailOk) {
-      alert('Revisá el correo electrónico guardado antes de continuar.');
-      return null;
-    }
-    return customer;
+    const customer = validateCheckoutCustomer(); if (!customer) return null; return customer;
   };
 
-  const createMPPreference = async (items, customer = {}) => {
+  const createMPPreference = async (items, customer = {}, shipping = null) => {
     if (STORE_CONFIG.mpMode !== 'backend' || !STORE_CONFIG.mpPreferenceEndpoint) return null;
     try {
       const headers = {
@@ -4322,7 +4828,10 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
           items,
           customer_name: customer.name || '',
           customer_email: customer.email || '',
-          customer_phone: customer.phone || ''
+          customer_phone: customer.phone || '',
+          shipping: serializeShippingOption(shipping),
+          shipping_price: Number(shipping?.charge || 0),
+          shipping_provider: shipping ? (shipping.provider || 'PUDO') : null
         })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -4337,156 +4846,69 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
     }
   };
 
-  const processPayment = async () => {
-    if (COMING_SOON_MODE) return;
-    if (!currentProduct) return;
-    if (!selectedSize) {
-      alert('Elegí un talle antes de continuar.');
-      return;
-    }
 
-    const customer = validateCheckoutCustomer();
-    if (!customer) return;
-
-    if (selectedPayMethod === 'transfer') {
-      const transferOrder = await createTransferOrder([{
-        variant_id: getVariantId(currentProduct, selectedSize, selectedFit) || '',
-        quantity: 1
-      }], customer, 'single');
-
-      const transferMessage = buildTransferOrderMessage({
-        customer,
-        items: [{
-          title: currentProduct.title,
-          sku: currentProduct.sku,
-          capsule: currentProduct.capsule,
-          size: selectedSize,
-          fit: selectedFit,
-          quantity: 1,
-          basePrice: Number(currentProduct.price || 0),
-          discount: Number(currentProduct.price || 0) - Number(getTransferPrice(currentProduct) || 0),
-          lineTotal: Number(getTransferPrice(currentProduct) || 0)
-        }],
-        total: getTransferPrice(currentProduct),
-        orderId: transferOrder?.order_id || '',
-        orderCode: transferOrder?.order_code || ''
-      });
-
-      openTransferWhatsApp(transferMessage);
-      closeModal();
-
-      if (!transferOrder?.ok) {
-        alert('Te abrimos WhatsApp, pero no pudimos registrar el pedido pendiente en Supabase. Después revisamos esa conexión.');
-      }
-      return;
-    }
-
-    const variantId = getVariantId(currentProduct, selectedSize, selectedFit) || '';
-    const directLink = STORE_CONFIG.mpMode === 'direct_links' ? getMpLink(currentProduct, selectedSize, selectedFit) : '';
-    if (directLink) {
-      window.open(directLink, '_blank');
-      closeModal();
-      return;
-    }
-
-    if (!variantId && STORE_CONFIG.mpMode === 'backend') {
-      alert(`No encontré la variante de talle ${selectedSize} para esta prenda. Revisá el stock cargado en el panel admin.`);
-      return;
-    }
-
-    const checkoutUrl = await createMPPreference([{
-      variant_id: variantId,
-      quantity: 1
-    }], customer);
-
-    if (checkoutUrl) {
-      window.open(checkoutUrl, '_blank');
-      closeModal();
-      return;
-    }
-
-    alert(`Falta conectar Mercado Pago para "${currentProduct.title}" (${selectedSize}).
-
-Tenés dos caminos seguros:
-1. Revisar que la Edge Function create-mp-preference esté desplegada.
-2. Revisar que ese talle tenga variante activa y stock en Supabase.
-
-Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
+  const buildCheckoutItem = (product, quantity = 1, fit = 'unisex', size = '', color = 'Hueso', paymentMethod = 'mp') => {
+    const normalizedFit = normalizeFit(fit);
+    const normalizedColor = normalizeColor(color || product.selectedColor || 'Hueso');
+    const blankStockId = getBlankStockId(product, size, normalizedFit, normalizedColor) || product.selectedBlankStockId || product.selectedVariantId || '';
+    const unitPrice = paymentMethod === 'transfer' ? Number(getTransferPrice(product) || 0) : Number(product.price || 0);
+    const basePrice = Number(product.price || 0);
+    const qty = Number(quantity || 1);
+    return {
+      product_id: product.dbId || product.product_id || null,
+      product_slug: product.id || product.slug || '',
+      product_title: product.title || '',
+      sku: product.sku || '',
+      capsule: product.capsule || '',
+      blank_stock_id: blankStockId,
+      size,
+      fit: normalizedFit,
+      color: normalizedColor,
+      quantity: qty,
+      unit_price: unitPrice,
+      base_price: basePrice,
+      line_total: unitPrice * qty,
+      discount: Math.max(0, (basePrice - unitPrice) * qty)
+    };
   };
+
+  const processPayment = async () => { addConfiguredToCart(true); };
 
   /* ─── CART ─── */
   const addToCart = (id, e) => {
-    if (COMING_SOON_MODE) return;
     if (e) e.stopPropagation();
-    const storedCustomer = getStoredCheckoutCustomer();
-    if (!storedCustomer.name || !storedCustomer.email) {
-      openBuyModal(id);
-      showCustomerPrompt('Complete nombre y correo para continuar.');
-      const missingField = !storedCustomer.name ? document.getElementById('customerName') : document.getElementById('customerEmail');
-      missingField?.focus();
-      return;
-    }
-    const p = products.find(item => item.id === id);
-    if (!p) return;
-    const defaultFit = getDefaultFit(p);
-    const defaultSize = getSizesForFit(p, defaultFit)[0] || 'Único';
-    const selectedVariantId = getVariantId(p, defaultSize, defaultFit);
-    const existing = cart.find(item => item.id === id && item.selectedSize === defaultSize && normalizeFit(item.selectedFit) === normalizeFit(defaultFit));
-    if (existing) existing.qty += 1;
-    else cart.push({ ...p, qty: 1, selectedSize: defaultSize, selectedFit: defaultFit, selectedVariantId });
-    updateCartUI();
-    openCartDrawer();
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
+    const p = products.find(item => item.id === id); if (!p) return;
+    const defaultFit = getDefaultFit(p); const defaultColor = getDefaultColor(p, defaultFit); const defaultSize = getSizesForFitColor(p, defaultFit, defaultColor)[0] || 'Único'; const selectedBlankStockId = getBlankStockId(p, defaultSize, defaultFit, defaultColor);
+    const existing = cart.find(item => item.id === id && item.selectedSize === defaultSize && normalizeFit(item.selectedFit) === normalizeFit(defaultFit) && normalizeColor(item.selectedColor) === normalizeColor(defaultColor));
+    if (existing) existing.qty += 1; else cart.push({ ...p, qty: 1, selectedSize: defaultSize, selectedFit: defaultFit, selectedColor: defaultColor, selectedBlankStockId, selectedVariantId: selectedBlankStockId });
+    selectedCartShippingOption = null; cartShippingQuotes = []; renderShippingOptions('cart', []); renderShippingSummary('cart'); updateCartUI(); openCartDrawer();
   };
 
-  const removeFromCart = (id, size) => {
-    if (COMING_SOON_MODE) return;
-    const idx = cart.findIndex(c => c.id === id && c.selectedSize === size);
+  const removeFromCart = (id, size, fit = 'unisex', color = 'Hueso') => {
+    const idx = cart.findIndex(c => c.id === id && c.selectedSize === size && normalizeFit(c.selectedFit) === normalizeFit(fit) && normalizeColor(c.selectedColor || 'Hueso') === normalizeColor(color));
     if (idx !== -1) cart.splice(idx, 1);
+    selectedCartShippingOption = null;
+    cartShippingQuotes = [];
+    renderShippingOptions('cart', []);
+    renderShippingSummary('cart');
     updateCartUI();
   };
 
   const updateCartUI = () => {
-    if (COMING_SOON_MODE) {
-      document.getElementById('cartCount').textContent = '0';
-      const floatingCount = document.getElementById('cartCountFloat');
-      if (floatingCount) floatingCount.textContent = '0';
-      return;
-    }
-    const count = cart.reduce((sum, item) => sum + item.qty, 0);
-    document.getElementById('cartCount').textContent = count;
-    const floatingCount = document.getElementById('cartCountFloat');
-    if (floatingCount) floatingCount.textContent = count;
-    const body = document.getElementById('cartBody');
-    const footer = document.getElementById('cartFooter');
-
-    if (!cart.length) {
-      body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>Tu carrito está vacío</p></div>`;
-      footer.style.display = 'none';
-      return;
-    }
-
-    footer.style.display = '';
-    body.innerHTML = cart.map(item => {
-      const img = getImageList(item)[0];
-      return `
-        <div class="cart-item">
-          <div class="cart-item-img"><img src="${img}" alt="${escapeHtml(item.title)}" style="width:100%;height:100%;object-fit:cover;display:block" /></div>
-          <div class="cart-item-info">
-            <div class="cart-item-name">${item.title}</div>
-            <div class="cart-item-meta">${item.capsule} · ${describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize)} · x${item.qty}</div>
-            <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
-          </div>
-          <button class="cart-item-remove" onclick="removeFromCart('${item.id}','${item.selectedSize}')" aria-label="Eliminar ${item.title}">✕</button>
-        </div>
-      `;
-    }).join('');
-
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    document.getElementById('cartTotal').textContent = fmt(total);
+    const count = cart.reduce((sum, item) => sum + item.qty, 0); document.getElementById('cartCount').textContent = count; const floatingCount = document.getElementById('cartCountFloat'); if (floatingCount) floatingCount.textContent = count;
+    const body = document.getElementById('cartBody'); const footer = document.getElementById('cartFooter');
+    if (!cart.length) { body.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>' + (isPreLaunchMode() ? 'La compra online se habilitará próximamente.' : 'Tu carrito está vacío') + '</p></div>'; footer.style.display = 'none'; selectedCartShippingOption = null; cartShippingQuotes = []; cartCheckoutOpen = false; return; }
+    footer.style.display = ''; fillDeliveryInputs('cart');
+    body.innerHTML = cart.map(item => { const img = getImageList(item)[0]; return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · x' + item.qty + '</div><div class="cart-item-price">' + fmt(item.price * item.qty) + '</div></div><button class="cart-item-remove" onclick="removeFromCart(\'' + item.id + '\',\'' + item.selectedSize + '\')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>'; }).join('');
+    const useTransfer = selectedPayMethod === 'transfer'; const subtotal = cart.reduce((sum, item) => sum + Number(useTransfer ? getTransferPrice(item) : item.price || 0) * Number(item.qty || 1), 0);
+    const shipping = cartDeliveryMethod === 'pickup' ? getPickupShippingOption() : selectedCartShippingOption; const shippingCharge = Number(shipping?.charge || 0);
+    document.getElementById('cartTotal').textContent = fmt(subtotal); const grand = document.getElementById('cartGrandTotal'); if (grand) grand.textContent = fmt(subtotal + shippingCharge);
+    const checkoutPanel = document.getElementById('cartCheckoutPanel'); if (checkoutPanel) checkoutPanel.classList.toggle('hidden', !cartCheckoutOpen); const openBtn = document.getElementById('cartOpenCheckoutButton'); if (openBtn) openBtn.classList.toggle('hidden', cartCheckoutOpen);
+    updateCartDeliveryUI(); updateTransferPanel(); updateCartCheckoutCta(); renderShippingSummary('cart');
   };
 
   const openCartDrawer = () => {
-    if (COMING_SOON_MODE) return;
     document.getElementById('cartDrawer').classList.add('open');
     document.getElementById('drawerBackdrop').classList.add('open');
     refreshBodyScrollLock();
@@ -4508,78 +4930,168 @@ Mientras tanto, la transferencia por WhatsApp ya queda operativa.`);
     }
   };
 
+  const getPickupShippingOption = () => ({ provider:'RETIRO', type:'pickup', shippingMethodId:'pickup-corimayo-burzaco', shippingMethodName: STORE_CONFIG.pickupLabel || 'Retiro en zona Corimayo · Burzaco', lockerId:null, realPrice:0, charge:0, isFree:true, destination:{ address:'Retiro coordinado', city:'Burzaco', province:'Buenos Aires', postalCode:'' }, packageItem: buildPudoPackageItem('cart') });
+  const updateCartDeliveryUI = () => { document.getElementById('deliveryChoicePudo')?.classList.toggle('selected', cartDeliveryMethod === 'pudo'); document.getElementById('deliveryChoicePickup')?.classList.toggle('selected', cartDeliveryMethod === 'pickup'); document.getElementById('cartShippingPanel')?.classList.toggle('hidden', cartDeliveryMethod !== 'pudo'); document.getElementById('cartPickupSummary')?.classList.toggle('hidden', cartDeliveryMethod !== 'pickup'); if (cartDeliveryMethod === 'pickup') hideShippingStatus('cart'); };
+  const selectCartDeliveryMethod = (method = 'pudo') => { cartDeliveryMethod = method === 'pickup' ? 'pickup' : 'pudo'; if (cartDeliveryMethod === 'pickup') selectedCartShippingOption = getPickupShippingOption(); else if (selectedCartShippingOption?.provider === 'RETIRO') selectedCartShippingOption = null; updateCartUI(); };
+  const openCartCheckout = () => { if (isPreLaunchMode()) { showPreLaunchNotice(); return; } if (!cart.length) return; cartCheckoutOpen = true; updateCartUI(); document.getElementById('cartCheckoutPanel')?.scrollIntoView({ behavior:'smooth', block:'start' }); };
+  const updateCartCheckoutCta = () => { const cta = document.getElementById('cartFinalCheckoutButton'); const secure = document.getElementById('cartSecureNote'); if (!cta) return; if (isPreLaunchMode()) { cta.className = 'modal-cta prelaunch-disabled'; cta.textContent = 'Próximamente podrás comprar'; cta.disabled = true; cta.setAttribute('aria-disabled','true'); if (secure) secure.textContent = 'La compra online todavía no está habilitada. Esta es una vista previa de la tienda.'; return; } if (selectedPayMethod === 'transfer') { cta.className = 'modal-cta'; cta.textContent = 'Confirmar transferencia'; if (secure) secure.textContent = 'Reservá el pedido y cerrá el pago con contacto directo por WhatsApp'; } else { cta.className = 'modal-cta mp-style'; cta.textContent = 'Pagar con Mercado Pago'; if (secure) secure.textContent = 'Pago en entorno seguro de Mercado Pago · Producto y entrega incluidos'; } };
+
+  const setCartCheckoutBusy = (busy = false, label = '') => {
+    const cta = document.getElementById('cartFinalCheckoutButton');
+    if (!cta) return;
+    cta.disabled = Boolean(busy);
+    cta.style.opacity = busy ? '.72' : '1';
+    cta.style.cursor = busy ? 'wait' : 'pointer';
+    if (busy && label) cta.textContent = label;
+    if (!busy) updateCartCheckoutCta();
+  };
+
+  const openSafePopup = (label = 'Preparando operación…') => {
+    const popup = window.open('', '_blank');
+    if (!popup) return null;
+    try {
+      popup.document.write('<!doctype html><html><head><title>SIN RECREO</title><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#faf9f6;color:#1a1a1b;display:grid;place-items:center;min-height:100vh;margin:0;padding:24px;text-align:center}strong{font-size:20px}p{color:#6d6863;line-height:1.6}</style></head><body><main><strong>' + label + '</strong><p>No cierres esta pestaña. Te redirigimos en unos segundos.</p></main></body></html>');
+      popup.document.close();
+    } catch (error) {}
+    return popup;
+  };
+
+  const navigateCheckoutTarget = (popup, url) => {
+    if (!url) return;
+    if (popup && !popup.closed) {
+      popup.location.href = url;
+      return;
+    }
+    window.location.href = url;
+  };
+
+  const finishCartCheckout = async () => {
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
+    if (selectedPayMethod === 'transfer') return checkoutWhatsApp();
+    return checkoutMP();
+  };
+
   const checkoutWhatsApp = async () => {
-    if (COMING_SOON_MODE) return;
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
     if (!cart.length) return;
 
     const customer = collectCartCustomer();
     if (!customer) return;
+    const shipping = validateSelectedShipping('cart');
+    if (!shipping) return;
 
-    const validItems = cart.map(item => ({
-      variant_id: item.selectedVariantId || getVariantId(item, item.selectedSize, item.selectedFit) || '',
-      quantity: item.qty
-    })).filter(item => item.variant_id);
+    const validItems = cart.map(item => buildCheckoutItem(
+      item,
+      item.qty,
+      item.selectedFit || 'unisex',
+      item.selectedSize || '',
+      item.selectedColor || 'Hueso',
+      'transfer'
+    )).filter(item => item.product_id && item.blank_stock_id);
 
     if (!validItems.length) {
-      alert('No encontramos variantes válidas en el carrito para registrar el pedido.');
+      alert('No encontramos productos válidos con stock base para registrar el pedido.');
       return;
     }
 
-    const transferOrder = await createTransferOrder(validItems, customer, 'cart');
+    const popup = openSafePopup('Preparando WhatsApp…');
+    setCartCheckoutBusy(true, 'Generando pedido…');
 
-    const total = cart.reduce((sum, item) => sum + (getTransferPrice(item) * item.qty), 0);
-    const transferMessage = buildTransferOrderMessage({
-      customer,
-      items: cart.map(item => ({
-        title: item.title,
-        sku: item.sku,
-        capsule: item.capsule,
-        size: item.selectedSize,
-        fit: item.selectedFit || 'unisex',
-        quantity: item.qty,
-        basePrice: Number(item.price || 0),
-        discount: (Number(item.price || 0) - Number(getTransferPrice(item) || 0)) * Number(item.qty || 1),
-        lineTotal: Number(getTransferPrice(item) || 0) * Number(item.qty || 1)
-      })),
-      total,
-      orderId: transferOrder?.order_id || '',
-      orderCode: transferOrder?.order_code || ''
-    });
+    try {
+      const transferOrder = await createTransferOrder(validItems, customer, 'cart', shipping);
 
-    openTransferWhatsApp(transferMessage);
+      const total = cart.reduce((sum, item) => sum + (getTransferPrice(item) * item.qty), 0) + Number(shipping.charge || 0);
+      const transferMessage = buildTransferOrderMessage({
+        customer,
+        items: cart.map(item => ({
+          title: item.title,
+          sku: item.sku,
+          capsule: item.capsule,
+          size: item.selectedSize,
+          fit: item.selectedFit || 'unisex',
+          color: item.selectedColor || 'Hueso',
+          quantity: item.qty,
+          basePrice: Number(item.price || 0),
+          discount: (Number(item.price || 0) - Number(getTransferPrice(item) || 0)) * Number(item.qty || 1),
+          lineTotal: Number(getTransferPrice(item) || 0) * Number(item.qty || 1)
+        })),
+        total,
+        shipping,
+        orderId: transferOrder?.order_id || '',
+        orderCode: transferOrder?.order_code || ''
+      });
 
-    if (!transferOrder?.ok) {
-      alert('Te abrimos WhatsApp, pero no pudimos registrar el pedido pendiente en Supabase.');
+      const whatsappUrl = getWhatsAppBase() + '?text=' + encodeURIComponent(transferMessage);
+      navigateCheckoutTarget(popup, whatsappUrl);
+
+      if (!transferOrder?.ok) {
+        alert('Te abrimos WhatsApp, pero no pudimos registrar el pedido pendiente en Supabase.');
+      }
+    } catch (error) {
+      if (popup && !popup.closed) popup.close();
+      console.error('Error cerrando transferencia:', error);
+      alert('No pudimos iniciar la transferencia. Revisá la consola o la Edge Function create-transfer-order.');
+    } finally {
+      setCartCheckoutBusy(false);
     }
   };
 
   const checkoutMP = async () => {
-    if (COMING_SOON_MODE) return;
+    if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
     if (!cart.length) return;
 
     const customer = collectCartCustomer();
     if (!customer) return;
+    const shipping = validateSelectedShipping('cart');
+    if (!shipping) return;
 
     if (cart.length === 1) {
       const single = cart[0];
       const directLink = getMpLink(single, single.selectedSize, single.selectedFit || 'unisex');
       if (directLink) {
+        if (Number(shipping.charge || 0) > 0) {
+          alert('Este carrito tiene envío PUDO. Para cobrar prendas + envío juntos, usá el checkout backend de Mercado Pago, no links directos por talle.');
+          return;
+        }
         window.open(directLink, '_blank');
         return;
       }
     }
 
-    const checkoutUrl = await createMPPreference(cart.map(item => ({
-      variant_id: item.selectedVariantId || getVariantId(item, item.selectedSize, item.selectedFit) || '',
-      quantity: item.qty
-    })).filter(item => item.variant_id), customer);
+    const mpItems = cart.map(item => buildCheckoutItem(
+      item,
+      item.qty,
+      item.selectedFit || 'unisex',
+      item.selectedSize || '',
+      item.selectedColor || 'Hueso',
+      'mp'
+    )).filter(item => item.product_id && item.blank_stock_id);
 
-    if (checkoutUrl) {
-      window.open(checkoutUrl, '_blank');
+    if (!mpItems.length) {
+      alert('No encontramos productos válidos con stock base para pagar con Mercado Pago.');
       return;
     }
 
-    alert('Para pagar el carrito completo con Mercado Pago necesitás un backend que cree la preferencia con todos los items. Si no, podés usar los links directos por producto o cerrar el pedido por WhatsApp.');
+    const popup = openSafePopup('Preparando Mercado Pago…');
+    setCartCheckoutBusy(true, 'Creando link de pago…');
+
+    try {
+      const checkoutUrl = await createMPPreference(mpItems, customer, shipping);
+
+      if (checkoutUrl) {
+        navigateCheckoutTarget(popup, checkoutUrl);
+        return;
+      }
+
+      if (popup && !popup.closed) popup.close();
+      alert('No se pudo crear el link de Mercado Pago. Revisá la Edge Function create-mp-preference y el token de Mercado Pago.');
+    } catch (error) {
+      if (popup && !popup.closed) popup.close();
+      console.error('Error cerrando Mercado Pago:', error);
+      alert('No pudimos iniciar Mercado Pago. Revisá la consola o la Edge Function create-mp-preference.');
+    } finally {
+      setCartCheckoutBusy(false);
+    }
   };
 
   /* ─── SETUP ─── */
