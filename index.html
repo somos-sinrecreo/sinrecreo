@@ -118,6 +118,186 @@
     }
 
 
+
+    /* ── BLOQUEO DE LANZAMIENTO / CONTADOR TEMPORAL ── */
+    body.launch-locked {
+      overflow: hidden;
+    }
+    .launch-lock-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(192,90,58,.28), transparent 32%),
+        radial-gradient(circle at 85% 86%, rgba(250,248,243,.18), transparent 28%),
+        rgba(14,14,16,.88);
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    }
+    .launch-lock-overlay.hidden {
+      display: none !important;
+    }
+    .launch-lock-card {
+      width: min(760px, 100%);
+      position: relative;
+      overflow: hidden;
+      border-radius: 34px;
+      background: var(--cream);
+      border: 1px solid rgba(255,255,255,.32);
+      box-shadow: 0 36px 120px rgba(0,0,0,.42);
+      color: var(--ink);
+    }
+    .launch-lock-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,0) 42%),
+        radial-gradient(circle at 88% 12%, rgba(192,90,58,.16), transparent 34%);
+    }
+    .launch-lock-inner {
+      position: relative;
+      z-index: 1;
+      padding: clamp(26px, 5vw, 54px);
+      text-align: center;
+    }
+    .launch-lock-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(192,90,58,.12);
+      border: 1px solid rgba(192,90,58,.20);
+      color: var(--accent);
+      font-size: .74rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .launch-lock-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 9vw, 6.3rem);
+      line-height: .88;
+      letter-spacing: .035em;
+      margin: 0 0 16px;
+    }
+    .launch-lock-title em {
+      display: block;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: .46em;
+      letter-spacing: 0;
+      line-height: 1.05;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+    .launch-lock-copy {
+      max-width: 58ch;
+      margin: 0 auto 24px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+    .launch-countdown {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 28px 0 24px;
+    }
+    .launch-count-box {
+      padding: 16px 10px 14px;
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--sh);
+    }
+    .launch-count-number {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(2.15rem, 6vw, 3.35rem);
+      line-height: .9;
+      letter-spacing: .03em;
+    }
+    .launch-count-label {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .launch-lock-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .launch-instagram-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 14px 24px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      border: 1px solid var(--ink);
+      font-weight: 900;
+      font-size: .92rem;
+      transition: transform .18s, box-shadow .18s, background .18s;
+    }
+    .launch-instagram-btn:hover {
+      transform: translateY(-1px);
+      background: #222;
+      box-shadow: 0 16px 34px rgba(14,14,16,.20);
+    }
+    .launch-lock-footnote {
+      margin-top: 18px;
+      color: #8a817a;
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+    .launch-lock-footnote strong {
+      color: var(--ink);
+    }
+    @media (max-width: 680px) {
+      .launch-lock-overlay {
+        padding: 14px;
+        align-items: stretch;
+      }
+      .launch-lock-card {
+        display: flex;
+        align-items: center;
+        border-radius: 28px;
+        max-height: calc(100vh - 28px);
+        overflow-y: auto;
+      }
+      .launch-lock-inner {
+        width: 100%;
+        padding: 26px 18px;
+      }
+      .launch-countdown {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .launch-lock-copy {
+        font-size: .95rem;
+      }
+      .launch-instagram-btn {
+        width: 100%;
+      }
+    }
+
     /* ── ANNOUNCE BAR ── */
     .announce {
       background: var(--ink);
@@ -2275,7 +2455,29 @@
     .fade-up.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
-<body>
+<body class="launch-locked">
+
+<!-- ── BLOQUEO DE LANZAMIENTO ── -->
+<div class="launch-lock-overlay" id="launchLockModal" role="dialog" aria-modal="true" aria-label="Cuenta regresiva de apertura SIN RECREO">
+  <section class="launch-lock-card" aria-live="polite">
+    <div class="launch-lock-inner">
+      <div class="launch-lock-pill">✦ Lanzamiento en preparación</div>
+      <h2 class="launch-lock-title">SIN RECREO<em>abre el lunes 11 a las 00:00</em></h2>
+      <p class="launch-lock-copy">Estamos acomodando la tienda para que la experiencia salga prolija, linda y sin tropiezos. Hasta que el contador llegue a cero, la página queda bloqueada.</p>
+      <div class="launch-countdown" aria-label="Cuenta regresiva para el lanzamiento">
+        <div class="launch-count-box"><span class="launch-count-number" id="launchDays">00</span><span class="launch-count-label">Días</span></div>
+        <div class="launch-count-box"><span class="launch-count-number" id="launchHours">00</span><span class="launch-count-label">Horas</span></div>
+        <div class="launch-count-box"><span class="launch-count-number" id="launchMinutes">00</span><span class="launch-count-label">Min</span></div>
+        <div class="launch-count-box"><span class="launch-count-number" id="launchSeconds">00</span><span class="launch-count-label">Seg</span></div>
+      </div>
+      <div class="launch-lock-actions">
+        <a class="launch-instagram-btn" href="https://instagram.com/somos.sinrecreo" target="_blank" rel="noopener noreferrer">Mirar prendas en Instagram ↗</a>
+      </div>
+      <p class="launch-lock-footnote"><strong>Domingo después de las 24:</strong> cuando llegue a cero, la tienda se habilita automáticamente.</p>
+    </div>
+  </section>
+</div>
+
 
 <!-- Announce bar -->
 <div class="announce" aria-label="Novedades">
@@ -5185,6 +5387,67 @@ En un momento les envío el comprobante por este medio. ¿Me confirman disponibi
       applyFilters();
     });
   });
+
+
+  /* ─── BLOQUEO DE LANZAMIENTO / CONTADOR TEMPORAL ─── */
+  const LAUNCH_LOCK_TARGET = new Date('2026-05-11T00:00:00-03:00').getTime();
+  const LAUNCH_LOCK_STORAGE_KEY = 'sinrecreo_launch_lock_released_v1';
+
+  const padLaunchNumber = value => String(Math.max(0, value)).padStart(2, '0');
+
+  const releaseLaunchLock = () => {
+    const modal = document.getElementById('launchLockModal');
+    if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('launch-locked');
+    try { localStorage.setItem(LAUNCH_LOCK_STORAGE_KEY, '1'); } catch (error) {}
+  };
+
+  const renderLaunchCountdown = () => {
+    const modal = document.getElementById('launchLockModal');
+    if (!modal) return;
+
+    const now = Date.now();
+    const distance = LAUNCH_LOCK_TARGET - now;
+
+    if (distance <= 0) {
+      document.getElementById('launchDays').textContent = '00';
+      document.getElementById('launchHours').textContent = '00';
+      document.getElementById('launchMinutes').textContent = '00';
+      document.getElementById('launchSeconds').textContent = '00';
+      releaseLaunchLock();
+      return;
+    }
+
+    document.body.classList.add('launch-locked');
+    modal.classList.remove('hidden');
+
+    const totalSeconds = Math.floor(distance / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    document.getElementById('launchDays').textContent = padLaunchNumber(days);
+    document.getElementById('launchHours').textContent = padLaunchNumber(hours);
+    document.getElementById('launchMinutes').textContent = padLaunchNumber(minutes);
+    document.getElementById('launchSeconds').textContent = padLaunchNumber(seconds);
+  };
+
+  const initLaunchLock = () => {
+    const modal = document.getElementById('launchLockModal');
+    if (!modal) return;
+
+    if (Date.now() >= LAUNCH_LOCK_TARGET) {
+      releaseLaunchLock();
+      return;
+    }
+
+    document.body.classList.add('launch-locked');
+    renderLaunchCountdown();
+    setInterval(renderLaunchCountdown, 1000);
+  };
+
+  initLaunchLock();
 
   /* ─── SCROLL ANIMATIONS ─── */
   const observeElements = () => {
