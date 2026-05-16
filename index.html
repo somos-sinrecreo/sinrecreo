@@ -1592,15 +1592,22 @@
     .cart-item-meta { font-size: .78rem; color: var(--muted); margin-bottom: 8px; }
     .cart-item-price { font-family: var(--font-display); font-size: 1.1rem; }
     .cart-item-remove {
-      background: none;
-      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: var(--cream);
+      border: 1px solid var(--line);
       cursor: pointer;
       color: var(--muted);
       font-size: 1.1rem;
-      padding: 4px;
-      transition: color .15s;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      transition: color .15s, background .15s, border-color .15s;
     }
-    .cart-item-remove:hover { color: var(--accent); }
+    .cart-item-remove:hover { color: var(--accent); background: rgba(192,90,58,.08); border-color: rgba(192,90,58,.22); }
     .cart-footer {
       padding: 16px 22px 24px;
       border-top: 1px solid var(--line);
@@ -6797,19 +6804,30 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     updateCartUI();
   };
 
+  const removeCartItemByIndex = index => {
+    const idx = Number(index);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= cart.length) return;
+    cart.splice(idx, 1);
+    selectedCartShippingOption = null;
+    cartShippingQuotes = [];
+    renderShippingOptions('cart', []);
+    renderShippingSummary('cart');
+    updateCartUI();
+  };
+
   const updateCartUI = () => {
     const count = cart.reduce((sum, item) => sum + item.qty, 0); document.getElementById('cartCount').textContent = count; const floatingCount = document.getElementById('cartCountFloat'); if (floatingCount) floatingCount.textContent = count;
     const body = document.getElementById('cartBody'); const footer = document.getElementById('cartFooter');
     if (!cart.length) { body.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>' + (isPreLaunchMode() ? 'La compra online se habilitará próximamente.' : 'Tu carrito está vacío') + '</p></div>'; footer.style.display = 'none'; selectedCartShippingOption = null; cartShippingQuotes = []; cartCheckoutOpen = false; return; }
     footer.style.display = ''; fillDeliveryInputs('cart');
-    body.innerHTML = cart.map(item => {
+    body.innerHTML = cart.map((item, cartIndex) => {
       const img = getImageList(item)[0];
       const stampSize = item.selectedStampSize || 'normal';
       const stampMeta = getStampSizeMeta(stampSize);
       const removeArgs = [item.id, item.selectedSize, item.selectedFit || 'unisex', item.selectedColor || 'Hueso', stampSize].map(value => JSON.stringify(value)).join(',');
       const unitDisplayPrice = getEffectiveUnitPrice(item, selectedPayMethod === 'transfer' ? 'transfer' : 'mp');
       const promoLine = isPromoActive() ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ': -' + fmt(getPromoDiscountAmount(item.price) * item.qty) + '</div>' : '';
-      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(unitDisplayPrice * item.qty) + '</div></div><button class="cart-item-remove" onclick="removeFromCart(' + removeArgs + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
+      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(unitDisplayPrice * item.qty) + '</div></div><button class="cart-item-remove" type="button" onclick="removeCartItemByIndex(' + cartIndex + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
     }).join('');
     renderPromoActiveUi();
     const useTransfer = selectedPayMethod === 'transfer'; const subtotal = cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, useTransfer ? 'transfer' : 'mp') || 0) * Number(item.qty || 1), 0);
