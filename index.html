@@ -2913,6 +2913,176 @@
     }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
 
+
+    /* ── PROMO OCULTA POR QR ── */
+    .promo-modal-shell {
+      max-width: min(760px, calc(100vw - 28px));
+      max-height: min(92vh, 860px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .promo-qr-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--r-xl);
+      background: var(--ink);
+      color: #fff;
+      padding: 34px;
+      min-height: 430px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 26px;
+    }
+    .promo-qr-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 90% 4%, rgba(232,120,90,.44), transparent 48%),
+        radial-gradient(ellipse at 8% 94%, rgba(255,255,255,.10), transparent 42%);
+      pointer-events: none;
+    }
+    .promo-qr-card::after {
+      content: "SR";
+      position: absolute;
+      right: -10px;
+      bottom: -34px;
+      font-family: var(--font-display);
+      font-size: clamp(9rem, 24vw, 15rem);
+      line-height: .8;
+      letter-spacing: -.02em;
+      color: rgba(255,255,255,.045);
+      pointer-events: none;
+      user-select: none;
+    }
+    .promo-qr-card > * { position: relative; z-index: 1; }
+    .promo-qr-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(232,120,90,.16);
+      color: var(--accent-light);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .promo-qr-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.05rem, 8vw, 6.4rem);
+      letter-spacing: .035em;
+      line-height: .88;
+      margin: 0 0 18px;
+    }
+    .promo-qr-title em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: .70em;
+      color: var(--accent-light);
+    }
+    .promo-qr-lead {
+      max-width: 58ch;
+      color: rgba(255,255,255,.76);
+      font-size: 1rem;
+      line-height: 1.75;
+      margin-bottom: 18px;
+    }
+    .promo-qr-code {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.88);
+      font-size: .86rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .promo-qr-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .promo-qr-primary,
+    .promo-qr-secondary {
+      min-height: 52px;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .promo-qr-primary {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .promo-qr-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .promo-qr-secondary {
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+    .promo-qr-secondary:hover { background: rgba(255,255,255,.14); }
+    .promo-qr-small {
+      color: rgba(255,255,255,.54);
+      font-size: .76rem;
+      line-height: 1.55;
+      margin-top: 10px;
+    }
+    .promo-active-strip {
+      background: #fff7ef;
+      border: 1px solid rgba(192,90,58,.20);
+      color: #7b3f2d;
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: .84rem;
+      font-weight: 800;
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .promo-price-old {
+      display: inline-block;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      font-weight: 700;
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+    .promo-price-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(192,90,58,.10);
+      color: var(--accent);
+      font-size: .70rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 680px) {
+      #promoQrModal { align-items: flex-start; padding: 12px; }
+      .promo-modal-shell { max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+      .promo-qr-card { padding: 26px 18px; min-height: 0; }
+      .promo-qr-actions { grid-template-columns: 1fr; }
+    }
+
+
     /* ── MODAL AUTOMÁTICO · PREVENTA DOCENTE ── */
     .presale-modal-shell {
       max-width: min(820px, calc(100vw - 28px));
@@ -3606,6 +3776,38 @@
   </div>
 </div>
 
+
+<!-- ── MODAL OCULTO · PROMO POR QR ── -->
+<div class="modal-overlay" id="promoQrModal" role="dialog" aria-modal="true" aria-label="Promoción especial SIN RECREO">
+  <div class="modal promo-modal-shell">
+    <div class="modal-header">
+      <div>
+        <div class="modal-section-title">Acceso por QR</div>
+        <h2 class="modal-title">Promoción especial</h2>
+      </div>
+      <button class="modal-close" type="button" onclick="declineQrPromo()" aria-label="Cerrar promoción">✕</button>
+    </div>
+    <div class="modal-body">
+      <article class="promo-qr-card">
+        <div>
+          <div class="promo-qr-kicker">✦ Beneficio SIN RECREO</div>
+          <h2 class="promo-qr-title">20% OFF<br><em>próxima compra</em></h2>
+          <p class="promo-qr-lead">Por comprar o recibir un regalo de SIN RECREO, tenés 20% de descuento para usar ahora en la tienda.</p>
+          <div class="promo-qr-code" id="promoQrCodeLabel">Código: SINRECREO20</div>
+        </div>
+        <div>
+          <div class="promo-qr-actions">
+            <button class="promo-qr-primary" type="button" onclick="acceptQrPromo()">Aceptar promoción</button>
+            <button class="promo-qr-secondary" type="button" onclick="declineQrPromo()">No, gracias</button>
+          </div>
+          <p class="promo-qr-small">El descuento se aplica sobre las prendas del catálogo. No acumulable con otros descuentos internos de la tienda.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+
 <!-- ── MOBILE MENU ── -->
 <div class="mobile-nav-backdrop" id="mobileNavBackdrop" onclick="closeMobileMenu()"></div>
 <aside class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-label="Menú de navegación móvil">
@@ -3879,6 +4081,20 @@
     preSaleStorageKey: 'sinrecreo_preventa_docente_v1',
     preSaleDefaultMode: false,
     preSaleModalDelayMs: 650,
+    promoStorageKey: 'sinrecreo_promo_activa_v1',
+    promoDeclineStorageKey: 'sinrecreo_promo_rechazada_v1',
+    promos: {
+      regalo20: {
+        code: 'regalo20',
+        publicCode: 'SINRECREO20',
+        discount: 20,
+        title: '20% OFF EN TU PRÓXIMA COMPRA',
+        subtitle: 'Por comprar o recibir un regalo de SIN RECREO',
+        body: 'Escaneaste un QR especial. Activá la promoción y vas a ver el descuento aplicado en las prendas de la tienda.',
+        acceptText: 'Aceptar promoción',
+        declineText: 'Seguir sin descuento'
+      }
+    },
     useSupabase: true,
     supabaseUrl: 'https://bhzwcevmeqzofuwnwpnm.supabase.co',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJoendjZXZtZXF6b2Z1d253cG5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTExNzksImV4cCI6MjA5MjU2NzE3OX0.LGDbzUNprkAfbiOC7oFuew0EpCOPll9ckdGL-LidhGA',
@@ -4077,6 +4293,127 @@
   const state = { query:'', catalogView:'featured', sort:'featured', capsules:new Set(), cuts:new Set(), sizes:new Set(), minPrice:'', maxPrice:'' };
   const cart = [];
   let preSaleMode = false;
+  let activePromo = null;
+  let pendingPromo = null;
+
+  const getPromoStorageKey = () => STORE_CONFIG.promoStorageKey || 'sinrecreo_promo_activa_v1';
+  const getPromoDeclineStorageKey = () => STORE_CONFIG.promoDeclineStorageKey || 'sinrecreo_promo_rechazada_v1';
+  const normalizePromoCode = value => String(value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  const getPromoByCode = (code = '') => {
+    const normalized = normalizePromoCode(code);
+    const promos = STORE_CONFIG.promos || {};
+    return Object.values(promos).find(promo =>
+      normalizePromoCode(promo.code) === normalized ||
+      normalizePromoCode(promo.publicCode) === normalized
+    ) || null;
+  };
+  const getPromoCodeFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    const direct = params.get('promo') || params.get('codigo') || params.get('cupon') || params.get('coupon') || '';
+    if (direct) return direct;
+    const hash = String(window.location.hash || '').replace(/^#/, '');
+    if (!hash) return '';
+    const hashParams = new URLSearchParams(hash.includes('=') ? hash : 'promo=' + hash);
+    return hashParams.get('promo') || hashParams.get('codigo') || hashParams.get('cupon') || hashParams.get('coupon') || '';
+  };
+  const getPromoFromUrl = () => getPromoByCode(getPromoCodeFromUrl());
+  const readStoredPromo = () => {
+    try {
+      const raw = localStorage.getItem(getPromoStorageKey());
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return getPromoByCode(parsed?.code || parsed?.publicCode || parsed?.id || '');
+    } catch (error) {
+      return null;
+    }
+  };
+  const saveActivePromo = promo => {
+    try {
+      if (!promo) localStorage.removeItem(getPromoStorageKey());
+      else localStorage.setItem(getPromoStorageKey(), JSON.stringify({ code: promo.code, publicCode: promo.publicCode, discount: promo.discount, acceptedAt: new Date().toISOString() }));
+    } catch (error) {}
+  };
+  const markPromoDeclined = promo => {
+    try {
+      if (promo?.code) localStorage.setItem(getPromoDeclineStorageKey(), JSON.stringify({ code: promo.code, declinedAt: new Date().toISOString() }));
+    } catch (error) {}
+  };
+  const isPromoActive = () => Boolean(activePromo);
+  const getActivePromoDiscount = () => Number(activePromo?.discount || 0);
+  const applyActivePromoToAmount = amount => {
+    const value = Number(amount || 0);
+    const discount = getActivePromoDiscount();
+    return discount > 0 ? Math.max(0, Math.round(value * (1 - discount / 100))) : value;
+  };
+  const getEffectiveProductPrice = (product = {}, stampSize = 'normal') => applyActivePromoToAmount(getProductPriceWithStamp(product, stampSize));
+  const getEffectiveUnitPrice = (product = {}, paymentMethod = 'mp') => {
+    const basePrice = Number(product.price || 0);
+    if (isPromoActive()) return applyActivePromoToAmount(basePrice);
+    return paymentMethod === 'transfer' ? Number(getTransferPrice(product) || 0) : basePrice;
+  };
+  const getPromoDiscountAmount = amount => Math.max(0, Number(amount || 0) - applyActivePromoToAmount(amount));
+  const getPromoLabel = () => activePromo?.publicCode || activePromo?.code || 'PROMO';
+  const hasPromoDeepLink = () => Boolean(getPromoFromUrl());
+  const initPromoSystem = () => {
+    pendingPromo = getPromoFromUrl();
+    activePromo = readStoredPromo();
+    renderPromoActiveUi();
+  };
+  const clearPromoParamsFromUrl = () => {
+    try {
+      const url = new URL(window.location.href);
+      ['promo','codigo','cupon','coupon'].forEach(key => url.searchParams.delete(key));
+      if (url.hash && /promo=|codigo=|cupon=|coupon=/i.test(url.hash)) url.hash = '';
+      window.history.replaceState({}, '', url.toString());
+    } catch (error) {}
+  };
+  const openQrPromoModal = (promo = pendingPromo || activePromo) => {
+    if (!promo) return;
+    pendingPromo = promo;
+    const codeLabel = document.getElementById('promoQrCodeLabel');
+    if (codeLabel) codeLabel.textContent = `Código: ${promo.publicCode || promo.code || 'SINRECREO20'}`;
+    document.getElementById('promoQrModal')?.classList.add('open');
+    refreshBodyScrollLock();
+  };
+  const closeQrPromoModal = () => {
+    document.getElementById('promoQrModal')?.classList.remove('open');
+    refreshBodyScrollLock();
+  };
+  const acceptQrPromo = () => {
+    const promo = pendingPromo || getPromoFromUrl() || activePromo || getPromoByCode('regalo20');
+    if (!promo) { closeQrPromoModal(); return; }
+    activePromo = promo;
+    saveActivePromo(promo);
+    closeQrPromoModal();
+    clearPromoParamsFromUrl();
+    renderPromoActiveUi();
+    refreshCatalogData();
+    updateCartUI();
+    if (!cart.length) {
+      const catalog = document.getElementById('catalogo');
+      if (catalog) catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  const declineQrPromo = () => {
+    const promo = pendingPromo || getPromoFromUrl();
+    if (promo) markPromoDeclined(promo);
+    pendingPromo = null;
+    closeQrPromoModal();
+    clearPromoParamsFromUrl();
+  };
+  const renderPromoActiveUi = () => {
+    const existing = document.getElementById('promoActiveStrip');
+    if (!isPromoActive()) {
+      existing?.remove();
+      return;
+    }
+    const checkoutPanel = document.getElementById('cartCheckoutPanel');
+    const html = `<div class="promo-active-strip" id="promoActiveStrip">🎁 Promo ${getPromoLabel()} activa: ${getActivePromoDiscount()}% de descuento aplicado sobre las prendas. No acumulable con otros descuentos internos.</div>`;
+    if (checkoutPanel) {
+      if (existing) existing.outerHTML = html;
+      else checkoutPanel.insertAdjacentHTML('afterbegin', html);
+    }
+  };
 
   const isPreLaunchMode = () => Boolean(STORE_CONFIG.preLaunchMode);
   const showPreLaunchNotice = () => {
@@ -4097,7 +4434,7 @@
     try { localStorage.setItem(getPreSaleStorageKey(), String(Boolean(active))); } catch (error) {}
   };
   const isPreSaleMode = () => Boolean(preSaleMode);
-  const isPaymentEnabled = () => isPreSaleMode();
+  const isPaymentEnabled = () => isPreSaleMode() || isPromoActive();
   const getPreSaleBannerHtml = () => `<div><strong>Preventa exclusiva para docentes y auxiliares.</strong> Envío sin cargo por PUDO a Smart Locker, ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés con Mercado Pago y entregas desde el 26 de mayo. Transferencia disponible y Cuenta DNI con 20% de reintegro.</div><span class="prelaunch-pill">Modo preventa activo</span>`;
   const getNormalBannerHtml = () => `<div><strong>Tienda SIN RECREO activa.</strong> Elegí tu prenda, completá tus datos y cerrá la compra online.</div><span class="prelaunch-pill">Compra online disponible</span>`;
 
@@ -4169,8 +4506,8 @@
   const refreshPreSaleHeaderButton = () => {
     const button = document.getElementById('preSaleHeaderButton');
     if (!button) return;
-    button.classList.toggle('hidden', isPreSaleMode());
-    button.setAttribute('aria-hidden', isPreSaleMode() ? 'true' : 'false');
+    button.classList.toggle('hidden', isPreSaleMode() || isPromoActive());
+    button.setAttribute('aria-hidden', (isPreSaleMode() || isPromoActive()) ? 'true' : 'false');
   };
 
   const activatePreSaleFromHeader = () => {
@@ -4450,10 +4787,10 @@
 
   const getContextQuantity = (context = 'single') => getContextItems(context).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
   const getContextSubtotal = (context = 'single', useTransfer = false) => {
-    if (context === 'cart') return cart.reduce((sum, item) => sum + Number(useTransfer ? getTransferPrice(item) : item.price || 0) * Number(item.qty || 1), 0);
+    if (context === 'cart') return cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, useTransfer ? 'transfer' : 'mp') || 0) * Number(item.qty || 1), 0);
     if (!currentProduct) return 0;
     const singleProduct = { ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) };
-    return Number(useTransfer ? getTransferPrice(singleProduct) : singleProduct.price || 0);
+    return Number(getEffectiveUnitPrice(singleProduct, useTransfer ? 'transfer' : 'mp') || 0);
   };
   const getFreeShippingThreshold = () => Number(STORE_CONFIG.freeShippingMinAmount || 100000);
   const isFreeShippingContext = (context = 'single') => getContextSubtotal(context, false) >= getFreeShippingThreshold();
@@ -4737,7 +5074,11 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const capsuleMatches = (productCapsule, capsuleName) => isGeneralCapsuleName(productCapsule) && isGeneralCapsuleName(capsuleName)
     ? true
     : normalizeTextKey(productCapsule) === normalizeTextKey(capsuleName);
-  const getTransferPrice = p => p.transferPrice ?? Math.round(p.price * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
+  const getTransferPrice = p => {
+    const basePrice = Number(p?.price || 0);
+    if (isPromoActive()) return applyActivePromoToAmount(basePrice);
+    return p.transferPrice ?? Math.round(basePrice * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
+  };
   const normalizeFit = fit => {
     const key = String(fit || '').trim().toLowerCase();
     if (['femenino','femenina','corte dama','dama','mujer'].includes(key)) return 'femenina';
@@ -5482,10 +5823,15 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       wireAdminAccessLinks();
       wireCheckoutCustomerInputs();
       wireDeliveryInputs();
+      initPromoSystem();
       refreshCatalogData();
       renderPaymentStatusBanner();
       observeElements();
-      setTimeout(openPreSaleModal, Number(STORE_CONFIG.preSaleModalDelayMs || 650));
+      if (pendingPromo) {
+        setTimeout(() => openQrPromoModal(pendingPromo), 300);
+      } else if (!isPromoActive()) {
+        setTimeout(openPreSaleModal, Number(STORE_CONFIG.preSaleModalDelayMs || 650));
+      }
     }
   };
 
@@ -5775,7 +6121,12 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     grid.innerHTML = items.map(p => {
       const sizes = getAvailableSizes(p);
       const stock = getTotalStock(p);
-      const transferPrice = getTransferPrice(p);
+      const baseCardPrice = Number(p.price || 0);
+      const displayPrice = getEffectiveProductPrice(p, 'normal');
+      const transferPrice = getTransferPrice({ ...p, price: baseCardPrice });
+      const promoCardHtml = isPromoActive()
+        ? `<div class="promo-price-old">${fmt(baseCardPrice)}</div><div class="promo-price-badge">${getActivePromoDiscount()}% OFF · ${escapeHtml(getPromoLabel())}</div>`
+        : '';
       const descData = truncateWords(p.description, PRODUCT_DESCRIPTION_WORD_LIMIT_DESKTOP);
       const descriptionHtml = truncateDescriptions && descData.truncated
         ? `<p class="pcard-desc"><span class="pcard-desc-inline" data-desc-role="text" data-full="${escapeHtml(descData.full)}" data-short="${escapeHtml(descData.short)}">${escapeHtml(descData.short)}</span><button class="pcard-desc-toggle" type="button" data-desc-role="toggle" data-expanded="false" onclick="toggleProductDescription(event)">ver más...</button></p>`
@@ -5805,9 +6156,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
             ${descriptionHtml}
             ${getAvailableFits(p).length > 1 ? `<div class="pcard-transfer" style="margin-top:-4px">Disponible en femenino o unisex según talle, en Negro, Blanco y color Hueso</div>` : ``}
             <div class="pcard-price-block">
-              <div class="pcard-price">${fmt(p.price)}</div>
-              <div class="pcard-cuotas">3 x ${fmt(Math.round(p.price / 3))} sin interés</div>
-              <div class="pcard-transfer">💸 ${fmt(transferPrice)} por transferencia</div>
+              ${promoCardHtml}
+              <div class="pcard-price">${fmt(displayPrice)}</div>
+              <div class="pcard-cuotas">3 x ${fmt(Math.round(displayPrice / 3))} sin interés</div>
+              <div class="pcard-transfer">${isPromoActive() ? '🎁 Precio promocional aplicado' : '💸 ' + fmt(transferPrice) + ' por transferencia'}</div>
             </div>
             <div class="size-row">${sizes.map(sz => {
               const parsedSize = parseVariantSizeKey(sz);
@@ -6133,16 +6485,20 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     const panel = document.getElementById('transferPanel'); if (!panel) return;
     const show = selectedPayMethod === 'transfer'; panel.hidden = !show;
     const alias = document.getElementById('transferAliasValue'); const owner = document.getElementById('transferOwnerValue'); const cbu = document.getElementById('transferCbuValue'); const badge = document.getElementById('transferDiscountBadge');
-    if (alias) alias.textContent = STORE_CONFIG.transferAlias; if (owner) owner.textContent = STORE_CONFIG.transferOwner; if (cbu) cbu.textContent = STORE_CONFIG.transferCBU; if (badge) badge.textContent = STORE_CONFIG.transferDiscount + '% OFF';
+    if (alias) alias.textContent = STORE_CONFIG.transferAlias; if (owner) owner.textContent = STORE_CONFIG.transferOwner; if (cbu) cbu.textContent = STORE_CONFIG.transferCBU; if (badge) badge.textContent = isPromoActive() ? `${getActivePromoDiscount()}% OFF PROMO` : STORE_CONFIG.transferDiscount + '% OFF';
   };
 
   const updateModalTotal = () => {
     if (!currentProduct) return;
-    const finalPrice = getProductPriceWithStamp(currentProduct, selectedStampSize);
+    const basePrice = getProductPriceWithStamp(currentProduct, selectedStampSize);
+    const finalPrice = getEffectiveProductPrice(currentProduct, selectedStampSize);
     const modalTotal = document.getElementById('modalTotal');
     const modalProductPrice = document.getElementById('modalProductPrice');
+    const priceHtml = isPromoActive()
+      ? `<span class="promo-price-old">${fmt(basePrice)}</span><br>${fmt(finalPrice)} <span class="promo-price-badge">${getActivePromoDiscount()}% OFF</span>`
+      : fmt(finalPrice);
     if (modalTotal) modalTotal.textContent = fmt(finalPrice);
-    if (modalProductPrice) modalProductPrice.textContent = fmt(finalPrice);
+    if (modalProductPrice) modalProductPrice.innerHTML = priceHtml;
   };
 
   const copyTransferField = async (field) => {
@@ -6230,7 +6586,9 @@ ${value}`);
           customer_email: customer.email || '',
           customer_phone: customer.phone || '',
           payment_method: 'transferencia',
-          transfer_discount: STORE_CONFIG.transferDiscount,
+          transfer_discount: isPromoActive() ? 0 : STORE_CONFIG.transferDiscount,
+          promo_code: isPromoActive() ? getPromoLabel() : '',
+          promo_discount: isPromoActive() ? getActivePromoDiscount() : 0,
           shipping: serializeShippingOption(shipping),
           shipping_price: Number(shipping?.charge || 0),
           shipping_provider: shipping ? (shipping.provider || 'PUDO') : null,
@@ -6301,7 +6659,7 @@ ${itemsText}
 
 💳 *Resumen*
 • Precio de prendas: ${fmt(computedSubTotal)}
-• Descuento transferencia: ${fmt(computedDiscount)}
+• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() : 'transferencia'}: ${fmt(computedDiscount)}
 • Envío: ${shipping?.isFree ? 'Bonificado' : fmt(shippingCharge)}
 • *Total a transferir: ${fmt(computedTotal)}*
 
@@ -6336,6 +6694,8 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
           customer_name: customer.name || '',
           customer_email: customer.email || '',
           customer_phone: customer.phone || '',
+          promo_code: isPromoActive() ? getPromoLabel() : '',
+          promo_discount: isPromoActive() ? getActivePromoDiscount() : 0,
           shipping: serializeShippingOption(shipping),
           shipping_price: Number(shipping?.charge || 0),
           shipping_provider: shipping ? (shipping.provider || 'PUDO') : null
@@ -6363,7 +6723,7 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     const stampSurcharge = Number(product.stampSurcharge ?? getStampSizeSurcharge(stampSize));
     const baseProductPrice = Number(product.baseProductPrice ?? Math.max(0, Number(product.price || 0) - stampSurcharge));
     const basePrice = Number(product.price || 0);
-    const unitPrice = paymentMethod === 'transfer' ? Number(getTransferPrice(product) || 0) : basePrice;
+    const unitPrice = Number(getEffectiveUnitPrice(product, paymentMethod) || 0);
     const qty = Number(quantity || 1);
     return {
       product_id: product.dbId || product.product_id || null,
@@ -6447,9 +6807,12 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
       const stampSize = item.selectedStampSize || 'normal';
       const stampMeta = getStampSizeMeta(stampSize);
       const removeArgs = [item.id, item.selectedSize, item.selectedFit || 'unisex', item.selectedColor || 'Hueso', stampSize].map(value => JSON.stringify(value)).join(',');
-      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div><div class="cart-item-price">' + fmt(item.price * item.qty) + '</div></div><button class="cart-item-remove" onclick="removeFromCart(' + removeArgs + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
+      const unitDisplayPrice = getEffectiveUnitPrice(item, selectedPayMethod === 'transfer' ? 'transfer' : 'mp');
+      const promoLine = isPromoActive() ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ': -' + fmt(getPromoDiscountAmount(item.price) * item.qty) + '</div>' : '';
+      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(unitDisplayPrice * item.qty) + '</div></div><button class="cart-item-remove" onclick="removeFromCart(' + removeArgs + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
     }).join('');
-    const useTransfer = selectedPayMethod === 'transfer'; const subtotal = cart.reduce((sum, item) => sum + Number(useTransfer ? getTransferPrice(item) : item.price || 0) * Number(item.qty || 1), 0);
+    renderPromoActiveUi();
+    const useTransfer = selectedPayMethod === 'transfer'; const subtotal = cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, useTransfer ? 'transfer' : 'mp') || 0) * Number(item.qty || 1), 0);
     const shipping = cartDeliveryMethod === 'pickup' ? getPickupShippingOption() : selectedCartShippingOption; const shippingCharge = Number(shipping?.charge || 0);
     document.getElementById('cartTotal').textContent = fmt(subtotal); const grand = document.getElementById('cartGrandTotal'); if (grand) grand.textContent = fmt(subtotal + shippingCharge);
     const checkoutPanel = document.getElementById('cartCheckoutPanel'); if (checkoutPanel) checkoutPanel.classList.toggle('hidden', !cartCheckoutOpen); const openBtn = document.getElementById('cartOpenCheckoutButton'); if (openBtn) { openBtn.classList.toggle('hidden', cartCheckoutOpen); const paymentBlocked = !isPaymentEnabled(); openBtn.disabled = paymentBlocked; openBtn.setAttribute('aria-disabled', paymentBlocked ? 'true' : 'false'); openBtn.classList.toggle('payment-locked-by-presale', paymentBlocked); openBtn.classList.remove('prelaunch-disabled'); openBtn.textContent = paymentBlocked ? 'Activá modo preventa para pagar' : 'Finalizar compra'; }
@@ -6626,7 +6989,7 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     try {
       const transferOrder = await createTransferOrder(validItems, customer, 'cart', shipping);
 
-      const total = cart.reduce((sum, item) => sum + (getTransferPrice(item) * item.qty), 0) + Number(shipping.charge || 0);
+      const total = cart.reduce((sum, item) => sum + (getEffectiveUnitPrice(item, 'transfer') * item.qty), 0) + Number(shipping.charge || 0);
       const transferMessage = buildTransferOrderMessage({
         customer,
         items: cart.map(item => ({
@@ -6641,8 +7004,8 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
           stampSurcharge: Number(item.stampSurcharge || 0),
           quantity: item.qty,
           basePrice: Number(item.price || 0),
-          discount: (Number(item.price || 0) - Number(getTransferPrice(item) || 0)) * Number(item.qty || 1),
-          lineTotal: Number(getTransferPrice(item) || 0) * Number(item.qty || 1)
+          discount: (Number(item.price || 0) - Number(getEffectiveUnitPrice(item, 'transfer') || 0)) * Number(item.qty || 1),
+          lineTotal: Number(getEffectiveUnitPrice(item, 'transfer') || 0) * Number(item.qty || 1)
         })),
         total,
         shipping,
@@ -6678,7 +7041,7 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     if (cart.length === 1) {
       const single = cart[0];
       const directLink = getMpLink(single, single.selectedSize, single.selectedFit || 'unisex');
-      if (directLink && (single.selectedStampSize || 'normal') === 'normal') {
+      if (!isPromoActive() && directLink && (single.selectedStampSize || 'normal') === 'normal') {
         if (Number(shipping.charge || 0) > 0) {
           alert('Este carrito tiene envío PUDO. Para cobrar prendas + envío juntos, usá el checkout backend de Mercado Pago, no links directos por talle.');
           return;
