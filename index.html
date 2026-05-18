@@ -3398,7 +3398,7 @@
     <div class="header-left">
       <div class="search-pill">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="searchInput" type="search" placeholder="Buscá cápsulas o diseños…" aria-label="Buscar productos" />
+        <input id="searchInput" type="search" placeholder="Buscar una prenda por nombre…" aria-label="Buscar prendas por nombre" />
       </div>
     </div>
 
@@ -5165,7 +5165,13 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const getBlankStockId = (p, size, fit = 'unisex', color = 'Hueso') => (p.blankStockIdsByKey && p.blankStockIdsByKey[`${normalizeFit(fit)}|${normalizeColor(color)}|${size}`]) || '';
   const getVariantId = (p, size, fit = 'unisex') => getBlankStockId(p, size, fit, getDefaultColor(p, fit));
   const describeFitAndSize = (fit, size, color = '') => `${getFitLabel(fit)}${color ? ' · ' + normalizeColor(color) : ''} · Talle ${size}`;
-  const getProductUrl = p => `${location.origin}${location.pathname}#${p.id}`;
+  const PRODUCT_DEEP_LINK_PARAM_KEYS = ['producto', 'product', 'prenda', 'p'];
+  let productDeepLinkHandled = false;
+  const getProductUrl = p => {
+    const url = new URL(window.location.origin + window.location.pathname);
+    url.searchParams.set('producto', String(p?.id || p?.slug || p?.dbId || '').trim());
+    return url.toString();
+  };
   const PRODUCT_DESCRIPTION_WORD_LIMIT_DESKTOP = 20;
   const PRODUCT_DESCRIPTION_DESKTOP_QUERY = '(min-width: 681px)';
   const shouldTruncateProductDescriptions = () => window.matchMedia(PRODUCT_DESCRIPTION_DESKTOP_QUERY).matches;
@@ -5600,6 +5606,78 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     return Math.max(0, Number(productSalesMap[productId] || 0));
   };
 
+  const getProductSearchText = product => normalizeTextKey([
+    product?.title,
+    product?.capsule,
+    getDisplayCapsuleName(product?.capsule || ''),
+    product?.description,
+    product?.sku,
+    product?.id,
+    product?.dbId
+  ].filter(Boolean).join(' '));
+
+  const productMatchesSearch = (product, query = '') => {
+    const terms = normalizeTextKey(query).split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    const haystack = getProductSearchText(product);
+    return terms.every(term => haystack.includes(term));
+  };
+
+  const getProductFromDeepLinkValue = (value = '') => {
+    const cleaned = decodeURIComponent(String(value || '').replace(/^#/, '').trim());
+    const normalized = normalizeTextKey(cleaned);
+    if (!normalized) return null;
+    return products.find(product => [
+      product.id,
+      product.dbId,
+      product.sku,
+      product.title
+    ].some(candidate => normalizeTextKey(candidate) === normalized)) || null;
+  };
+
+  const getProductDeepLinkValueFromUrl = () => {
+    const params = new URLSearchParams(window.location.search || '');
+    for (const key of PRODUCT_DEEP_LINK_PARAM_KEYS) {
+      const value = params.get(key);
+      if (value) return value;
+    }
+
+    const rawHash = String(window.location.hash || '').replace(/^#/, '').trim();
+    if (!rawHash) return '';
+
+    if (rawHash.includes('=')) {
+      const hashParams = new URLSearchParams(rawHash);
+      for (const key of PRODUCT_DEEP_LINK_PARAM_KEYS) {
+        const value = hashParams.get(key);
+        if (value) return value;
+      }
+    }
+
+    return rawHash;
+  };
+
+  const getProductFromUrl = () => getProductFromDeepLinkValue(getProductDeepLinkValueFromUrl());
+
+  const handleProductDeepLink = ({ force = false } = {}) => {
+    if (productDeepLinkHandled && !force) return false;
+    const linkedProduct = getProductFromUrl();
+    if (!linkedProduct) return false;
+
+    productDeepLinkHandled = true;
+    closePreSaleModal?.();
+    closeQrPromoModal?.();
+    closeCapsuleModal?.();
+    closeProductsModal?.();
+    closeEfemeridesModal?.();
+    closeClubModal?.();
+    closeCartDrawer?.();
+
+    requestAnimationFrame(() => {
+      openBuyModal(linkedProduct.id);
+    });
+    return true;
+  };
+
   const getCatalogCollections = () => {
     const active = products.filter(product => getTotalStock(product) > 0);
     const byNewest = [...active].sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
@@ -5834,9 +5912,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       refreshCatalogData();
       renderPaymentStatusBanner();
       observeElements();
+      const productDeepLinkWasHandled = handleProductDeepLink();
       if (pendingPromo) {
         setTimeout(() => openQrPromoModal(pendingPromo), 300);
-      } else if (!isPromoActive()) {
+      } else if (!isPromoActive() && !productDeepLinkWasHandled) {
         setTimeout(openPreSaleModal, Number(STORE_CONFIG.preSaleModalDelayMs || 650));
       }
     }
@@ -6097,16 +6176,28 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const applyFilters = () => {
     const collections = getCatalogCollections();
-    const base = collections.featured;
+    const query = String(state.query || '').trim();
+    const hasSearch = Boolean(query);
+    const base = hasSearch
+      ? products
+          .filter(product => getTotalStock(product) > 0)
+          .sort((a, b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate || 0) - new Date(a.sortDate || 0))
+      : collections.featured;
 
-    const filtered = base.filter(product => {
-      if (!state.query) return true;
-      return `${product.title} ${product.capsule} ${product.description} ${product.sku || ''}`.toLowerCase().includes(state.query.toLowerCase());
-    });
+    const filtered = base.filter(product => productMatchesSearch(product, query));
 
     renderProducts(filtered, 'productsGrid');
     const rc = document.getElementById('resultsCount');
-    if (rc) rc.textContent = 'Te presentamos nuestras prendas destacadas del mes.';
+    const title = document.querySelector('.catalog-toolbar .section-title');
+    if (title) title.textContent = hasSearch ? 'Resultados de búsqueda' : 'Destacados del Catálogo';
+    if (rc) {
+      if (hasSearch) {
+        const countText = `${filtered.length} ${filtered.length === 1 ? 'prenda encontrada' : 'prendas encontradas'}`;
+        rc.textContent = `${countText} para “${query}”. Buscamos por nombre, cápsula, descripción y código.`;
+      } else {
+        rc.textContent = 'Te presentamos nuestras prendas destacadas del mes.';
+      }
+    }
   };
 
   const renderProducts = (items, targetId = 'productsGrid') => {
@@ -7125,6 +7216,15 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
   document.getElementById('searchInput').addEventListener('input', e => {
     state.query = e.target.value.trim();
     applyFilters();
+  });
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    if (state.query) document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  window.addEventListener('hashchange', () => {
+    productDeepLinkHandled = false;
+    handleProductDeepLink({ force: true });
   });
 
   document.getElementById('minPrice')?.addEventListener('input', e => {
