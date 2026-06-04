@@ -1466,6 +1466,13 @@
     .pay-method-icon.mp { background: #00bcff; }
     .pay-method-icon.card { background: #1a1a2e; }
     .pay-method-icon.transfer { background: #1a3a2e; }
+    .pay-method-icon.cuenta-dni {
+      background: linear-gradient(135deg, #00a6d6, #0b6fb3);
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
     .pay-method-info { flex: 1; }
     .pay-method-name { font-weight: 700; font-size: .94rem; margin-bottom: 2px; }
     .pay-method-detail { font-size: .8rem; color: var(--muted); }
@@ -1479,6 +1486,7 @@
     }
     .badge-discount { background: rgba(26,122,58,.12); color: #1a7a3a; }
     .badge-cuotas { background: rgba(0,188,255,.12); color: #0086b5; }
+    .badge-reintegro { background: rgba(0,158,227,.13); color: #0077a6; }
     .pay-method-btn.transfer-highlight {
       border-color: rgba(26,122,58,.24);
       background: rgba(26,122,58,.045);
@@ -1487,6 +1495,15 @@
     .pay-method-btn.transfer-highlight.selected {
       border-color: #1a7a3a;
       background: rgba(26,122,58,.085);
+    }
+    .pay-method-btn.cuenta-dni-highlight {
+      border-color: rgba(0,158,227,.24);
+      background: rgba(0,158,227,.045);
+    }
+    .pay-method-btn.cuenta-dni-highlight:hover,
+    .pay-method-btn.cuenta-dni-highlight.selected {
+      border-color: #009ee3;
+      background: rgba(0,158,227,.09);
     }
     .mp-mobile-note {
       margin: -4px 0 14px;
@@ -2255,6 +2272,9 @@
       .hero-main { padding: 32px 24px; min-height: 380px; }
       .hero-right { flex-direction: column; }
       .hero-title { font-size: 3.2rem; }
+      .hero-stat-card.fade-up { opacity: 1; transform: none; }
+      .hero-stat-card .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-stat-card .stat-item strong { font-size: 2rem; }
       .payment-status-title { font-size: 1.45rem; }
       .capsule-grid { grid-template-columns: 1fr; }
       .products-grid { grid-template-columns: 1fr; }
@@ -3200,10 +3220,10 @@
       <div class="hero-right">
         <div class="hero-stat-card fade-up">
           <div class="stat-grid">
-            <div class="stat-item"><strong id="statActiveDrops">0</strong><span>drops activos</span></div>
-            <div class="stat-item"><strong id="statActiveCapsules">0</strong><span>cápsulas</span></div>
-            <div class="stat-item"><strong id="statCustomers">0</strong><span>clientes</span></div>
-            <div class="stat-item"><strong id="statInstallments">3x</strong><span>cuotas sin interés</span></div>
+            <div class="stat-item"><strong id="statActiveDrops" data-stat="active-drops">0</strong><span>drops activos</span></div>
+            <div class="stat-item"><strong id="statActiveCapsules" data-stat="active-capsules">0</strong><span>cápsulas</span></div>
+            <div class="stat-item"><strong id="statCustomers" data-stat="customers">0</strong><span>clientes</span></div>
+            <div class="stat-item"><strong id="statInstallments" data-stat="installments">3x</strong><span>cuotas sin interés</span></div>
           </div>
           <div class="divider"></div>
           <div class="pay-info">
@@ -3214,6 +3234,10 @@
             <div class="pay-row">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
               <span id="heroTransferText"><strong>Transferencia:</strong> 10% de descuento</span>
+            </div>
+            <div class="pay-row">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8 9h3a3 3 0 010 6H8V9Zm9 0v6"/><path d="M15 9h4"/></svg>
+              <span id="heroCuentaDniText"><strong>Cuenta DNI:</strong> 20% de reintegro lun. a vier. · tope $6000 semanal</span>
             </div>
             <div class="pay-row">
               <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.198.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.1-.198.05-.372-.025-.521-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.075-.792.372-.272.297-1.04 1.016-1.04 2.48 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 2C6.555 2 2.1 6.455 2.1 11.95c0 1.76.46 3.414 1.265 4.848L2 22l5.348-1.402a9.909 9.909 0 0 0 4.702 1.19h.004c5.492 0 9.95-4.455 9.95-9.95S17.546 2 12.05 2Z"/></svg>
@@ -3255,6 +3279,11 @@
         <span>Pagando por transferencia bancaria</span>
       </div>
       <div class="trust-item">
+        <div class="trust-icon">🏦</div>
+        <strong>Cuenta DNI 20%</strong>
+        <span>Reintegro lunes a viernes · tope $6000 semanal por cuenta</span>
+      </div>
+      <div class="trust-item">
         <div class="trust-icon">💬</div>
         <strong>Atención real</strong>
         <span>Respondemos por WhatsApp en 24h</span>
@@ -3270,7 +3299,7 @@
         <div>
           <div class="section-label">Compra online</div>
           <h2 class="section-title">Así funciona</h2>
-          <p class="section-sub">Recorré el catálogo, elegí tu prenda y cerrá la compra con Mercado Pago, transferencia o Cuenta DNI.</p>
+          <p class="section-sub">Recorré el catálogo, elegí tu prenda y cerrá la compra con Mercado Pago, tarjeta, transferencia o Cuenta DNI.</p>
         </div>
       </div>
       <div class="how-steps fade-up">
@@ -3440,6 +3469,7 @@
         <span class="pay-logo">Visa</span>
         <span class="pay-logo">Mastercard</span>
         <span class="pay-logo">Transferencia</span>
+        <span class="pay-logo">Cuenta DNI</span>
       </div>
     </div>
   </div>
@@ -3582,14 +3612,15 @@
       <div class="pay-methods cart-pay-methods">
         <button class="pay-method-btn selected" onclick="selectPayMethod(this, 'mp')" type="button"><div class="pay-method-icon mp"><svg width="22" height="22" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="white"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#009ee3" font-family="Arial">MP</text></svg></div><div class="pay-method-info"><div class="pay-method-name">Mercado Pago / Cuenta MP</div><div class="pay-method-detail">Pagá con dinero en cuenta, tarjeta u otros medios habilitados</div></div><span class="pay-method-badge badge-cuotas">3 cuotas s/i</span></button>
         <button class="pay-method-btn" onclick="selectPayMethod(this, 'card')" type="button"><div class="pay-method-icon card"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Tarjeta de crédito/débito</div><div class="pay-method-detail">También se procesa por Mercado Pago</div></div><span class="pay-method-badge badge-cuotas">3 cuotas</span></button>
-        <button class="pay-method-btn transfer-highlight" onclick="selectPayMethod(this, 'transfer')" type="button"><div class="pay-method-icon transfer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Transferencia bancaria o Cuenta DNI</div><div class="pay-method-detail">Transferencia con 10% OFF · Cuenta DNI con 20% de reintegro</div></div><span class="pay-method-badge badge-discount">10% OFF</span></button>
+        <button class="pay-method-btn transfer-highlight" onclick="selectPayMethod(this, 'transfer')" type="button"><div class="pay-method-icon transfer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Transferencia bancaria</div><div class="pay-method-detail">Pagá por transferencia y aplicamos 10% OFF en la tienda</div></div><span class="pay-method-badge badge-discount">10% OFF</span></button>
+        <button class="pay-method-btn cuenta-dni-highlight" onclick="selectPayMethod(this, 'cuenta_dni')" type="button"><div class="pay-method-icon cuenta-dni">DNI</div><div class="pay-method-info"><div class="pay-method-name">Cuenta DNI</div><div class="pay-method-detail">20% de reintegro de lunes a viernes · tope $6000 semanal por cuenta. No se descuenta en la tienda.</div></div><span class="pay-method-badge badge-reintegro">20% reintegro</span></button>
       </div>
 
       <div class="transfer-panel" id="transferPanel" hidden>
-        <div class="transfer-head"><strong>Transferencia con contacto directo</strong><span id="transferDiscountBadge">10% OFF</span></div>
-        <div class="transfer-grid"><div class="transfer-item"><label>Alias</label><strong id="transferAliasValue">SINRECREO.TIENDA</strong></div><div class="transfer-item"><label>Titular</label><span id="transferOwnerValue">SIN RECREO</span></div><div class="transfer-item"><label>CVU</label><span id="transferCbuValue">0000003100000000000000</span></div></div>
-        <div class="transfer-actions"><button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button><button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button></div>
-        <div class="modal-note">Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante o solicites link de pago de CUENTA DNI.</div>
+        <div class="transfer-head"><strong id="transferPanelTitle">Transferencia con contacto directo</strong><span id="transferDiscountBadge">10% OFF</span></div>
+        <div class="transfer-grid" id="transferDataGrid"><div class="transfer-item"><label>Alias</label><strong id="transferAliasValue">SINRECREO.TIENDA</strong></div><div class="transfer-item"><label>Titular</label><span id="transferOwnerValue">SIN RECREO</span></div><div class="transfer-item"><label>CVU</label><span id="transferCbuValue">0000003100000000000000</span></div></div>
+        <div class="transfer-actions" id="transferActions"><button class="transfer-btn" type="button" onclick="copyTransferField('alias')">Copiar alias</button><button class="transfer-btn" type="button" onclick="copyTransferField('cbu')">Copiar CVU</button></div>
+        <div class="modal-note" id="transferPanelNote">Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante.</div>
       </div>
 
       <button class="modal-cta mp-style" id="cartFinalCheckoutButton" type="button" onclick="finishCartCheckout()">Pagar con Mercado Pago / Cuenta MP</button>
@@ -3747,6 +3778,9 @@
     transferOwner: 'Lucas Matias Faga',
     transferCBU: '0000003100065142182346',
     transferDiscount: 10,
+    cuentaDniRebatePercent: 20,
+    cuentaDniWeeklyCap: 6000,
+    cuentaDniDays: 'lunes a viernes',
     installmentsCount: 3,
     freeShippingMinAmount: 100000,
     preLaunchMode: false,
@@ -4033,6 +4067,17 @@
     const basePrice = Number(product.price || 0);
     if (isPromoActive()) return applyActivePromoToAmount(basePrice);
     return paymentMethod === 'transfer' ? Number(getTransferPrice(product) || 0) : basePrice;
+  };
+  const isTransferPaymentMethod = method => method === 'transfer';
+  const isCuentaDniPaymentMethod = method => method === 'cuenta_dni';
+  const isWhatsAppPaymentMethod = method => isTransferPaymentMethod(method) || isCuentaDniPaymentMethod(method);
+  const getPricingPaymentMethod = method => isTransferPaymentMethod(method) ? 'transfer' : 'mp';
+  const getCuentaDniBenefitText = () => `${STORE_CONFIG.cuentaDniRebatePercent || 20}% de reintegro de ${STORE_CONFIG.cuentaDniDays || 'lunes a viernes'} · tope ${fmt(STORE_CONFIG.cuentaDniWeeklyCap || 6000)} semanal por cuenta`;
+  const getPaymentMethodDisplayName = (method = selectedPayMethod) => {
+    if (isTransferPaymentMethod(method)) return 'transferencia bancaria';
+    if (isCuentaDniPaymentMethod(method)) return 'Cuenta DNI';
+    if (method === 'card') return 'tarjeta por Mercado Pago';
+    return 'Mercado Pago / Cuenta MP';
   };
   const getPromoDiscountAmount = amount => Math.max(0, Number(amount || 0) - applyActivePromoToAmount(amount));
   const getPromoLabel = () => activePromo?.publicCode || activePromo?.code || 'PROMO';
@@ -5064,22 +5109,17 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   };
 
   const renderHeroStats = () => {
-    const activeDropsNode = document.getElementById('statActiveDrops');
-    const activeCapsulesNode = document.getElementById('statActiveCapsules');
-    const customersNode = document.getElementById('statCustomers');
-    const installmentsNode = document.getElementById('statInstallments');
-    const mpTextNode = document.getElementById('heroMpText');
-    const transferTextNode = document.getElementById('heroTransferText');
+    const setText = (selector, value) => document.querySelectorAll(selector).forEach(node => { node.textContent = value; });
+    const setHtml = (selector, value) => document.querySelectorAll(selector).forEach(node => { node.innerHTML = value; });
+    const customersCount = Number(storeMetrics.customersCount ?? 0);
 
-    if (activeDropsNode) activeDropsNode.textContent = String(storeMetrics.activeDrops ?? 0);
-    if (activeCapsulesNode) activeCapsulesNode.textContent = String(storeMetrics.activeCapsules ?? 0);
-    if (customersNode) {
-      const customersCount = Number(storeMetrics.customersCount ?? 0);
-      customersNode.textContent = customersCount > 0 ? `+${customersCount}` : '0';
-    }
-    if (installmentsNode) installmentsNode.textContent = `${STORE_CONFIG.installmentsCount || 3}x`;
-    if (mpTextNode) mpTextNode.innerHTML = `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`;
-    if (transferTextNode) transferTextNode.innerHTML = `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`;
+    setText('[data-stat="active-drops"], #statActiveDrops', String(storeMetrics.activeDrops ?? 0));
+    setText('[data-stat="active-capsules"], #statActiveCapsules', String(storeMetrics.activeCapsules ?? 0));
+    setText('[data-stat="customers"], #statCustomers', customersCount > 0 ? `+${customersCount}` : '0');
+    setText('[data-stat="installments"], #statInstallments', `${STORE_CONFIG.installmentsCount || 3}x`);
+    setHtml('#heroMpText', `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`);
+    setHtml('#heroTransferText', `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`);
+    setHtml('#heroCuentaDniText', `<strong>Cuenta DNI:</strong> ${getCuentaDniBenefitText()}`);
   };
 
 
@@ -6200,9 +6240,37 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const updateTransferPanel = () => {
     const panel = document.getElementById('transferPanel'); if (!panel) return;
-    const show = selectedPayMethod === 'transfer'; panel.hidden = !show;
-    const alias = document.getElementById('transferAliasValue'); const owner = document.getElementById('transferOwnerValue'); const cbu = document.getElementById('transferCbuValue'); const badge = document.getElementById('transferDiscountBadge');
-    if (alias) alias.textContent = STORE_CONFIG.transferAlias; if (owner) owner.textContent = STORE_CONFIG.transferOwner; if (cbu) cbu.textContent = STORE_CONFIG.transferCBU; if (badge) badge.textContent = isPromoActive() ? `${getActivePromoDiscount()}% OFF PROMO` : STORE_CONFIG.transferDiscount + '% OFF';
+    const isTransfer = selectedPayMethod === 'transfer';
+    const isCuentaDni = selectedPayMethod === 'cuenta_dni';
+    panel.hidden = !(isTransfer || isCuentaDni);
+
+    const title = document.getElementById('transferPanelTitle');
+    const alias = document.getElementById('transferAliasValue');
+    const owner = document.getElementById('transferOwnerValue');
+    const cbu = document.getElementById('transferCbuValue');
+    const badge = document.getElementById('transferDiscountBadge');
+    const dataGrid = document.getElementById('transferDataGrid');
+    const actions = document.getElementById('transferActions');
+    const note = document.getElementById('transferPanelNote');
+
+    if (alias) alias.textContent = STORE_CONFIG.transferAlias;
+    if (owner) owner.textContent = STORE_CONFIG.transferOwner;
+    if (cbu) cbu.textContent = STORE_CONFIG.transferCBU;
+
+    if (isCuentaDni) {
+      if (title) title.textContent = 'Cuenta DNI con reintegro';
+      if (badge) badge.textContent = `${STORE_CONFIG.cuentaDniRebatePercent || 20}% REINTEGRO`;
+      if (dataGrid) dataGrid.classList.add('hidden');
+      if (actions) actions.classList.add('hidden');
+      if (note) note.innerHTML = `${getCuentaDniBenefitText()}. <strong>La tienda no descuenta ese reintegro en la orden de pago:</strong> el total se cobra completo y el beneficio lo reintegra Cuenta DNI según sus condiciones.`;
+      return;
+    }
+
+    if (title) title.textContent = 'Transferencia con contacto directo';
+    if (badge) badge.textContent = isPromoActive() ? `${getActivePromoDiscount()}% OFF PROMO` : STORE_CONFIG.transferDiscount + '% OFF';
+    if (dataGrid) dataGrid.classList.remove('hidden');
+    if (actions) actions.classList.remove('hidden');
+    if (note) note.textContent = 'Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante.';
   };
 
   const updateModalTotal = () => {
@@ -6245,6 +6313,10 @@ ${value}`);
     const stampLabel = item.stampSizeLabel || item.stamp_size_label || item.selectedStampLabel || getStampSizeLabel(stampSize);
     const stampSurcharge = Number(item.stampSurcharge ?? item.stamp_surcharge ?? getStampSizeSurcharge(stampSize));
     const color = item.color || item.selectedColor || '';
+    const paymentMethod = item.paymentMethod || item.payment_method || selectedPayMethod;
+    const benefitLine = isCuentaDniPaymentMethod(paymentMethod)
+      ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
+      : `• Descuento transferencia: ${fmt(discount)}`;
 
     return `👕 *${item.title || 'Producto'}*
 • Código: ${item.sku || 'Sin código'}
@@ -6253,13 +6325,13 @@ ${value}`);
 • Estampa: ${stampLabel}${stampSurcharge > 0 ? ` (+${fmt(stampSurcharge)} por unidad)` : ''}
 • Cantidad: ${quantity}
 • Precio lista: ${fmt(subTotal)}
-• Descuento transferencia: ${fmt(discount)}
+${benefitLine}
 • Total prenda: *${fmt(total)}*`;
   };
 
   const buildTransferMessage = () => {
     const customer = getCheckoutCustomer();
-    if (!currentProduct) return '*Hola, SIN RECREO* 👋\n\nQuiero comprar por *transferencia / Cuenta DNI*. ¿Me ayudan a cerrar el pedido?';
+    if (!currentProduct) return '*Hola, SIN RECREO* 👋\n\nQuiero comprar por *' + getPaymentMethodDisplayName() + '*. ¿Me ayudan a cerrar el pedido?';
 
     return buildTransferOrderMessage({
       customer,
@@ -6270,13 +6342,15 @@ ${value}`);
         size: selectedSize,
         fit: selectedFit,
         quantity: 1,
+        paymentMethod: selectedPayMethod,
         stampSize: selectedStampSize,
         stampSizeLabel: getStampSizeLabel(selectedStampSize),
         stampSurcharge: getStampSizeSurcharge(selectedStampSize),
         basePrice: getProductPriceWithStamp(currentProduct, selectedStampSize),
-        discount: getProductPriceWithStamp(currentProduct, selectedStampSize) - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }) || 0),
-        lineTotal: Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }) || 0)
-      }]
+        discount: isTransferPaymentMethod(selectedPayMethod) ? getProductPriceWithStamp(currentProduct, selectedStampSize) - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }) || 0) : 0,
+        lineTotal: Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }, getPricingPaymentMethod(selectedPayMethod)) || 0)
+      }],
+      paymentMethod: selectedPayMethod
     });
   };
 
@@ -6286,7 +6360,7 @@ ${value}`);
     window.open(`${getWhatsAppBase()}?text=${msg}`, '_blank');
   };
 
-  const createTransferOrder = async (items, customer = {}, context = 'single', shipping = null) => {
+  const createTransferOrder = async (items, customer = {}, context = 'single', shipping = null, paymentMethod = 'transfer') => {
     if (!STORE_CONFIG.transferOrderEndpoint) return null;
     try {
       const headers = {
@@ -6302,16 +6376,16 @@ ${value}`);
           customer_name: customer.name || '',
           customer_email: customer.email || '',
           customer_phone: customer.phone || '',
-          payment_method: 'transferencia',
-          transfer_discount: isPromoActive() ? 0 : STORE_CONFIG.transferDiscount,
+          payment_method: isCuentaDniPaymentMethod(paymentMethod) ? 'cuenta_dni' : 'transferencia',
+          transfer_discount: isTransferPaymentMethod(paymentMethod) && !isPromoActive() ? STORE_CONFIG.transferDiscount : 0,
           promo_code: isPromoActive() ? getPromoLabel() : '',
           promo_discount: isPromoActive() ? getActivePromoDiscount() : 0,
           shipping: serializeShippingOption(shipping),
           shipping_price: Number(shipping?.charge || 0),
           shipping_provider: shipping ? (shipping.provider || 'PUDO') : null,
           notes: context === 'cart'
-            ? 'Pedido iniciado por transferencia desde el carrito de la tienda'
-            : 'Pedido iniciado por transferencia desde la ficha de producto'
+            ? `Pedido iniciado por ${getPaymentMethodDisplayName(paymentMethod)} desde el carrito de la tienda`
+            : `Pedido iniciado por ${getPaymentMethodDisplayName(paymentMethod)} desde la ficha de producto`
         })
       });
       const data = await res.json();
@@ -6324,7 +6398,7 @@ ${value}`);
   };
 
 
-  const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '', shipping = null } = {}) => {
+  const buildTransferOrderMessage = ({ customer = {}, items = [], total = 0, orderId = '', orderCode = '', shipping = null, paymentMethod = selectedPayMethod } = {}) => {
     const normalizedItems = items.length
       ? items.map(item => {
           const quantity = Number(item.quantity || 1);
@@ -6338,7 +6412,8 @@ ${value}`);
             basePrice,
             subTotal,
             lineTotal,
-            discount
+            discount,
+            paymentMethod: item.paymentMethod || item.payment_method || paymentMethod
           };
         })
       : [{
@@ -6351,10 +6426,11 @@ ${value}`);
           stampSizeLabel: getStampSizeLabel(selectedStampSize || 'normal'),
           stampSurcharge: getStampSizeSurcharge(selectedStampSize || 'normal'),
           quantity: 1,
+          paymentMethod,
           basePrice: currentProduct ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') : 0,
           subTotal: currentProduct ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') : 0,
-          discount: currentProduct ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }) || 0) : 0,
-          lineTotal: currentProduct ? Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }) || 0) : 0
+          discount: currentProduct && isTransferPaymentMethod(paymentMethod) ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }) || 0) : 0,
+          lineTotal: currentProduct ? Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }, getPricingPaymentMethod(paymentMethod)) || 0) : 0
         }];
 
     const shippingCharge = Number(shipping?.charge || 0);
@@ -6364,10 +6440,19 @@ ${value}`);
     const computedDiscount = normalizedItems.reduce((acc, item) => acc + Number(item.discount || 0), 0);
     const itemsText = normalizedItems.map(buildTransferLineBlock).join('\n\n');
     const shippingText = describeShippingForMessage(shipping);
+    const isCuentaDni = isCuentaDniPaymentMethod(paymentMethod);
+    const paymentTitle = isCuentaDni ? 'Cuenta DNI' : 'transferencia bancaria';
+    const benefitSummary = isCuentaDni
+      ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
+      : `• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() : 'transferencia'}: ${fmt(computedDiscount)}`;
+    const totalLabel = isCuentaDni ? 'Total a pagar en tienda' : 'Total a transferir';
+    const finalNote = isCuentaDni
+      ? '_La tienda no aplica el reintegro en esta orden. Cuenta DNI lo acredita según sus condiciones._'
+      : '_En un momento envío el comprobante por este chat. ¿Me confirman disponibilidad y próximos pasos?_';
 
     return `*Hola, SIN RECREO* 👋
 
-Quiero confirmar este pedido por *transferencia / Cuenta DNI*.
+Quiero confirmar este pedido por *${paymentTitle}*.
 
 🧾 *Pedido*
 • Nº: ${orderCode || (orderId ? '#' + String(orderId).slice(0, 8).toUpperCase() : 'Pendiente')}
@@ -6376,9 +6461,9 @@ ${itemsText}
 
 💳 *Resumen*
 • Precio de prendas: ${fmt(computedSubTotal)}
-• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() : 'transferencia'}: ${fmt(computedDiscount)}
+${benefitSummary}
 • Envío: ${shipping?.isFree ? 'Bonificado' : fmt(shippingCharge)}
-• *Total a transferir: ${fmt(computedTotal)}*
+• *${totalLabel}: ${fmt(computedTotal)}*
 
 🚚 *Entrega*
 ${shippingText}
@@ -6388,7 +6473,7 @@ ${shippingText}
 • Email: ${customer.email || 'A confirmar'}
 • Teléfono: ${customer.phone || 'A confirmar'}
 
-_En un momento envío el comprobante por este chat. ¿Me confirman disponibilidad y próximos pasos?_`;
+${finalNote}`;
   };
 
   const collectCartCustomer = () => {
@@ -6535,12 +6620,12 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
       const stampSize = item.selectedStampSize || 'normal';
       const stampMeta = getStampSizeMeta(stampSize);
       const removeArgs = [item.id, item.selectedSize, item.selectedFit || 'unisex', item.selectedColor || 'Hueso', stampSize].map(value => JSON.stringify(value)).join(',');
-      const unitDisplayPrice = getEffectiveUnitPrice(item, selectedPayMethod === 'transfer' ? 'transfer' : 'mp');
+      const unitDisplayPrice = getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod));
       const promoLine = isPromoActive() ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ': -' + fmt(getPromoDiscountAmount(item.price) * item.qty) + '</div>' : '';
       return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(unitDisplayPrice * item.qty) + '</div></div><button class="cart-item-remove" type="button" onclick="removeCartItemByIndex(' + cartIndex + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
     }).join('');
     renderPromoActiveUi();
-    const useTransfer = selectedPayMethod === 'transfer'; const subtotal = cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, useTransfer ? 'transfer' : 'mp') || 0) * Number(item.qty || 1), 0);
+    const subtotal = cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod)) || 0) * Number(item.qty || 1), 0);
     const shipping = cartDeliveryMethod === 'pickup' ? getPickupShippingOption() : selectedCartShippingOption; const shippingCharge = Number(shipping?.charge || 0);
     document.getElementById('cartTotal').textContent = fmt(subtotal); const grand = document.getElementById('cartGrandTotal'); if (grand) grand.textContent = fmt(subtotal + shippingCharge);
     const checkoutPanel = document.getElementById('cartCheckoutPanel'); if (checkoutPanel) checkoutPanel.classList.toggle('hidden', !cartCheckoutOpen); const openBtn = document.getElementById('cartOpenCheckoutButton'); if (openBtn) { openBtn.classList.toggle('hidden', cartCheckoutOpen); const paymentBlocked = !isPaymentEnabled(); openBtn.disabled = paymentBlocked; openBtn.setAttribute('aria-disabled', paymentBlocked ? 'true' : 'false'); openBtn.classList.toggle('payment-locked-by-presale', paymentBlocked); openBtn.classList.remove('prelaunch-disabled'); openBtn.textContent = paymentBlocked ? 'Finalizar compra' : 'Finalizar compra'; }
@@ -6640,12 +6725,17 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     cta.style.cursor = 'pointer';
     if (selectedPayMethod === 'transfer') {
       cta.className = 'modal-cta';
-      cta.textContent = 'Confirmar transferencia / Cuenta DNI por WhatsApp';
+      cta.textContent = 'Confirmar transferencia por WhatsApp';
+      if (secure) secure.textContent = '';
+      if (mpNote) mpNote.classList.add('hidden');
+    } else if (selectedPayMethod === 'cuenta_dni') {
+      cta.className = 'modal-cta';
+      cta.textContent = 'Confirmar Cuenta DNI por WhatsApp';
       if (secure) secure.textContent = '';
       if (mpNote) mpNote.classList.add('hidden');
     } else {
       cta.className = 'modal-cta mp-style';
-      cta.textContent = 'Pagar con Mercado Pago / Cuenta MP';
+      cta.textContent = selectedPayMethod === 'card' ? 'Pagar con tarjeta por Mercado Pago' : 'Pagar con Mercado Pago / Cuenta MP';
       if (secure) secure.textContent = '';
       if (mpNote) mpNote.classList.add('hidden');
     }
@@ -6683,11 +6773,11 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
   const finishCartCheckout = async () => {
     if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
     if (!isPaymentEnabled()) { openPreSaleModal(); return; }
-    if (selectedPayMethod === 'transfer') return checkoutWhatsApp();
+    if (isWhatsAppPaymentMethod(selectedPayMethod)) return checkoutWhatsApp(selectedPayMethod);
     return checkoutMP();
   };
 
-  const checkoutWhatsApp = async () => {
+  const checkoutWhatsApp = async (paymentMethod = 'transfer') => {
     if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
     if (!isPaymentEnabled()) { openPreSaleModal(); return; }
     if (!cart.length) return;
@@ -6703,8 +6793,8 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
       item.selectedFit || 'unisex',
       item.selectedSize || '',
       item.selectedColor || 'Hueso',
-      'transfer'
-    )).filter(item => item.product_id && item.blank_stock_id);
+      getPricingPaymentMethod(paymentMethod)
+    )).map(item => ({ ...item, payment_method: paymentMethod, paymentMethod })).filter(item => item.product_id && item.blank_stock_id);
 
     if (!validItems.length) {
       alert('No encontramos productos válidos con stock base para registrar el pedido.');
@@ -6715,9 +6805,9 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
     setCartCheckoutBusy(true, 'Generando pedido…');
 
     try {
-      const transferOrder = await createTransferOrder(validItems, customer, 'cart', shipping);
+      const transferOrder = await createTransferOrder(validItems, customer, 'cart', shipping, paymentMethod);
 
-      const total = cart.reduce((sum, item) => sum + (getEffectiveUnitPrice(item, 'transfer') * item.qty), 0) + Number(shipping.charge || 0);
+      const total = cart.reduce((sum, item) => sum + (getEffectiveUnitPrice(item, getPricingPaymentMethod(paymentMethod)) * item.qty), 0) + Number(shipping.charge || 0);
       const transferMessage = buildTransferOrderMessage({
         customer,
         items: cart.map(item => ({
@@ -6731,11 +6821,13 @@ _En un momento envío el comprobante por este chat. ¿Me confirman disponibilida
           stampSizeLabel: item.selectedStampLabel || getStampSizeLabel(item.selectedStampSize || 'normal'),
           stampSurcharge: Number(item.stampSurcharge || 0),
           quantity: item.qty,
+          paymentMethod,
           basePrice: Number(item.price || 0),
-          discount: (Number(item.price || 0) - Number(getEffectiveUnitPrice(item, 'transfer') || 0)) * Number(item.qty || 1),
-          lineTotal: Number(getEffectiveUnitPrice(item, 'transfer') || 0) * Number(item.qty || 1)
+          discount: isTransferPaymentMethod(paymentMethod) ? (Number(item.price || 0) - Number(getEffectiveUnitPrice(item, 'transfer') || 0)) * Number(item.qty || 1) : 0,
+          lineTotal: Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(paymentMethod)) || 0) * Number(item.qty || 1)
         })),
         total,
+        paymentMethod,
         shipping,
         orderId: transferOrder?.order_id || '',
         orderCode: transferOrder?.order_code || ''
