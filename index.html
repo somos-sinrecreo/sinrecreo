@@ -3662,7 +3662,7 @@
 <!-- ── BUY MODAL ── -->
 <div class="modal-overlay" id="buyModal" role="dialog" aria-modal="true" aria-label="Elegir producto">
   <div class="modal" id="modalInner">
-    <div class="modal-header"><h2 class="modal-title">Elegí modelo, talle y estampa</h2><button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button></div>
+    <div class="modal-header"><h2 class="modal-title">Elegí corte, talle y estampa</h2><button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button></div>
     <div class="modal-body">
       <div class="modal-product-row" id="modalProductRow"></div>
       <div class="modal-section-title">Corte</div><div class="fit-selector" id="modalFits"></div>
@@ -3670,9 +3670,9 @@
       <div class="modal-section-title">Talle</div><div class="size-selector" id="modalSizes"></div>
       <div class="modal-section-title">Tamaño de estampa</div><div class="fit-selector" id="modalStampSizes"></div>
       <div class="modal-stock-note" id="modalStockNote"></div>
-      <div id="modalSizePrompt" class="modal-customer-prompt hidden">Elegí modelo, color, talle y tamaño de estampa para continuar.</div><span id="modalTotal" class="hidden">$0</span>
+      <div id="modalSizePrompt" class="modal-customer-prompt hidden">Elegí corte, color, talle y tamaño de estampa para continuar.</div><span id="modalTotal" class="hidden">$0</span>
       <button class="modal-secondary-cta" id="modalAddCartCta" type="button" onclick="addConfiguredToCart(true)">Agregar al carrito</button>
-      <div class="modal-secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Elegí modelo, color, talle y tamaño de estampa. Después continuás desde el carrito con entrega y forma de pago.</div>
+      <div class="modal-secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Elegí corte, color, talle y tamaño de estampa. Después continuás desde el carrito con entrega y forma de pago.</div>
     </div>
   </div>
 </div>
@@ -6048,11 +6048,9 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     fitWrap.innerHTML = fits.map(fit => {
       const stock = getFitStockTotal(product, fit);
       const tone = getStockTone(stock);
-      const measurements = getFitMeasurementsSummary(fit);
       return `
-      <button class="fit-btn fit-with-measurements ${tone} ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')" ${stock <= 0 ? 'disabled' : ''}>
+      <button class="fit-btn ${tone} ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')" ${stock <= 0 ? 'disabled' : ''}>
         <span>${getFitLabel(fit)}</span>
-        ${measurements ? `<small class="garment-measurements">${measurements}</small>` : ''}
         <small class="garment-stock">${getStockLabel(stock)}</small>
       </button>`;
     }).join('');
@@ -6063,7 +6061,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     if (!colorWrap) return;
     const colors = getAllColorsForFit(product, selectedFit);
     if (!colors.length) {
-      colorWrap.innerHTML = '<div class="mini">Sin colores cargados para este modelo</div>';
+      colorWrap.innerHTML = '<div class="mini">Sin colores cargados para este corte</div>';
       return;
     }
     const preferredColor = colors.find(color => getColorStockTotal(product, selectedFit, color) > 0) || colors[0] || '';
@@ -6261,7 +6259,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const addConfiguredToCart = (closeAfter = false) => {
     if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
-    if (!currentProduct || !selectedSize) { alert('Elegí modelo, color, talle y tamaño de estampa antes de agregar al carrito.'); return; }
+    if (!currentProduct || !selectedSize) { alert('Elegí corte, color, talle y tamaño de estampa antes de agregar al carrito.'); return; }
     const selectedBlankStockId = getBlankStockId(currentProduct, selectedSize, selectedFit, selectedColor);
     if (!selectedBlankStockId) { alert('No encontramos stock base válido para esa combinación.'); return; }
     const stampSize = getStampSizeOption(selectedStampSize).id;
