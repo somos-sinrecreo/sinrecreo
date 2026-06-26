@@ -1357,6 +1357,35 @@
       opacity: .78;
       letter-spacing: .02em;
     }
+    .fit-btn.fit-with-measurements {
+      flex: 1 1 220px;
+      min-width: 210px;
+      align-items: flex-start;
+      text-align: left;
+      padding: 12px 14px;
+    }
+    .fit-btn.fit-with-measurements > span {
+      width: 100%;
+    }
+    .fit-btn .garment-measurements {
+      width: 100%;
+      max-width: 34ch;
+      margin-top: 2px;
+      font-size: .64rem;
+      line-height: 1.28;
+      font-weight: 700;
+      opacity: .72;
+      white-space: normal;
+    }
+    .fit-btn .garment-stock,
+    .sz-btn .garment-stock {
+      opacity: .62;
+    }
+    .sz-btn .garment-measurement {
+      font-size: .68rem;
+      font-weight: 800;
+      opacity: .76;
+    }
     .sz-btn:hover:not(:disabled), .sz-btn.selected {
       border-color: var(--ink);
       background: var(--ink);
@@ -3220,13 +3249,14 @@
 
       <div class="hero-right">
         <div class="hero-stat-card fade-up">
-          <div class="stat-grid">
+          <!-- Contadores temporalmente apagados para mejorar la carga. Para reactivar, quitar hidden y cambiar HERO_COUNTERS_ENABLED a true. -->
+          <div class="stat-grid hidden" data-counter-section="off" aria-hidden="true">
             <div class="stat-item"><strong id="statActiveDrops" data-stat="active-drops">0</strong><span>drops activos</span></div>
             <div class="stat-item"><strong id="statActiveCapsules" data-stat="active-capsules">0</strong><span>cápsulas</span></div>
             <div class="stat-item stat-customers"><strong id="statCustomers" data-stat="customers">0</strong><span>clientes</span></div>
             <div class="stat-item"><strong id="statInstallments" data-stat="installments">3x</strong><span>cuotas sin interés</span></div>
           </div>
-          <div class="divider"></div>
+          <div class="divider hidden" data-counter-section="off" aria-hidden="true"></div>
           <div class="pay-info">
             <div class="pay-row">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -3635,7 +3665,7 @@
     <div class="modal-header"><h2 class="modal-title">Elegí modelo, talle y estampa</h2><button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button></div>
     <div class="modal-body">
       <div class="modal-product-row" id="modalProductRow"></div>
-      <div class="modal-section-title">Modelo</div><div class="fit-selector" id="modalFits"></div>
+      <div class="modal-section-title">Corte</div><div class="fit-selector" id="modalFits"></div>
       <div class="modal-section-title">Color</div><div class="fit-selector" id="modalColors"></div>
       <div class="modal-section-title">Talle</div><div class="size-selector" id="modalSizes"></div>
       <div class="modal-section-title">Tamaño de estampa</div><div class="fit-selector" id="modalStampSizes"></div>
@@ -3771,6 +3801,10 @@
 <script>
 
   /* ─── CONFIGURACIÓN GENERAL ─── */
+  // Contadores del hero apagados temporalmente a pedido.
+  // Para reactivarlos: cambiar a true y quitar la clase hidden del bloque data-counter-section.
+  const HERO_COUNTERS_ENABLED = false;
+
   const STORE_CONFIG = {
     whatsappNumber: '5491140492855',
     instagramUrl: 'https://instagram.com/somos.sinrecreo',
@@ -4769,7 +4803,16 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   };
   const makeVariantSizeKey = (fit, size) => normalizeFit(fit) === 'unisex' ? String(size || '') : `${normalizeFit(fit).toUpperCase()}__${String(size || '')}`;
   const SIZE_ORDER = ['XS','S','M','L','XL','XXL'];
-  const getFitLabel = fit => ({ unisex:'Unisex', femenina:'Femenina' }[normalizeFit(fit)] || 'Unisex');
+  const GARMENT_MEASUREMENTS = {
+    unisex: { S:'48×65 cm', M:'49×69 cm', L:'51×71 cm', XL:'54×73 cm', XXL:'56×76 cm' },
+    femenina: { S:'41×57 cm', M:'43×60 cm', L:'45×62 cm', XL:'47×64 cm', XXL:'51×68 cm' }
+  };
+  const getFitLabel = fit => ({ unisex:'Unisex', femenina:'Femenino' }[normalizeFit(fit)] || 'Unisex');
+  const getSizeMeasurement = (fit, size) => (GARMENT_MEASUREMENTS[normalizeFit(fit)] || {})[String(size || '').trim()] || '';
+  const getFitMeasurementsSummary = fit => SIZE_ORDER
+    .filter(size => getSizeMeasurement(fit, size))
+    .map(size => `${size} ${getSizeMeasurement(fit, size)}`)
+    .join(' · ');
   const getFitOrder = fit => ({ unisex:0, femenina:1 }[normalizeFit(fit)] ?? 9);
   const buildBlankStockSnapshot = (rows = []) => {
     const byFitColorSize = {};
@@ -5086,6 +5129,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const loadPublicStoreMetrics = async () => {
     const localMetrics = computeLocalStoreMetrics();
+    if (!HERO_COUNTERS_ENABLED) return localMetrics;
     const client = initSupabaseClient();
     if (!client) return localMetrics;
 
@@ -5112,12 +5156,20 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const renderHeroStats = () => {
     const setText = (selector, value) => document.querySelectorAll(selector).forEach(node => { node.textContent = value; });
     const setHtml = (selector, value) => document.querySelectorAll(selector).forEach(node => { node.innerHTML = value; });
-    const customersCount = Number(storeMetrics.customersCount ?? 0);
 
-    setText('[data-stat="active-drops"], #statActiveDrops', String(storeMetrics.activeDrops ?? 0));
-    setText('[data-stat="active-capsules"], #statActiveCapsules', String(storeMetrics.activeCapsules ?? 0));
-    setText('[data-stat="customers"], #statCustomers', customersCount > 0 ? `+${customersCount}` : '0');
-    setText('[data-stat="installments"], #statInstallments', `${STORE_CONFIG.installmentsCount || 3}x`);
+    document.querySelectorAll('[data-counter-section]').forEach(node => {
+      node.classList.toggle('hidden', !HERO_COUNTERS_ENABLED);
+      node.setAttribute('aria-hidden', HERO_COUNTERS_ENABLED ? 'false' : 'true');
+    });
+
+    if (HERO_COUNTERS_ENABLED) {
+      const customersCount = Number(storeMetrics.customersCount ?? 0);
+      setText('[data-stat="active-drops"], #statActiveDrops', String(storeMetrics.activeDrops ?? 0));
+      setText('[data-stat="active-capsules"], #statActiveCapsules', String(storeMetrics.activeCapsules ?? 0));
+      setText('[data-stat="customers"], #statCustomers', customersCount > 0 ? `+${customersCount}` : '0');
+      setText('[data-stat="installments"], #statInstallments', `${STORE_CONFIG.installmentsCount || 3}x`);
+    }
+
     setHtml('#heroMpText', `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`);
     setHtml('#heroTransferText', `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`);
     setHtml('#heroCuentaDniText', `<strong>Cuenta DNI:</strong> ${getCuentaDniBenefitText()}`);
@@ -5996,10 +6048,12 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     fitWrap.innerHTML = fits.map(fit => {
       const stock = getFitStockTotal(product, fit);
       const tone = getStockTone(stock);
+      const measurements = getFitMeasurementsSummary(fit);
       return `
-      <button class="fit-btn ${tone} ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')" ${stock <= 0 ? 'disabled' : ''}>
+      <button class="fit-btn fit-with-measurements ${tone} ${selectedFit === fit ? 'selected' : ''}" type="button" onclick="selectFit(this,'${fit}')" ${stock <= 0 ? 'disabled' : ''}>
         <span>${getFitLabel(fit)}</span>
-        <small>${getStockLabel(stock)}</small>
+        ${measurements ? `<small class="garment-measurements">${measurements}</small>` : ''}
+        <small class="garment-stock">${getStockLabel(stock)}</small>
       </button>`;
     }).join('');
   };
@@ -6040,10 +6094,12 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     sizeWrap.innerHTML = sizes.map(sz => {
       const stock = getStockForSelection(product, sz, selectedFit, selectedColor);
       const tone = getStockTone(stock);
+      const measurement = getSizeMeasurement(selectedFit, sz);
       return `
       <button class="sz-btn ${tone} ${selectedSize === sz ? 'selected' : ''}" type="button" onclick="selectSize(this,'${sz}')" ${stock <= 0 ? 'disabled' : ''}>
         <span>${sz}</span>
-        <small>${getStockLabel(stock)}</small>
+        ${measurement ? `<small class="garment-measurement">${measurement}</small>` : ''}
+        <small class="garment-stock">${getStockLabel(stock)}</small>
       </button>`;
     }).join('');
     updateModalStockNote();
