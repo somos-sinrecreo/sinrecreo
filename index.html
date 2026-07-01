@@ -2063,7 +2063,7 @@
     }
     .action-share:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
 
-    /* ── ACCESO FLOTANTE · EFEMÉRIDES ── */
+    /* ── ACCESO FLOTANTE · MUJERES DE LA CIENCIA ── */
     .float-efemerides {
       position: fixed;
       right: 22px;
@@ -2255,6 +2255,132 @@
       font-size: 1.8rem;
       letter-spacing: .03em;
       margin-bottom: 8px;
+    }
+
+    .science-tribute {
+      position: relative;
+      overflow: hidden;
+      min-height: 430px;
+      border-radius: 30px;
+      padding: 34px;
+      background: var(--ink);
+      color: #fff;
+      display: grid;
+      grid-template-columns: minmax(220px, .82fr) minmax(0, 1.18fr);
+      gap: 28px;
+      align-items: stretch;
+      box-shadow: var(--sh-lg);
+    }
+    .science-tribute::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 88% 6%, rgba(232,120,90,.40), transparent 48%),
+        radial-gradient(ellipse at 5% 92%, rgba(255,255,255,.10), transparent 42%);
+      pointer-events: none;
+    }
+    .science-tribute::after {
+      content: "CIENCIA";
+      position: absolute;
+      right: -14px;
+      bottom: -22px;
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 14vw, 10rem);
+      line-height: .8;
+      letter-spacing: .02em;
+      color: rgba(255,255,255,.045);
+      pointer-events: none;
+      user-select: none;
+    }
+    .science-tribute > * { position: relative; z-index: 1; }
+    .science-tribute-visual {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 100%;
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .science-tribute-symbol {
+      width: 86px;
+      height: 86px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      background: rgba(232,120,90,.18);
+      color: var(--accent-light);
+      font-size: 2.8rem;
+      box-shadow: 0 18px 48px rgba(0,0,0,.18);
+    }
+    .science-tribute-note {
+      color: rgba(255,255,255,.68);
+      font-size: .88rem;
+      line-height: 1.65;
+      max-width: 30ch;
+    }
+    .science-tribute-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+    }
+    .science-tribute-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(232,120,90,.16);
+      color: var(--accent-light);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .science-tribute-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6.6vw, 6rem);
+      letter-spacing: .035em;
+      line-height: .88;
+      margin: 0;
+    }
+    .science-tribute-title em {
+      font-family: var(--font-serif);
+      font-size: .64em;
+      font-style: italic;
+      color: var(--accent-light);
+    }
+    .science-tribute-lead {
+      max-width: 64ch;
+      color: rgba(255,255,255,.74);
+      font-size: 1rem;
+      line-height: 1.78;
+    }
+    .science-tribute-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .science-tribute-actions .club-cta {
+      width: auto;
+      min-height: 52px;
+      padding-inline: 24px;
+    }
+    @media (max-width: 680px) {
+      .science-tribute {
+        grid-template-columns: 1fr;
+        padding: 26px 18px;
+        min-height: 0;
+      }
+      .science-tribute-visual { padding: 18px; }
+      .science-tribute-symbol { width: 72px; height: 72px; font-size: 2.25rem; }
+      .science-tribute-actions .club-cta { width: 100%; }
     }
 
 
@@ -3517,10 +3643,10 @@
   <svg width="28" height="28" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.76-.87-2.03-.97-.27-.1-.47-.14-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.52.14-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12 2a10 10 0 00-8.5 15.27L2 22l4.86-1.48A10 10 0 1012 2z"/></svg>
 </a>
 
-<!-- ── FLOATING EFEMÉRIDES ── -->
-<button class="float-efemerides" type="button" onclick="openEfemeridesModal(event)" aria-label="Abrir cápsula Efemérides">
-  <span class="float-efemerides-icon" aria-hidden="true">✦</span>
-  <span>Efemérides</span>
+<!-- ── FLOATING MUJERES DE LA CIENCIA ── -->
+<button class="float-efemerides" type="button" onclick="openEfemeridesModal(event)" aria-label="Abrir homenaje Mujeres de la Ciencia">
+  <span class="float-efemerides-icon" aria-hidden="true">🔬</span>
+  <span>Mujeres de la Ciencia</span>
 </button>
 
 
@@ -3701,16 +3827,16 @@
   </div>
 </div>
 
-<!-- ── EFEMÉRIDES MODAL ── -->
-<div class="modal-overlay" id="efemeridesModal" role="dialog" aria-modal="true" aria-label="Cápsula Efemérides">
+<!-- ── MUJERES DE LA CIENCIA MODAL ── -->
+<div class="modal-overlay" id="efemeridesModal" role="dialog" aria-modal="true" aria-label="Mujeres de la Ciencia">
   <div class="modal modal-wide products-modal-shell efemerides-modal-shell">
     <div class="modal-header capsule-modal-header">
       <div>
-        <div class="modal-section-title">Efemérides</div>
-        <h2 class="modal-title">La remera del día</h2>
-        <p class="capsule-modal-sub">Acceso rápido a la última prenda cargada en la cápsula EFEMÉRIDES.</p>
+        <div class="modal-section-title">Mujeres de la Ciencia</div>
+        <h2 class="modal-title">Homenaje a las que hicieron ciencia</h2>
+        <p class="capsule-modal-sub">Antes de entrar a la cápsula, una pausa para nombrar a quienes abrieron caminos, hicieron descubrimientos y muchas veces quedaron fuera del relato oficial.</p>
       </div>
-      <button class="modal-close" onclick="closeEfemeridesModal()" aria-label="Cerrar Efemérides">✕</button>
+      <button class="modal-close" onclick="closeEfemeridesModal()" aria-label="Cerrar Mujeres de la Ciencia">✕</button>
     </div>
     <div class="modal-body" id="efemeridesModalBody">
       <!-- rendered by JS -->
@@ -4036,6 +4162,16 @@
       desc:'Cuando una remera funciona como toma de posición, no solo como look.',
       heroTitle:'Cápsula "Ensayo visual" — activa ahora',
       heroBody:'Cuando una remera funciona como toma de posición, no solo como look.',
+      heroCtaText:'Ver cápsula',
+      featured:false,
+      isActive:true
+    },
+    'Mujeres de la Ciencia': {
+      name:'Mujeres de la Ciencia',
+      tag:'Nueva sección',
+      desc:'Estampas que homenajean a científicas reales y devuelven nombre propio a descubrimientos, métodos e historias.',
+      heroTitle:'Cápsula "Mujeres de la Ciencia" — activa ahora',
+      heroBody:'Una colección para vestir memoria, ciencia y reparación: mujeres que investigaron, descubrieron y abrieron camino.',
       heroCtaText:'Ver cápsula',
       featured:false,
       isActive:true
@@ -4776,12 +4912,20 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const GENERAL_CAPSULE_NAME = 'Línea Permanente';
   const GENERAL_CAPSULE_ALIASES = ['general', 'linea permanente', 'línea permanente', 'permanente', 'seleccion abierta', 'selección abierta', 'catalogo general', 'catálogo general'];
   const isGeneralCapsuleName = name => GENERAL_CAPSULE_ALIASES.includes(normalizeTextKey(name));
-  const getDisplayCapsuleName = name => isGeneralCapsuleName(name) ? GENERAL_CAPSULE_NAME : String(name || '').trim();
-  const EFEMERIDES_CAPSULE_NAME = 'Efemérides';
-  const isEfemeridesCapsuleName = name => normalizeTextKey(name) === 'efemerides';
+  const WOMEN_SCIENCE_CAPSULE_NAME = 'Mujeres de la Ciencia';
+  const WOMEN_SCIENCE_CAPSULE_ALIASES = ['efemerides', 'efemérides', 'mujeres de la ciencia', 'mujeres ciencia', 'mujeres cientificas', 'mujeres científicas'];
+  const isWomenScienceCapsuleName = name => WOMEN_SCIENCE_CAPSULE_ALIASES.includes(normalizeTextKey(name));
+  const getDisplayCapsuleName = name => isGeneralCapsuleName(name)
+    ? GENERAL_CAPSULE_NAME
+    : (isWomenScienceCapsuleName(name) ? WOMEN_SCIENCE_CAPSULE_NAME : String(name || '').trim());
+  // Compatibilidad: si en Supabase todavía figura como “Efemérides”, se muestra y se abre como “Mujeres de la Ciencia”.
+  const EFEMERIDES_CAPSULE_NAME = WOMEN_SCIENCE_CAPSULE_NAME;
+  const isEfemeridesCapsuleName = isWomenScienceCapsuleName;
   const capsuleMatches = (productCapsule, capsuleName) => isGeneralCapsuleName(productCapsule) && isGeneralCapsuleName(capsuleName)
     ? true
-    : normalizeTextKey(productCapsule) === normalizeTextKey(capsuleName);
+    : (isWomenScienceCapsuleName(productCapsule) && isWomenScienceCapsuleName(capsuleName)
+      ? true
+      : normalizeTextKey(productCapsule) === normalizeTextKey(capsuleName));
   const getTransferPrice = p => {
     const basePrice = Number(p?.price || 0);
     if (isPromoActive()) return applyActivePromoToAmount(basePrice);
@@ -5101,9 +5245,9 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const computeLocalStoreMetrics = () => {
     const activeProducts = products.filter(product => getTotalStock(product) > 0);
-    const activeCapsuleNames = new Set(activeProducts.map(product => product.capsule).filter(Boolean));
+    const activeCapsuleNames = new Set(activeProducts.map(product => getDisplayCapsuleName(product.capsule)).filter(Boolean));
     const activeCapsules = capsulesData.length
-      ? capsulesData.filter(capsule => capsule.isActive !== false && activeCapsuleNames.has(capsule.name)).length
+      ? capsulesData.filter(capsule => capsule.isActive !== false && activeCapsuleNames.has(getDisplayCapsuleName(capsule.name))).length
       : activeCapsuleNames.size;
 
     return {
@@ -5455,47 +5599,33 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const getEfemeridesCapsuleName = () => {
     const record = (capsulesData.length ? capsulesData : getCapsuleFallbackData())
       .find(item => isEfemeridesCapsuleName(item.name) || isEfemeridesCapsuleName(item.rawName));
-    return record?.name || getLatestEfemeridesProduct()?.capsule || EFEMERIDES_CAPSULE_NAME;
+    return record?.name || EFEMERIDES_CAPSULE_NAME;
   };
 
   const renderEfemeridesModal = () => {
     const body = document.getElementById('efemeridesModalBody');
     if (!body) return;
-    const product = getLatestEfemeridesProduct();
-    if (!product) {
-      body.innerHTML = `
-        <div class="efemerides-empty">
-          <strong>Efemérides todavía no tiene prendas visibles</strong>
-          <p>Cuando cargues una remera en la cápsula <b>Efemérides</b>, este acceso mostrará automáticamente la última prenda cargada.</p>
-        </div>`;
-      return;
-    }
-
-    const images = getImageList(product);
-    const stock = getTotalStock(product);
-    const transferPrice = getTransferPrice(product);
+    const count = getEfemeridesProducts().length;
     body.innerHTML = `
-      <article class="efemerides-feature">
-        <div class="efemerides-media">
-          <img src="${images[0]}" alt="${escapeHtml(product.title)}" />
+      <article class="science-tribute">
+        <div class="science-tribute-visual">
+          <div class="science-tribute-symbol" aria-hidden="true">🔬</div>
+          <p class="science-tribute-note">Una cápsula para sacar del pie de página a quienes observaron, calcularon, curaron, clasificaron, programaron, enseñaron y descubrieron.</p>
         </div>
-        <div class="efemerides-copy">
-          <div class="efemerides-kicker">✦ Última efeméride cargada</div>
-          <h3 class="efemerides-title">${escapeHtml(product.title)}</h3>
-          <p class="efemerides-desc">${escapeHtml(product.description || 'Una prenda de la cápsula Efemérides, pensada para vestir una fecha, una idea y una conversación.')}</p>
+        <div class="science-tribute-copy">
+          <div class="science-tribute-kicker">✦ Nueva sección · SIN RECREO</div>
+          <h3 class="science-tribute-title">MUJERES<br><em>de la Ciencia</em></h3>
+          <p class="science-tribute-lead">Un homenaje a las mujeres que hicieron ciencia incluso cuando el mundo no estaba dispuesto a nombrarlas. Esta cápsula reúne estampas con memoria, descubrimiento y reparación: vestir una idea también puede ser devolverle lugar a una historia.</p>
           <div class="efemerides-meta">
-            <span class="efemerides-chip">${escapeHtml(getDisplayCapsuleName(product.capsule))}</span>
-            <span class="efemerides-chip">Código ${escapeHtml(product.sku || 'SIN CÓDIGO')}</span>
-            <span class="efemerides-chip">${stock} ${stock === 1 ? 'unidad' : 'unidades'} disponibles</span>
+            <span class="efemerides-chip">Ciencia con nombre propio</span>
+            <span class="efemerides-chip">Historia que vuelve</span>
+            <span class="efemerides-chip">${count} ${count === 1 ? 'prenda visible' : 'prendas visibles'}</span>
           </div>
-          <div class="efemerides-price">
-            <strong>${fmt(product.price || 0)}</strong>
-            <span>3 x ${fmt(Math.round((product.price || 0) / 3))} sin interés · ${fmt(transferPrice)} por transferencia</span>
-          </div>
-          <div class="efemerides-actions">
-            <button class="modal-secondary-cta" type="button" onclick="openBuyModal('${product.id}', event)">Elegir talle y agregar</button>
-            <button class="club-cta secondary" type="button" onclick="addToCart('${product.id}', event)">Agregar directo al carrito</button>
-            <button class="efemerides-outline" type="button" onclick="openEfemeridesCollection()">VER COLECCIÓN COMPLETA</button>
+          <div class="science-tribute-actions">
+            <button class="club-cta primary" type="button" onclick="openEfemeridesCollection()">
+              Ingresar a la cápsula
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
           </div>
         </div>
       </article>`;
