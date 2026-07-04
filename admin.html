@@ -392,7 +392,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
             <h2 class="title" style="margin:0">Códigos promo</h2>
           </div>
-          <p class="mini" style="line-height:1.6;margin-bottom:14px">Cargá los códigos vigentes que después se pueden aplicar desde el carrito. El descuento se calcula sobre las prendas y no se acumula con el 10% de transferencia.</p>
+          <p class="mini" style="line-height:1.6;margin-bottom:14px">Cargá códigos vigentes para aplicar desde el carrito: porcentaje o promo 2x1. No se acumulan con el 10% de transferencia.</p>
           <div class="toolbar" style="margin-bottom:12px">
             <button class="btn btn-accent" id="newPromoBtn" type="button">Nuevo código</button>
             <button class="btn btn-soft" id="reloadPromosBtn" type="button">Recargar</button>
@@ -404,7 +404,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
             <div>
               <h2 class="title" style="margin:0">Editor de promociones</h2>
-              <div class="mini">Ejemplo: SINRECREO20 · 20% · activo hasta una fecha determinada.</div>
+              <div class="mini">Ejemplo: SINRECREO20 · 20% o 2x1 · activo hasta una fecha determinada.</div>
             </div>
             <div class="toolbar">
               <button class="btn btn-dark" id="savePromoBtn" type="button">Guardar código</button>
@@ -417,10 +417,26 @@
 
           <div class="row">
             <label class="field"><span class="label">Código</span><input id="promoCode" placeholder="SINRECREO20" style="text-transform:uppercase;font-weight:800;letter-spacing:.04em" /></label>
-            <label class="field"><span class="label">Descuento %</span><input id="promoDiscountPercent" type="number" min="1" max="100" step="1" placeholder="20" /></label>
+            <label class="field"><span class="label">Tipo de promo</span>
+              <select id="promoType">
+                <option value="percent">Descuento porcentual</option>
+                <option value="bogo">2x1</option>
+              </select>
+            </label>
           </div>
 
-          <label class="field" style="margin-top:12px"><span class="label">Descripción interna / motivo</span><input id="promoDescription" placeholder="Promo QR, lanzamiento, docentes, etc." /></label>
+          <div class="row" style="margin-top:12px">
+            <label class="field" id="promoDiscountField"><span class="label">Descuento %</span><input id="promoDiscountPercent" type="number" min="1" max="100" step="1" placeholder="20" /></label>
+            <div class="field" id="promoBogoInfo">
+              <span class="label">Regla 2x1</span>
+              <div class="summary-card" style="height:100%;display:flex;flex-direction:column;justify-content:center">
+                <strong>2x1</strong>
+                <span class="mini">Por cada 2 prendas del carrito, se bonifica 1 de menor valor.</span>
+              </div>
+            </div>
+          </div>
+
+          <label class="field" style="margin-top:12px"><span class="label">Descripción interna / motivo</span><input id="promoDescription" placeholder="Promo QR, lanzamiento, docentes, 2x1, etc." /></label>
 
           <div class="row" style="margin-top:12px">
             <label class="field"><span class="label">Vigente desde</span><input id="promoStartsAt" type="date" /></label>
@@ -446,7 +462,7 @@
           </div>
 
           <div class="notice" style="margin-top:16px">
-            Importante: para que el carrito lea estos códigos, debe existir la tabla <strong>promo_codes</strong> en Supabase y tener permisos de lectura pública para códigos activos. Te dejo el SQL junto al archivo actualizado.
+            Importante: para que el carrito lea estos códigos, la tabla <strong>promo_codes</strong> debe tener los campos nuevos <strong>promo_type</strong>, <strong>buy_qty</strong> y <strong>pay_qty</strong>. Corré el SQL actualizado en Supabase.
           </div>
 
           <div class="divider"></div>
@@ -613,7 +629,7 @@
       el('saveCapsuleBtn').addEventListener('click', saveCapsule);
       el('saveCapsuleBtnBottom').addEventListener('click', saveCapsule);
       el('deactivateCapsuleBtn').addEventListener('click', deactivateCapsule);
-      ['promoCode','promoDiscountPercent','promoStartsAt','promoEndsAt','promoIsActive'].forEach(id => {
+      ['promoCode','promoDiscountPercent','promoStartsAt','promoEndsAt','promoIsActive','promoType'].forEach(id => {
         el(id)?.addEventListener('input', updatePromoPreview);
         el(id)?.addEventListener('change', updatePromoPreview);
       });
@@ -962,7 +978,9 @@
     };
 
     const normalizePromoCodeForStorage = value => String(value || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
-    const promoBlankForm = () => ({ id:'', code:'', description:'', discount_percent:20, is_active:true, starts_at:'', ends_at:'', max_uses:'', used_count:0 });
+    const promoBlankForm = () => ({ id:'', code:'', description:'', promo_type:'percent', discount_percent:20, buy_qty:2, pay_qty:1, is_active:true, starts_at:'', ends_at:'', max_uses:'', used_count:0 });
+    const getPromoAdminType = promo => String(promo?.promo_type || 'percent').toLowerCase() === 'bogo' ? 'bogo' : 'percent';
+    const getPromoAdminBenefitLabel = promo => getPromoAdminType(promo) === 'bogo' ? '2x1' : `${Number(promo?.discount_percent || 0)}% OFF`;
     const formatDateInput = value => value ? String(value).slice(0, 10) : '';
     const parsePromoBoundaryDate = (value = '', endOfDay = false) => {
       if (!value) return null;
@@ -979,21 +997,27 @@
       if (starts && now < starts) return false;
       if (ends && now > ends) return false;
       if (promo.max_uses !== null && promo.max_uses !== undefined && promo.max_uses !== '' && Number(promo.used_count || 0) >= Number(promo.max_uses)) return false;
-      return Number(promo.discount_percent || 0) > 0;
+      return getPromoAdminType(promo) === 'bogo' ? true : Number(promo.discount_percent || 0) > 0;
     };
     const updatePromoPreview = () => {
       const code = normalizePromoCodeForStorage(el('promoCode')?.value || '');
+      const type = el('promoType')?.value === 'bogo' ? 'bogo' : 'percent';
       const discount = Number(el('promoDiscountPercent')?.value || 0);
       const previewDiscount = el('promoPreviewDiscount');
       const previewText = el('promoPreviewText');
-      if (previewDiscount) previewDiscount.textContent = `${discount || 0}%`;
-      if (previewText) previewText.textContent = code ? `${code} · ${el('promoIsActive')?.value === 'true' ? 'activo' : 'inactivo'}` : 'Código sin cargar';
+      const discountField = el('promoDiscountField');
+      const bogoInfo = el('promoBogoInfo');
+      if (discountField) discountField.classList.toggle('hidden', type === 'bogo');
+      if (bogoInfo) bogoInfo.classList.toggle('hidden', type !== 'bogo');
+      if (previewDiscount) previewDiscount.textContent = type === 'bogo' ? '2x1' : `${discount || 0}%`;
+      if (previewText) previewText.textContent = code ? `${code} · ${type === 'bogo' ? '2x1' : 'porcentaje'} · ${el('promoIsActive')?.value === 'true' ? 'activo' : 'inactivo'}` : 'Código sin cargar';
     };
     const fillPromoForm = promo => {
       const row = promo || promoBlankForm();
       el('promoId').value = row.id || '';
       el('promoCode').value = row.code || '';
       el('promoDescription').value = row.description || '';
+      el('promoType').value = getPromoAdminType(row);
       el('promoDiscountPercent').value = Number(row.discount_percent || 0);
       el('promoStartsAt').value = formatDateInput(row.starts_at);
       el('promoEndsAt').value = formatDateInput(row.ends_at);
@@ -1005,13 +1029,17 @@
     };
     const collectPromoForm = () => {
       const code = normalizePromoCodeForStorage(el('promoCode').value);
-      const discount = Number(el('promoDiscountPercent').value || 0);
+      const promoType = el('promoType').value === 'bogo' ? 'bogo' : 'percent';
+      const discount = promoType === 'bogo' ? 0 : Number(el('promoDiscountPercent').value || 0);
       const maxUsesRaw = el('promoMaxUses').value;
       return {
         id: el('promoId').value || null,
         code,
         description: el('promoDescription').value.trim() || null,
+        promo_type: promoType,
         discount_percent: discount,
+        buy_qty: 2,
+        pay_qty: 1,
         starts_at: el('promoStartsAt').value || null,
         ends_at: el('promoEndsAt').value || null,
         max_uses: maxUsesRaw === '' ? null : Math.max(0, parseInt(maxUsesRaw, 10) || 0),
@@ -1032,7 +1060,7 @@
             <h4>${promo.code}</h4>
             <span class="badge">${isPromoVigente(promo) ? 'Vigente' : (promo.is_active ? 'Fuera de fecha' : 'Inactivo')}</span>
           </div>
-          <p>${Number(promo.discount_percent || 0)}% OFF · ${promo.description || 'sin descripción'}${promo.ends_at ? ' · hasta ' + formatDateInput(promo.ends_at) : ''}</p>
+          <p>${getPromoAdminBenefitLabel(promo)} · ${promo.description || 'sin descripción'}${promo.ends_at ? ' · hasta ' + formatDateInput(promo.ends_at) : ''}</p>
         </div>
       `).join('');
       list.querySelectorAll('.item[data-id]').forEach(node => {
@@ -1044,7 +1072,7 @@
       try {
         const { data, error } = await sb
           .from('promo_codes')
-          .select('id, code, description, discount_percent, is_active, starts_at, ends_at, max_uses, used_count, created_at')
+          .select('id, code, description, promo_type, discount_percent, buy_qty, pay_qty, is_active, starts_at, ends_at, max_uses, used_count, created_at')
           .order('created_at', { ascending: false });
         if (error) throw error;
         promoCodes = data || [];
@@ -1073,7 +1101,7 @@
       try {
         const payload = collectPromoForm();
         if (!payload.code) throw new Error('Completá el código promocional.');
-        if (!(payload.discount_percent > 0 && payload.discount_percent <= 100)) throw new Error('El descuento debe estar entre 1 y 100.');
+        if (payload.promo_type === 'percent' && !(payload.discount_percent > 0 && payload.discount_percent <= 100)) throw new Error('El descuento debe estar entre 1 y 100.');
         let savedId = payload.id;
         if (savedId) {
           const { error } = await sb.from('promo_codes').update(payload).eq('id', savedId);
