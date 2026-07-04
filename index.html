@@ -4293,10 +4293,34 @@
     const date = new Date(normalized);
     return Number.isNaN(date.getTime()) ? null : date;
   };
+  const getPromoType = (promo = activePromo) => String(promo?.promoType || promo?.promo_type || 'percent').toLowerCase() === 'bogo' ? 'bogo' : 'percent';
+  const isBogoPromoRecord = (promo = activePromo) => getPromoType(promo) === 'bogo';
+  const getPromoBuyQty = (promo = activePromo) => Math.max(2, Number(promo?.buyQty ?? promo?.buy_qty ?? 2) || 2);
+  const getPromoPayQty = (promo = activePromo) => {
+    const buyQty = getPromoBuyQty(promo);
+    const raw = Math.max(1, Number(promo?.payQty ?? promo?.pay_qty ?? 1) || 1);
+    return Math.min(raw, buyQty - 1);
+  };
+  const getPromoFreeQty = (promo = activePromo) => Math.max(1, getPromoBuyQty(promo) - getPromoPayQty(promo));
+  const getPromoBenefitLabel = (promo = activePromo) => {
+    if (!promo) return 'PROMO';
+    if (isBogoPromoRecord(promo)) {
+      const buyQty = getPromoBuyQty(promo);
+      const payQty = getPromoPayQty(promo);
+      return buyQty === 2 && payQty === 1 ? '2x1' : `${buyQty}x${payQty}`;
+    }
+    return `${Number(promo.discount || promo.discount_percent || 0)}% OFF`;
+  };
   const isPromoCurrentlyAvailable = (promo = {}) => {
     if (!promo || promo.isActive === false) return false;
-    const discount = Number(promo.discount || promo.discount_percent || 0);
-    if (!(discount > 0)) return false;
+    if (isBogoPromoRecord(promo)) {
+      const buyQty = getPromoBuyQty(promo);
+      const payQty = getPromoPayQty(promo);
+      if (!(buyQty > payQty && payQty > 0)) return false;
+    } else {
+      const discount = Number(promo.discount || promo.discount_percent || 0);
+      if (!(discount > 0)) return false;
+    }
     const now = new Date();
     const startsAt = parsePromoBoundaryDate(promo.startsAt || promo.starts_at || '', false);
     const endsAt = parsePromoBoundaryDate(promo.endsAt || promo.ends_at || '', true);
@@ -4339,7 +4363,16 @@
   const saveActivePromo = promo => {
     try {
       if (!promo) localStorage.removeItem(getPromoStorageKey());
-      else localStorage.setItem(getPromoStorageKey(), JSON.stringify({ id: promo.id || '', code: promo.code, publicCode: promo.publicCode, discount: promo.discount, acceptedAt: new Date().toISOString() }));
+      else localStorage.setItem(getPromoStorageKey(), JSON.stringify({
+        id: promo.id || '',
+        code: promo.code,
+        publicCode: promo.publicCode,
+        discount: promo.discount,
+        promoType: getPromoType(promo),
+        buyQty: getPromoBuyQty(promo),
+        payQty: getPromoPayQty(promo),
+        acceptedAt: new Date().toISOString()
+      }));
     } catch (error) {}
   };
   const markPromoDeclined = promo => {
@@ -4349,10 +4382,12 @@
   };
   const isPromoActive = () => Boolean(activePromo && isPromoCurrentlyAvailable(activePromo));
   const getActivePromoDiscount = () => Number(activePromo?.discount || 0);
+  const isActivePercentPromo = () => isPromoActive() && !isBogoPromoRecord(activePromo);
+  const isActiveBogoPromo = () => isPromoActive() && isBogoPromoRecord(activePromo);
   const applyActivePromoToAmount = amount => {
     const value = Number(amount || 0);
     const discount = getActivePromoDiscount();
-    return isPromoActive() && discount > 0 ? Math.max(0, Math.round(value * (1 - discount / 100))) : value;
+    return isActivePercentPromo() && discount > 0 ? Math.max(0, Math.round(value * (1 - discount / 100))) : value;
   };
   const getEffectiveProductPrice = (product = {}, stampSize = 'normal') => applyActivePromoToAmount(getProductPriceWithStamp(product, stampSize));
   const getEffectiveUnitPrice = (product = {}, paymentMethod = 'mp') => {
@@ -4377,8 +4412,11 @@
     promo_id: activePromo?.id || null,
     promo_code: getPromoLabel(),
     promo_discount: getActivePromoDiscount(),
-    promo_description: activePromo?.title || activePromo?.body || ''
-  } : { promo_id: null, promo_code: '', promo_discount: 0, promo_description: '' };
+    promo_type: getPromoType(activePromo),
+    promo_buy_qty: isActiveBogoPromo() ? getPromoBuyQty(activePromo) : null,
+    promo_pay_qty: isActiveBogoPromo() ? getPromoPayQty(activePromo) : null,
+    promo_description: activePromo?.title || activePromo?.body || getPromoBenefitLabel(activePromo)
+  } : { promo_id: null, promo_code: '', promo_discount: 0, promo_type: '', promo_buy_qty: null, promo_pay_qty: null, promo_description: '' };
   const hasPromoDeepLink = () => Boolean(getPromoFromUrl());
   const initPromoSystem = () => {
     pendingPromo = getPromoFromUrl();
@@ -4447,6 +4485,48 @@
     status.classList.toggle('hidden', !message);
   };
   const getCartOriginalSubtotal = () => cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+  const getCartPromoPricing = (paymentMethod = selectedPayMethod) => {
+    const pricingMethod = getPricingPaymentMethod(paymentMethod);
+    const rows = cart.map(item => {
+      const qty = Math.max(1, Number(item.qty || 1));
+      const unitBase = Number(item.price || 0);
+      const unitPrice = Number(getEffectiveUnitPrice(item, pricingMethod) || 0);
+      return {
+        unitBase,
+        subTotal: unitBase * qty,
+        unitPrice,
+        lineTotal: unitPrice * qty,
+        discount: Math.max(0, (unitBase - unitPrice) * qty),
+        qty
+      };
+    });
+    if (!isActiveBogoPromo()) return rows;
+
+    const buyQty = getPromoBuyQty(activePromo);
+    const freeQtyPerGroup = getPromoFreeQty(activePromo);
+    const units = [];
+    cart.forEach((item, cartIndex) => {
+      const qty = Math.max(1, Number(item.qty || 1));
+      const unitBase = Number(item.price || 0);
+      for (let i = 0; i < qty; i += 1) units.push({ cartIndex, price: unitBase });
+    });
+    const freeUnits = Math.floor(units.length / buyQty) * freeQtyPerGroup;
+    if (freeUnits <= 0) return rows.map(row => ({ ...row, unitPrice: row.unitBase, lineTotal: row.subTotal, discount: 0 }));
+
+    const discountByIndex = new Map();
+    units
+      .sort((a, b) => a.price - b.price)
+      .slice(0, freeUnits)
+      .forEach(unit => discountByIndex.set(unit.cartIndex, Number(discountByIndex.get(unit.cartIndex) || 0) + unit.price));
+
+    return rows.map((row, index) => {
+      const discount = Math.min(row.subTotal, Math.round(Number(discountByIndex.get(index) || 0)));
+      const lineTotal = Math.max(0, row.subTotal - discount);
+      return { ...row, unitPrice: row.qty ? lineTotal / row.qty : lineTotal, lineTotal, discount };
+    });
+  };
+  const getCartPromoSavings = (paymentMethod = selectedPayMethod) => getCartPromoPricing(paymentMethod).reduce((sum, row) => sum + Number(row.discount || 0), 0);
+  const getCartPromoLinePricing = (cartIndex, paymentMethod = selectedPayMethod) => getCartPromoPricing(paymentMethod)[cartIndex] || null;
   const renderCartPromoPanel = () => {
     const panel = document.getElementById('cartPromoPanel');
     if (!panel) return;
@@ -4458,9 +4538,10 @@
       if (applyBtn) applyBtn.textContent = 'Aplicar';
       return;
     }
-    const savings = getPromoDiscountAmount(getCartOriginalSubtotal());
+    const savings = isActiveBogoPromo() ? getCartPromoSavings() : getPromoDiscountAmount(getCartOriginalSubtotal());
+    const benefit = getPromoBenefitLabel(activePromo);
     if (applied) {
-      applied.innerHTML = `<div>🎁 <strong>${escapeHtml(getPromoLabel())}</strong> activo · ${getActivePromoDiscount()}% OFF${savings > 0 ? ` · Ahorrás ${fmt(savings)}` : ''}</div><button class="cart-promo-remove" type="button" onclick="clearActivePromoFromCart()">Quitar</button>`;
+      applied.innerHTML = `<div>🎁 <strong>${escapeHtml(getPromoLabel())}</strong> activo · ${escapeHtml(benefit)}${savings > 0 ? ` · Ahorrás ${fmt(savings)}` : ''}</div><button class="cart-promo-remove" type="button" onclick="clearActivePromoFromCart()">Quitar</button>`;
       applied.classList.remove('hidden');
     }
     if (input && document.activeElement !== input) input.value = getPromoLabel();
@@ -4501,7 +4582,7 @@
       return;
     }
     const checkoutPanel = document.getElementById('cartCheckoutPanel');
-    const html = `<div class="promo-active-strip" id="promoActiveStrip">🎁 Promo ${getPromoLabel()} activa: ${getActivePromoDiscount()}% de descuento aplicado sobre las prendas. No acumulable con otros descuentos internos.</div>`;
+    const html = `<div class="promo-active-strip" id="promoActiveStrip">🎁 Promo ${getPromoLabel()} activa: ${getPromoBenefitLabel(activePromo)} aplicado sobre las prendas. No acumulable con otros descuentos internos.</div>`;
     if (checkoutPanel) {
       if (existing) existing.outerHTML = html;
       else checkoutPanel.insertAdjacentHTML('afterbegin', html);
@@ -5411,12 +5492,19 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const normalizePromoRecord = (row = {}) => {
     const rawCode = String(row.code || row.public_code || '').trim();
+    const promoType = String(row.promo_type || row.promoType || 'percent').toLowerCase() === 'bogo' ? 'bogo' : 'percent';
+    const discount = Number(row.discount_percent ?? row.discount ?? 0);
+    const buyQty = Math.max(2, Number(row.buy_qty ?? row.buyQty ?? 2) || 2);
+    const payQty = Math.min(Math.max(1, Number(row.pay_qty ?? row.payQty ?? 1) || 1), buyQty - 1);
     return {
       id: row.id || rawCode,
       code: rawCode,
       publicCode: String(row.public_code || rawCode).trim().toUpperCase(),
-      discount: Number(row.discount_percent ?? row.discount ?? 0),
-      title: row.description || row.title || `${Number(row.discount_percent ?? row.discount ?? 0)}% OFF`,
+      promoType,
+      discount,
+      buyQty,
+      payQty,
+      title: row.description || row.title || (promoType === 'bogo' ? (buyQty === 2 && payQty === 1 ? '2x1' : `${buyQty}x${payQty}`) : `${discount}% OFF`),
       subtitle: row.subtitle || '',
       body: row.description || '',
       isActive: row.is_active !== false,
@@ -5433,7 +5521,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     try {
       const { data, error } = await client
         .from('promo_codes')
-        .select('id, code, description, discount_percent, is_active, starts_at, ends_at, max_uses, used_count, created_at')
+        .select('id, code, description, promo_type, discount_percent, buy_qty, pay_qty, is_active, starts_at, ends_at, max_uses, used_count, created_at')
         .order('created_at', { ascending: false });
       if (error) throw error;
       remotePromoCatalogLoaded = true;
@@ -6734,7 +6822,7 @@ ${value}`);
     const stampSurcharge = Number(item.stampSurcharge ?? item.stamp_surcharge ?? getStampSizeSurcharge(stampSize));
     const color = item.color || item.selectedColor || '';
     const paymentMethod = item.paymentMethod || item.payment_method || selectedPayMethod;
-    const benefitLabel = isPromoActive() ? `promo ${getPromoLabel()}` : 'transferencia';
+    const benefitLabel = isPromoActive() ? `promo ${getPromoLabel()} (${getPromoBenefitLabel(activePromo)})` : 'transferencia';
     const benefitLine = isCuentaDniPaymentMethod(paymentMethod)
       ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
       : `• Descuento ${benefitLabel}: ${fmt(discount)}`;
@@ -6864,7 +6952,7 @@ ${benefitLine}
     const paymentTitle = isCuentaDni ? 'Cuenta DNI' : 'transferencia bancaria';
     const benefitSummary = isCuentaDni
       ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
-      : `• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() : 'transferencia'}: ${fmt(computedDiscount)}`;
+      : `• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() + ' (' + getPromoBenefitLabel(activePromo) + ')' : 'transferencia'}: ${fmt(computedDiscount)}`;
     const totalLabel = isCuentaDni ? 'Total a pagar en tienda' : 'Total a transferir';
     const finalNote = isCuentaDni
       ? '_La tienda no aplica el reintegro en esta orden. Cuenta DNI lo acredita según sus condiciones._'
@@ -6935,7 +7023,7 @@ ${finalNote}`;
   };
 
 
-  const buildCheckoutItem = (product, quantity = 1, fit = 'unisex', size = '', color = 'Hueso', paymentMethod = 'mp') => {
+  const buildCheckoutItem = (product, quantity = 1, fit = 'unisex', size = '', color = 'Hueso', paymentMethod = 'mp', linePricing = null) => {
     const normalizedFit = normalizeFit(fit);
     const normalizedColor = normalizeColor(color || product.selectedColor || 'Hueso');
     const blankStockId = getBlankStockId(product, size, normalizedFit, normalizedColor) || product.selectedBlankStockId || product.selectedVariantId || '';
@@ -6944,8 +7032,11 @@ ${finalNote}`;
     const stampSurcharge = Number(product.stampSurcharge ?? getStampSizeSurcharge(stampSize));
     const baseProductPrice = Number(product.baseProductPrice ?? Math.max(0, Number(product.price || 0) - stampSurcharge));
     const basePrice = Number(product.price || 0);
-    const unitPrice = Number(getEffectiveUnitPrice(product, paymentMethod) || 0);
     const qty = Number(quantity || 1);
+    const lineSubTotal = Number(linePricing?.subTotal ?? (basePrice * qty));
+    const lineTotal = Number(linePricing?.lineTotal ?? (Number(getEffectiveUnitPrice(product, paymentMethod) || 0) * qty));
+    const unitPrice = Number(linePricing?.unitPrice ?? (qty ? lineTotal / qty : lineTotal));
+    const lineDiscount = Number(linePricing?.discount ?? Math.max(0, lineSubTotal - lineTotal));
     return {
       product_id: product.dbId || product.product_id || null,
       product_slug: product.id || product.slug || '',
@@ -6965,8 +7056,8 @@ ${finalNote}`;
       unit_price: unitPrice,
       base_price: basePrice,
       product_base_price: baseProductPrice,
-      line_total: unitPrice * qty,
-      discount: Math.max(0, (basePrice - unitPrice) * qty)
+      line_total: lineTotal,
+      discount: lineDiscount
     };
   };
 
@@ -7034,18 +7125,21 @@ ${finalNote}`;
     const body = document.getElementById('cartBody'); const footer = document.getElementById('cartFooter');
     if (!cart.length) { body.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>' + (isPreLaunchMode() ? 'La compra online se habilitará próximamente.' : 'Tu carrito está vacío') + '</p></div>'; footer.style.display = 'none'; selectedCartShippingOption = null; cartShippingQuotes = []; cartCheckoutOpen = false; return; }
     footer.style.display = ''; fillDeliveryInputs('cart');
+    const cartPricing = getCartPromoPricing(selectedPayMethod);
     body.innerHTML = cart.map((item, cartIndex) => {
       const img = getImageList(item)[0];
       const stampSize = item.selectedStampSize || 'normal';
       const stampMeta = getStampSizeMeta(stampSize);
       const removeArgs = [item.id, item.selectedSize, item.selectedFit || 'unisex', item.selectedColor || 'Hueso', stampSize].map(value => JSON.stringify(value)).join(',');
-      const unitDisplayPrice = getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod));
-      const promoLine = isPromoActive() ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ': -' + fmt(getPromoDiscountAmount(item.price) * item.qty) + '</div>' : '';
-      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(unitDisplayPrice * item.qty) + '</div></div><button class="cart-item-remove" type="button" onclick="removeCartItemByIndex(' + cartIndex + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
+      const pricing = cartPricing[cartIndex] || {};
+      const lineTotal = Number(pricing.lineTotal ?? (Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod)) || 0) * Number(item.qty || 1)));
+      const discount = Number(pricing.discount || 0);
+      const promoLine = isPromoActive() && discount > 0 ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ' (' + escapeHtml(getPromoBenefitLabel(activePromo)) + '): -' + fmt(discount) + '</div>' : '';
+      return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(lineTotal) + '</div></div><button class="cart-item-remove" type="button" onclick="removeCartItemByIndex(' + cartIndex + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
     }).join('');
     renderPromoActiveUi();
     renderCartPromoPanel();
-    const subtotal = cart.reduce((sum, item) => sum + Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod)) || 0) * Number(item.qty || 1), 0);
+    const subtotal = cartPricing.reduce((sum, row) => sum + Number(row.lineTotal || 0), 0);
     const shipping = cartDeliveryMethod === 'pickup' ? getPickupShippingOption() : selectedCartShippingOption; const shippingCharge = Number(shipping?.charge || 0);
     document.getElementById('cartTotal').textContent = fmt(subtotal); const grand = document.getElementById('cartGrandTotal'); if (grand) grand.textContent = fmt(subtotal + shippingCharge);
     const checkoutPanel = document.getElementById('cartCheckoutPanel'); if (checkoutPanel) checkoutPanel.classList.toggle('hidden', !cartCheckoutOpen); const openBtn = document.getElementById('cartOpenCheckoutButton'); if (openBtn) { openBtn.classList.toggle('hidden', cartCheckoutOpen); const paymentBlocked = !isPaymentEnabled(); openBtn.disabled = paymentBlocked; openBtn.setAttribute('aria-disabled', paymentBlocked ? 'true' : 'false'); openBtn.classList.toggle('payment-locked-by-presale', paymentBlocked); openBtn.classList.remove('prelaunch-disabled'); openBtn.textContent = paymentBlocked ? 'Finalizar compra' : 'Finalizar compra'; }
@@ -7207,13 +7301,15 @@ ${finalNote}`;
     const shipping = validateSelectedShipping('cart');
     if (!shipping) return;
 
-    const validItems = cart.map(item => buildCheckoutItem(
+    const cartPricing = getCartPromoPricing(paymentMethod);
+    const validItems = cart.map((item, index) => buildCheckoutItem(
       item,
       item.qty,
       item.selectedFit || 'unisex',
       item.selectedSize || '',
       item.selectedColor || 'Hueso',
-      getPricingPaymentMethod(paymentMethod)
+      getPricingPaymentMethod(paymentMethod),
+      cartPricing[index]
     )).map(item => ({ ...item, payment_method: paymentMethod, paymentMethod })).filter(item => item.product_id && item.blank_stock_id);
 
     if (!validItems.length) {
@@ -7227,25 +7323,29 @@ ${finalNote}`;
     try {
       const transferOrder = await createTransferOrder(validItems, customer, 'cart', shipping, paymentMethod);
 
-      const total = cart.reduce((sum, item) => sum + (getEffectiveUnitPrice(item, getPricingPaymentMethod(paymentMethod)) * item.qty), 0) + Number(shipping.charge || 0);
+      const total = cartPricing.reduce((sum, row) => sum + Number(row.lineTotal || 0), 0) + Number(shipping.charge || 0);
       const transferMessage = buildTransferOrderMessage({
         customer,
-        items: cart.map(item => ({
-          title: item.title,
-          sku: item.sku,
-          capsule: item.capsule,
-          size: item.selectedSize,
-          fit: item.selectedFit || 'unisex',
-          color: item.selectedColor || 'Hueso',
-          stampSize: item.selectedStampSize || 'normal',
-          stampSizeLabel: item.selectedStampLabel || getStampSizeLabel(item.selectedStampSize || 'normal'),
-          stampSurcharge: Number(item.stampSurcharge || 0),
-          quantity: item.qty,
-          paymentMethod,
-          basePrice: Number(item.price || 0),
-          discount: isTransferPaymentMethod(paymentMethod) ? (Number(item.price || 0) - Number(getEffectiveUnitPrice(item, 'transfer') || 0)) * Number(item.qty || 1) : 0,
-          lineTotal: Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(paymentMethod)) || 0) * Number(item.qty || 1)
-        })),
+        items: cart.map((item, index) => {
+          const pricing = cartPricing[index] || {};
+          return {
+            title: item.title,
+            sku: item.sku,
+            capsule: item.capsule,
+            size: item.selectedSize,
+            fit: item.selectedFit || 'unisex',
+            color: item.selectedColor || 'Hueso',
+            stampSize: item.selectedStampSize || 'normal',
+            stampSizeLabel: item.selectedStampLabel || getStampSizeLabel(item.selectedStampSize || 'normal'),
+            stampSurcharge: Number(item.stampSurcharge || 0),
+            quantity: item.qty,
+            paymentMethod,
+            basePrice: Number(item.price || 0),
+            subTotal: Number(pricing.subTotal ?? (Number(item.price || 0) * Number(item.qty || 1))),
+            discount: Number(pricing.discount || 0),
+            lineTotal: Number(pricing.lineTotal ?? (Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(paymentMethod)) || 0) * Number(item.qty || 1)))
+          };
+        }),
         total,
         paymentMethod,
         shipping,
@@ -7291,13 +7391,15 @@ ${finalNote}`;
       }
     }
 
-    const mpItems = cart.map(item => buildCheckoutItem(
+    const cartPricing = getCartPromoPricing('mp');
+    const mpItems = cart.map((item, index) => buildCheckoutItem(
       item,
       item.qty,
       item.selectedFit || 'unisex',
       item.selectedSize || '',
       item.selectedColor || 'Hueso',
-      'mp'
+      'mp',
+      cartPricing[index]
     )).filter(item => item.product_id && item.blank_stock_id);
 
     if (!mpItems.length) {
