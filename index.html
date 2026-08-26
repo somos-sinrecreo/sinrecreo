@@ -3351,6 +3351,79 @@
       .promo-qr-card { padding: 26px 18px; min-height: 0; }
       .promo-qr-actions { grid-template-columns: 1fr; }
     }
+
+
+    /* ── LITERAL · campaña discos + cine ── */
+    .nav-link-literal{color:var(--accent);font-weight:800}
+    .literal-section{padding:56px 0 8px}
+    .literal-stage{
+      position:relative;overflow:hidden;background:var(--ink);color:var(--paper);
+      border-radius:30px;padding:54px;border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 24px 70px rgba(26,26,27,.16)
+    }
+    .literal-stage::before{
+      content:'LITERAL';position:absolute;right:-22px;top:-48px;font-family:var(--display);
+      font-size:clamp(8rem,20vw,18rem);line-height:1;color:rgba(255,255,255,.035);letter-spacing:.02em;pointer-events:none
+    }
+    .literal-stage-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:end}
+    .literal-kicker{font-size:.72rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#d6a08f;margin-bottom:14px}
+    .literal-title{font-family:var(--display);font-size:clamp(4rem,8vw,7.5rem);line-height:.82;letter-spacing:.015em;margin:0}
+    .literal-title em{font-family:var(--serif);font-weight:400;color:#d6a08f}
+    .literal-copy{font-size:1rem;line-height:1.75;color:rgba(250,249,246,.72);max-width:52ch;margin:24px 0 0}
+    .literal-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .literal-choice{
+      min-height:190px;text-align:left;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.055);color:white;
+      border-radius:22px;padding:24px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;transition:.25s ease
+    }
+    .literal-choice:hover{transform:translateY(-3px);background:rgba(255,255,255,.095);border-color:rgba(255,255,255,.28)}
+    .literal-choice-icon{font-size:2rem}.literal-choice strong{font-family:var(--display);font-size:2.1rem;letter-spacing:.04em}
+    .literal-choice span{font-size:.82rem;color:rgba(255,255,255,.62);line-height:1.45}
+    .literal-choice-count{display:inline-flex;margin-top:7px;font-weight:800;color:#d6a08f!important}
+    .literal-manifesto{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+    .literal-manifesto span{border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 12px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+
+    .literal-modal-shell{max-width:1180px;background:#f4efe8}
+    .literal-modal-header{background:var(--ink);color:white;border-bottom:0}
+    .literal-modal-header .modal-section-title{color:#d6a08f}.literal-modal-header .modal-title{color:white}
+    .literal-modal-header .modal-close{color:white;border-color:rgba(255,255,255,.18)}
+    .literal-modal-body{padding:0}
+    .literal-intro{background:var(--ink);color:white;padding:0 34px 32px}
+    .literal-intro-line{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:rgba(255,255,255,.72)}
+    .literal-controls{position:sticky;top:0;z-index:5;background:rgba(244,239,232,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:18px 28px;display:grid;grid-template-columns:auto minmax(220px,1fr) auto;gap:12px;align-items:center}
+    .literal-tabs{display:flex;gap:8px}.literal-tab{border:1px solid var(--line);background:white;border-radius:999px;padding:11px 16px;font-weight:800;cursor:pointer;color:var(--ink)}
+    .literal-tab.active{background:var(--ink);color:white;border-color:var(--ink)}
+    .literal-search-wrap{position:relative}.literal-search{width:100%;border:1px solid var(--line);border-radius:999px;padding:12px 16px 12px 42px;background:white;outline:none}
+    .literal-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.48}
+    .literal-surprise{border:0;background:var(--accent);color:white;border-radius:999px;padding:12px 16px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .literal-results-meta{padding:22px 28px 0;color:var(--muted);font-size:.82rem}
+    .literal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding:18px 28px 30px}
+    .literal-card{background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:.2s ease}
+    .literal-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(26,26,27,.09)}
+    .literal-art{aspect-ratio:4/5;background:#e8e1d7;overflow:hidden;position:relative;cursor:pointer}
+    .literal-art img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}.literal-card:hover .literal-art img{transform:scale(1.02)}
+    .literal-kind-badge{position:absolute;left:10px;top:10px;background:rgba(26,26,27,.9);color:white;border-radius:999px;padding:6px 9px;font-size:.64rem;font-weight:800;letter-spacing:.08em}
+    .literal-card-body{padding:16px;display:flex;flex-direction:column;gap:7px;flex:1}
+    .literal-card-title{font-family:var(--display);font-size:1.48rem;letter-spacing:.025em;line-height:.95;margin:0}.literal-card-meta{font-size:.78rem;color:var(--muted);min-height:1.2em}
+    .literal-card-price{font-weight:800;margin-top:auto;padding-top:8px}.literal-card-actions{display:flex;gap:8px;margin-top:8px}
+    .literal-card-buy{flex:1;border:0;background:var(--ink);color:white;border-radius:999px;padding:10px 12px;font-weight:800;cursor:pointer}
+    .literal-card-share{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer}
+    .literal-empty{grid-column:1/-1;text-align:center;padding:58px 20px;color:var(--muted)}
+    .literal-request{margin:0 28px 30px;border:1px dashed #cbbbae;border-radius:20px;padding:22px;display:flex;justify-content:space-between;align-items:center;gap:20px;background:#fffaf5}
+    .literal-request strong{display:block;font-family:var(--display);font-size:1.5rem;letter-spacing:.03em;color:var(--ink)}
+    .literal-request span{font-size:.84rem;color:var(--muted)}
+    .literal-request a{border-radius:999px;background:var(--accent);color:white;padding:12px 16px;font-weight:800;white-space:nowrap}
+
+    @media(max-width:900px){
+      .literal-stage{padding:34px 24px}.literal-stage-grid{grid-template-columns:1fr;gap:28px}.literal-choice-grid{grid-template-columns:1fr 1fr}
+      .literal-controls{grid-template-columns:1fr}.literal-tabs{order:1}.literal-search-wrap{order:2}.literal-surprise{order:3;width:100%}
+      .literal-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px}.literal-results-meta{padding:18px 16px 0}.literal-request{margin:0 16px 24px}
+    }
+    @media(max-width:560px){
+      .literal-section{padding-top:32px}.literal-stage{border-radius:22px;padding:28px 18px}.literal-choice-grid{grid-template-columns:1fr}.literal-choice{min-height:142px}
+      .literal-title{font-size:4.4rem}.literal-grid{grid-template-columns:1fr 1fr;gap:10px}.literal-card-body{padding:12px}.literal-card-title{font-size:1.2rem}
+      .literal-card-actions{flex-direction:column}.literal-card-share{display:none}.literal-request{align-items:flex-start;flex-direction:column}.literal-request a{width:100%;text-align:center}
+    }
+
   </style>
 </head>
 <body>
@@ -3418,6 +3491,7 @@
     <div class="container nav-scroll">
       <a class="nav-link" href="#linea-permanente">Línea Permanente</a>
       <a class="nav-link" href="#capsulas-coleccion">Cápsulas de Colección</a>
+      <a class="nav-link nav-link-literal" href="#literal" onclick="openLiteralModal(event)">LITERAL</a>
       <a class="nav-link nav-link-club" href="#club" onclick="openClubModal(event)">Club SIN RECREO</a>
       <a class="nav-link" href="#productos" onclick="openProductsModal(event)">Productos</a>
       <a class="nav-link" href="#como-comprar">Cómo comprar</a>
@@ -3535,6 +3609,33 @@
     </div>
   </div>
 
+
+
+  <!-- ── LITERAL ── -->
+  <section class="literal-section" id="literal">
+    <div class="container">
+      <div class="literal-stage fade-up">
+        <div class="literal-stage-grid">
+          <div>
+            <div class="literal-kicker">SIN RECREO presenta · Nueva línea</div>
+            <h2 class="literal-title">LITE<em>RAL</em></h2>
+            <p class="literal-copy"><strong>Hay imágenes que no necesitan diseño.</strong><br>Tapas de discos y pósters de películas llevados a la remera sin filtros, sin reinterpretaciones y sin inventar nada.</p>
+            <div class="literal-manifesto"><span>La imagen tal cual</span><span>Discos</span><span>Películas</span><span>Tu historia, puesta</span></div>
+          </div>
+          <div class="literal-choice-grid">
+            <button class="literal-choice" type="button" onclick="openLiteralModal(event,'discos')">
+              <div class="literal-choice-icon">💿</div>
+              <div><strong>DISCOS</strong><span>Tapas que ya son parte de tu memoria.</span><span class="literal-choice-count" id="literalDiscosCount">0 disponibles →</span></div>
+            </button>
+            <button class="literal-choice" type="button" onclick="openLiteralModal(event,'cine')">
+              <div class="literal-choice-icon">🎬</div>
+              <div><strong>PELÍCULAS</strong><span>Pósters que no necesitan presentación.</span><span class="literal-choice-count" id="literalCineCount">0 disponibles →</span></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ── CÓMO COMPRAR ── -->
   <section class="section" id="como-comprar" style="padding-bottom: 0;">
@@ -3695,6 +3796,7 @@
         <a href="#catalogo">Catálogo completo</a>
         <a href="#linea-permanente">Línea Permanente</a>
         <a href="#capsulas-coleccion">Cápsulas de Colección</a>
+        <a href="#literal" onclick="openLiteralModal(event)">LITERAL</a>
         <a href="#catalogo">Nuevos drops</a>
         <a href="#catalogo">Destacados</a>
       </div>
@@ -3781,6 +3883,7 @@
   <nav class="mobile-nav-links" aria-label="Navegación móvil">
     <a href="#linea-permanente" onclick="closeMobileMenu()">Línea Permanente</a>
     <a href="#capsulas-coleccion" onclick="closeMobileMenu()">Cápsulas de Colección</a>
+    <a href="#literal" onclick="openLiteralModal(event); closeMobileMenu();">LITERAL · Discos + Cine</a>
     <a href="#club" onclick="closeMobileMenu(); openClubModal(event);">Club SIN RECREO</a>
     <a href="#productos" onclick="openProductsModal(event); closeMobileMenu();">Productos</a>
     <a href="#como-comprar" onclick="closeMobileMenu()">Cómo comprar</a>
@@ -3883,6 +3986,40 @@
 </div>
 
 <!-- ── BUY MODAL ── -->
+
+<!-- ── LITERAL MODAL ── -->
+<div class="modal-overlay" id="literalModal" role="dialog" aria-modal="true" aria-label="LITERAL · Discos y películas">
+  <div class="modal modal-wide literal-modal-shell">
+    <div class="modal-header literal-modal-header">
+      <div>
+        <div class="modal-section-title">SIN RECREO / LITERAL</div>
+        <h2 class="modal-title">NO LA REDISEÑAMOS. LA VESTIMOS.</h2>
+      </div>
+      <button class="modal-close" onclick="closeLiteralModal()" aria-label="Cerrar LITERAL">✕</button>
+    </div>
+    <div class="modal-body literal-modal-body">
+      <div class="literal-intro"><div class="literal-intro-line">La portada original. El póster original. Elegí la imagen que es parte de tu historia.</div></div>
+      <div class="literal-controls">
+        <div class="literal-tabs" role="tablist" aria-label="Tipo de LITERAL">
+          <button class="literal-tab active" id="literalTabDiscos" type="button" onclick="setLiteralKind('discos')">💿 Discos</button>
+          <button class="literal-tab" id="literalTabCine" type="button" onclick="setLiteralKind('cine')">🎬 Películas</button>
+        </div>
+        <div class="literal-search-wrap">
+          <span class="literal-search-icon">⌕</span>
+          <input class="literal-search" id="literalSearch" type="search" placeholder="Buscá un artista, disco o año…" oninput="renderLiteralProducts()" />
+        </div>
+        <button class="literal-surprise" type="button" onclick="surpriseLiteral()">SORPRENDEME ↻</button>
+      </div>
+      <div class="literal-results-meta" id="literalResultsMeta">Explorá LITERAL.</div>
+      <div class="literal-grid" id="literalGrid"></div>
+      <div class="literal-request">
+        <div><strong>¿NO ESTÁ LA TUYA?</strong><span>Decinos qué disco o película querés vestir. También nos sirve para decidir los próximos drops.</span></div>
+        <a id="literalRequestLink" href="#" target="_blank" rel="noopener noreferrer">PEDIR UNA PORTADA →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="buyModal" role="dialog" aria-modal="true" aria-label="Elegir producto">
   <div class="modal" id="modalInner">
     <div class="modal-header"><h2 class="modal-title">Elegí corte, talle y estampa</h2><button class="modal-close" onclick="closeModal()" aria-label="Cerrar">✕</button></div>
@@ -4076,6 +4213,19 @@
     supabaseStorageBucket: 'product-images', // legado: imágenes nuevas en Cloudflare R2
     adminUrl: './admin.html'
   };
+
+  const LITERAL_DISCOS_CAPSULE = 'LITERAL · DISCOS';
+  const LITERAL_CINE_CAPSULE = 'LITERAL · CINE';
+  const LITERAL_CAPSULES = [LITERAL_DISCOS_CAPSULE, LITERAL_CINE_CAPSULE];
+  const getLiteralKind = productOrCapsule => {
+    const capsule = typeof productOrCapsule === 'string' ? productOrCapsule : (productOrCapsule?.capsule || '');
+    const key = normalizeTextKey(capsule);
+    if (key === normalizeTextKey(LITERAL_DISCOS_CAPSULE)) return 'discos';
+    if (key === normalizeTextKey(LITERAL_CINE_CAPSULE)) return 'cine';
+    return null;
+  };
+  const isLiteralCapsuleName = name => Boolean(getLiteralKind(String(name || '')));
+  const isLiteralProduct = product => Boolean(getLiteralKind(product));
 
   /* Catálogo local de respaldo. Ejemplo de estructura:
     {
@@ -4671,6 +4821,8 @@
   let pendingCapsuleReturn = null;
   let pendingProductsReturn = false;
   let pendingEfemeridesReturn = false;
+  let pendingLiteralReturn = null;
+  let literalCurrentKind = 'discos';
   let productSalesMap = {};
   let bestsellerProducts = [];
   let productSalesSource = 'fallback';
@@ -5361,7 +5513,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   };
 
   const refreshBodyScrollLock = () => {
-    const hasOpenLayer = ['buyModal', 'capsuleModal', 'productsModal', 'clubModal', 'efemeridesModal'].some(id => document.getElementById(id)?.classList.contains('open'))
+    const hasOpenLayer = ['buyModal', 'capsuleModal', 'productsModal', 'clubModal', 'efemeridesModal', 'literalModal'].some(id => document.getElementById(id)?.classList.contains('open'))
       || document.getElementById('cartDrawer')?.classList.contains('open')
       || document.getElementById('mobileNavDrawer')?.classList.contains('open');
     document.body.style.overflow = hasOpenLayer ? 'hidden' : '';
@@ -5990,7 +6142,91 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     openCapsuleModal(capsuleName);
   };
 
+
+  /* ─── LITERAL ─── */
+  const getLiteralProducts = (kind = literalCurrentKind) => products
+    .filter(product => getLiteralKind(product) === kind)
+    .filter(product => getTotalStock(product) > 0)
+    .sort((a,b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
+
+  const updateLiteralHomeCounts = () => {
+    const discos = getLiteralProducts('discos').length;
+    const cine = getLiteralProducts('cine').length;
+    const d = document.getElementById('literalDiscosCount');
+    const c = document.getElementById('literalCineCount');
+    if (d) d.textContent = `${discos} ${discos === 1 ? 'disponible' : 'disponibles'} →`;
+    if (c) c.textContent = `${cine} ${cine === 1 ? 'disponible' : 'disponibles'} →`;
+  };
+
+  const setLiteralKind = kind => {
+    literalCurrentKind = kind === 'cine' ? 'cine' : 'discos';
+    document.getElementById('literalTabDiscos')?.classList.toggle('active', literalCurrentKind === 'discos');
+    document.getElementById('literalTabCine')?.classList.toggle('active', literalCurrentKind === 'cine');
+    const search = document.getElementById('literalSearch');
+    if (search) search.placeholder = literalCurrentKind === 'discos' ? 'Buscá un artista, disco o año…' : 'Buscá una película, director o año…';
+    renderLiteralProducts();
+  };
+
+  const renderLiteralProducts = () => {
+    const grid = document.getElementById('literalGrid');
+    if (!grid) return;
+    const query = normalizeTextKey(document.getElementById('literalSearch')?.value || '');
+    const all = getLiteralProducts(literalCurrentKind);
+    const items = query ? all.filter(p => normalizeTextKey([p.title,p.description,p.sku].join(' ')).includes(query)) : all;
+    const meta = document.getElementById('literalResultsMeta');
+    if (meta) meta.textContent = `${items.length} ${items.length === 1 ? 'imagen disponible' : 'imágenes disponibles'} en ${literalCurrentKind === 'discos' ? 'DISCOS' : 'PELÍCULAS'}${query ? ' para tu búsqueda' : ''}.`;
+    const request = document.getElementById('literalRequestLink');
+    if (request) {
+      const text = `Hola SIN RECREO 👋\n\nEstoy viendo la colección LITERAL y no encontré ${literalCurrentKind === 'discos' ? 'el disco' : 'la película'} que buscaba.\n\nQuiero pedir: `;
+      request.href = `${getWhatsAppBase()}?text=${encodeURIComponent(text)}`;
+    }
+    if (!items.length) {
+      grid.innerHTML = `<div class="literal-empty"><div style="font-size:2rem;margin-bottom:10px">${literalCurrentKind === 'discos' ? '💿' : '🎬'}</div><strong>No encontramos esa imagen.</strong><p>Probá con otra búsqueda o pedínosla desde el botón de abajo.</p></div>`;
+      return;
+    }
+    grid.innerHTML = items.map(p => {
+      const image = getImageList(p)[0];
+      const label = literalCurrentKind === 'discos' ? 'DISCO' : 'PELÍCULA';
+      return `<article class="literal-card">
+        <div class="literal-art" onclick="openBuyModal('${p.id}',event)"><img src="${image}" alt="${escapeHtml(p.title)}" /><span class="literal-kind-badge">${label}</span></div>
+        <div class="literal-card-body">
+          <h3 class="literal-card-title">${escapeHtml(p.title)}</h3>
+          <div class="literal-card-meta">${escapeHtml(p.description || '')}</div>
+          <div class="literal-card-price">${fmt(getEffectiveUnitPrice(p, 'mp'))}</div>
+          <div class="literal-card-actions">
+            <button class="literal-card-buy" type="button" onclick="openBuyModal('${p.id}',event)">VER REMERA</button>
+            <button class="literal-card-share" type="button" onclick="shareProduct('${p.id}',event)" aria-label="Compartir ${escapeHtml(p.title)}">↗</button>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  };
+
+  const openLiteralModal = (event, kind = null) => {
+    if (event) event.preventDefault();
+    closeMobileMenu();
+    if (kind) literalCurrentKind = kind === 'cine' ? 'cine' : 'discos';
+    const search = document.getElementById('literalSearch');
+    if (search) search.value = '';
+    setLiteralKind(literalCurrentKind);
+    document.getElementById('literalModal')?.classList.add('open');
+    refreshBodyScrollLock();
+  };
+
+  const closeLiteralModal = () => {
+    document.getElementById('literalModal')?.classList.remove('open');
+    refreshBodyScrollLock();
+  };
+
+  const surpriseLiteral = () => {
+    const items = getLiteralProducts(literalCurrentKind);
+    if (!items.length) return;
+    const pick = items[Math.floor(Math.random() * items.length)];
+    openBuyModal(pick.id);
+  };
+
   const getProductsModalItems = () => products
+    .filter(product => !isLiteralProduct(product))
     .filter(product => getTotalStock(product) > 0)
     .sort((a, b) => Number(b.featured) - Number(a.featured) || new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
 
@@ -6290,6 +6526,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     const generalGrid = document.getElementById('generalCapsuleGrid');
     const activeCapsules = (capsulesData.length ? capsulesData : getCapsuleFallbackData())
       .filter(item => item.isActive !== false)
+      .filter(item => !isLiteralCapsuleName(item.name) && !isLiteralCapsuleName(item.rawName))
       .filter(item => (item.productCount || getCapsuleProducts(item.name).length) > 0);
 
     const renderCapsuleList = (items, emptyMessage) => {
@@ -6329,6 +6566,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     if (collectionGrid) collectionGrid.innerHTML = renderCapsuleList(collectionCapsules, 'Todavía no hay cápsulas de colección visibles. Cuando cargues una cápsula no general, va a aparecer acá.');
     if (generalGrid) generalGrid.innerHTML = renderCapsuleList(generalCapsules, 'Todavía no hay prendas en Línea Permanente. Si en el admin elegís “Línea Permanente”, aparecerán acá.');
     observeElements();
+    updateLiteralHomeCounts();
   };
 
   /* ─── FILTERS ─── */
@@ -6597,25 +6835,35 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const openBuyModal = (id, e) => {
     if (e) e.stopPropagation();
     if (isPreLaunchMode()) { showPreLaunchNotice(); return; }
-    if (document.getElementById('capsuleModal')?.classList.contains('open')) {
+    if (document.getElementById('literalModal')?.classList.contains('open')) {
+      pendingLiteralReturn = literalCurrentKind;
+      pendingCapsuleReturn = null;
+      pendingProductsReturn = false;
+      pendingEfemeridesReturn = false;
+      closeLiteralModal();
+    } else if (document.getElementById('capsuleModal')?.classList.contains('open')) {
       pendingCapsuleReturn = currentCapsuleView;
       pendingProductsReturn = false;
       pendingEfemeridesReturn = false;
+      pendingLiteralReturn = null;
       closeCapsuleModal();
     } else if (document.getElementById('productsModal')?.classList.contains('open')) {
       pendingCapsuleReturn = null;
       pendingProductsReturn = true;
       pendingEfemeridesReturn = false;
+      pendingLiteralReturn = null;
       closeProductsModal();
     } else if (document.getElementById('efemeridesModal')?.classList.contains('open')) {
       pendingCapsuleReturn = null;
       pendingProductsReturn = false;
       pendingEfemeridesReturn = true;
+      pendingLiteralReturn = null;
       closeEfemeridesModal();
     } else {
       pendingCapsuleReturn = null;
       pendingProductsReturn = false;
       pendingEfemeridesReturn = false;
+      pendingLiteralReturn = null;
     }
     currentProduct = products.find(p => p.id === id);
     selectedPayMethod = 'mp';
@@ -6674,6 +6922,12 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
   const closeModal = ({ restoreCapsule = true } = {}) => {
     document.getElementById('buyModal').classList.remove('open');
     refreshBodyScrollLock();
+    if (restoreCapsule && pendingLiteralReturn) {
+      const kindToRestore = pendingLiteralReturn;
+      pendingLiteralReturn = null;
+      openLiteralModal(null, kindToRestore);
+      return;
+    }
     if (restoreCapsule && pendingCapsuleReturn) {
       const capsuleToRestore = pendingCapsuleReturn;
       pendingCapsuleReturn = null;
@@ -7083,6 +7337,14 @@ ${finalNote}`;
 
   /* ─── CART ─── */
   const rememberCurrentShoppingContextForCart = () => {
+    if (document.getElementById('literalModal')?.classList.contains('open')) {
+      pendingLiteralReturn = literalCurrentKind;
+      pendingCapsuleReturn = null;
+      pendingProductsReturn = false;
+      pendingEfemeridesReturn = false;
+      closeLiteralModal();
+      return;
+    }
     if (document.getElementById('capsuleModal')?.classList.contains('open')) {
       pendingCapsuleReturn = currentCapsuleView;
       pendingProductsReturn = false;
@@ -7192,9 +7454,17 @@ ${finalNote}`;
     const capsuleWasOpen = document.getElementById('capsuleModal')?.classList.contains('open');
     const productsWasOpen = document.getElementById('productsModal')?.classList.contains('open');
     const efemeridesWasOpen = document.getElementById('efemeridesModal')?.classList.contains('open');
+    const literalWasOpen = document.getElementById('literalModal')?.classList.contains('open');
     closeCartDrawer();
 
-    if (capsuleWasOpen || productsWasOpen || efemeridesWasOpen) return;
+    if (capsuleWasOpen || productsWasOpen || efemeridesWasOpen || literalWasOpen) return;
+
+    if (pendingLiteralReturn) {
+      const kindToRestore = pendingLiteralReturn;
+      pendingLiteralReturn = null;
+      openLiteralModal(null, kindToRestore);
+      return;
+    }
 
     if (pendingCapsuleReturn) {
       const capsuleToRestore = pendingCapsuleReturn;
