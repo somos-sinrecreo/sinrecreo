@@ -4200,6 +4200,7 @@
         code: 'regalo20',
         publicCode: 'SINRECREO20',
         discount: 20,
+        managedLocally: true,
         title: '20% OFF EN TU PRÓXIMA COMPRA',
         subtitle: 'Por comprar o recibir un regalo de SIN RECREO',
         body: 'Escaneaste un QR especial. Activá la promoción y vas a ver el descuento aplicado en las prendas de la tienda.',
@@ -4481,13 +4482,39 @@
     if (maxUses !== null && maxUses !== undefined && maxUses !== '' && usedCount >= Number(maxUses)) return false;
     return true;
   };
-  const getPromoSource = () => remotePromoCatalogLoaded ? dynamicPromoCodes : Object.values(STORE_CONFIG.promos || {});
+  const getPromoAliases = (promo = {}) => [promo.code, promo.publicCode]
+    .map(normalizePromoCode)
+    .filter(Boolean);
+  const getPromoSource = () => {
+    const localPromos = Object.values(STORE_CONFIG.promos || {});
+    if (!remotePromoCatalogLoaded) return localPromos;
+
+    // Supabase es la fuente principal para los codigos creados desde el admin.
+    // Las promociones marcadas como managedLocally quedan fijas en la pagina:
+    // el QR historico regalo20 / SINRECREO20 no vence ni depende de la tabla.
+    const locallyManagedAliases = new Set(
+      localPromos.filter(promo => promo.managedLocally).flatMap(getPromoAliases)
+    );
+    const remotePromos = dynamicPromoCodes.filter(promo =>
+      !getPromoAliases(promo).some(alias => locallyManagedAliases.has(alias))
+    );
+    const remoteAliases = new Set(remotePromos.flatMap(getPromoAliases));
+    const localFallbacks = localPromos.filter(promo =>
+      promo.managedLocally || !getPromoAliases(promo).some(alias => remoteAliases.has(alias))
+    );
+    return [...remotePromos, ...localFallbacks];
+  };
   const getPromoByCode = (code = '') => {
     const normalized = normalizePromoCode(code);
     if (!normalized) return null;
+    const aliases = new Set([normalized]);
+    Object.values(STORE_CONFIG.promos || {}).forEach(promo => {
+      const promoAliases = getPromoAliases(promo);
+      if (promoAliases.includes(normalized)) promoAliases.forEach(alias => aliases.add(alias));
+    });
     return getPromoSource().find(promo =>
       isPromoCurrentlyAvailable(promo) &&
-      (normalizePromoCode(promo.code) === normalized || normalizePromoCode(promo.publicCode) === normalized)
+      getPromoAliases(promo).some(alias => aliases.has(alias))
     ) || null;
   };
   const getPromoCodeFromUrl = () => {
@@ -5665,6 +5692,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
 
   const normalizePromoRecord = (row = {}) => {
     const rawCode = String(row.code || row.public_code || '').trim();
+    const normalizedRawCode = normalizePromoCode(rawCode);
+    const localAliasPromo = Object.values(STORE_CONFIG.promos || {}).find(promo =>
+      getPromoAliases(promo).includes(normalizedRawCode)
+    );
     const promoType = String(row.promo_type || row.promoType || 'percent').toLowerCase() === 'bogo' ? 'bogo' : 'percent';
     const discount = Number(row.discount_percent ?? row.discount ?? 0);
     const buyQty = Math.max(2, Number(row.buy_qty ?? row.buyQty ?? 2) || 2);
@@ -5672,7 +5703,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     return {
       id: row.id || rawCode,
       code: rawCode,
-      publicCode: String(row.public_code || rawCode).trim().toUpperCase(),
+      publicCode: String(row.public_code || localAliasPromo?.publicCode || rawCode).trim().toUpperCase(),
       promoType,
       discount,
       buyQty,
