@@ -4257,6 +4257,7 @@
     cuentaDniDays: 'lunes a viernes',
     installmentsCount: 3,
     freeShippingMinAmount: 100000,
+    autoOpenProductsModal: true,
     springPromo: {
       enabled: true,
       code: 'PRIMAVERA2026',
@@ -6553,6 +6554,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       renderPaymentStatusBanner();
       observeElements();
       const productDeepLinkWasHandled = handleProductDeepLink();
+      const hasPaymentReturnStatus = Boolean(getPaymentStatusFromUrl());
+      if (STORE_CONFIG.autoOpenProductsModal && !productDeepLinkWasHandled && !pendingPromo && !hasPaymentReturnStatus) {
+        openProductsModal();
+      }
       if (pendingPromo) {
         setTimeout(() => openQrPromoModal(pendingPromo), 300);
       }
