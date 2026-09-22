@@ -3345,11 +3345,75 @@
       letter-spacing: .08em;
       text-transform: uppercase;
     }
+    .spring-promo-banner {
+      background:
+        radial-gradient(circle at 14% 20%, rgba(255,255,255,.16), transparent 24%),
+        linear-gradient(115deg, #b84428 0%, var(--accent) 52%, #db7c4e 100%);
+      color: #fff;
+      border-bottom: 1px solid rgba(14,14,16,.12);
+    }
+    .spring-promo-inner {
+      min-height: 92px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(240px, .75fr);
+      align-items: center;
+      gap: 30px;
+      padding-top: 17px;
+      padding-bottom: 17px;
+    }
+    .spring-promo-kicker {
+      display: block;
+      margin-bottom: 3px;
+      font-size: .69rem;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      opacity: .86;
+    }
+    .spring-promo-title {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(1.55rem, 3vw, 2.65rem);
+      line-height: .98;
+      letter-spacing: .02em;
+    }
+    .spring-promo-detail {
+      display: block;
+      margin-top: 7px;
+      font-size: .82rem;
+      font-weight: 700;
+      line-height: 1.45;
+      opacity: .9;
+    }
+    .spring-promo-shipping {
+      padding-left: 28px;
+      border-left: 1px solid rgba(255,255,255,.32);
+    }
+    .spring-promo-shipping span,
+    .spring-promo-shipping small { display: block; }
+    .spring-promo-shipping span {
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      opacity: .82;
+    }
+    .spring-promo-shipping strong {
+      display: block;
+      margin: 2px 0;
+      font-family: var(--font-display);
+      font-size: 1.72rem;
+      letter-spacing: .02em;
+    }
+    .spring-promo-shipping small { font-size: .78rem; font-weight: 700; opacity: .86; }
     @media (max-width: 680px) {
       #promoQrModal { align-items: flex-start; padding: 12px; }
       .promo-modal-shell { max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
       .promo-qr-card { padding: 26px 18px; min-height: 0; }
       .promo-qr-actions { grid-template-columns: 1fr; }
+      .spring-promo-inner { grid-template-columns: 1fr; gap: 14px; padding-top: 16px; padding-bottom: 16px; }
+      .spring-promo-shipping { padding: 12px 0 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.28); }
+      .spring-promo-shipping strong { font-size: 1.45rem; }
     }
 
 
@@ -3511,6 +3575,21 @@
     <span class="prelaunch-pill">Compra online disponible</span>
   </div>
 </div>
+
+<section class="spring-promo-banner hidden" id="springPromoBanner" aria-label="Promo Primavera en Remera">
+  <div class="container spring-promo-inner">
+    <div>
+      <span class="spring-promo-kicker">✦ Promo Primavera en Remera</span>
+      <strong class="spring-promo-title">Todas las remeras a $25.000</strong>
+      <span class="spring-promo-detail">Hasta el 21 de diciembre de 2026 inclusive · Precio final promocional, no acumulable con otros descuentos internos.</span>
+    </div>
+    <div class="spring-promo-shipping">
+      <span>Envío gratis</span>
+      <strong>desde $100.000</strong>
+      <small>Con 4 remeras ya alcanzás el beneficio.</small>
+    </div>
+  </div>
+</section>
 
 <main>
 
@@ -3969,7 +4048,7 @@
       <div class="pay-methods cart-pay-methods">
         <button class="pay-method-btn selected" onclick="selectPayMethod(this, 'mp')" type="button"><div class="pay-method-icon mp"><svg width="22" height="22" viewBox="0 0 48 48" fill="white"><ellipse cx="24" cy="24" rx="22" ry="14" fill="white"/><text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#009ee3" font-family="Arial">MP</text></svg></div><div class="pay-method-info"><div class="pay-method-name">Mercado Pago / Cuenta MP</div><div class="pay-method-detail">Pagá con dinero en cuenta, tarjeta u otros medios habilitados</div></div><span class="pay-method-badge badge-cuotas">3 cuotas s/i</span></button>
         <button class="pay-method-btn" onclick="selectPayMethod(this, 'card')" type="button"><div class="pay-method-icon card"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Tarjeta de crédito/débito</div><div class="pay-method-detail">También se procesa por Mercado Pago</div></div><span class="pay-method-badge badge-cuotas">3 cuotas</span></button>
-        <button class="pay-method-btn transfer-highlight" onclick="selectPayMethod(this, 'transfer')" type="button"><div class="pay-method-icon transfer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Transferencia bancaria</div><div class="pay-method-detail">Pagá por transferencia y aplicamos 10% OFF en la tienda</div></div><span class="pay-method-badge badge-discount">10% OFF</span></button>
+        <button class="pay-method-btn transfer-highlight" onclick="selectPayMethod(this, 'transfer')" type="button"><div class="pay-method-icon transfer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="pay-method-info"><div class="pay-method-name">Transferencia bancaria</div><div class="pay-method-detail" id="transferMethodDetail">Pagá por transferencia y aplicamos 10% OFF en la tienda</div></div><span class="pay-method-badge badge-discount" id="transferMethodBadge">10% OFF</span></button>
         <button class="pay-method-btn cuenta-dni-highlight" onclick="selectPayMethod(this, 'cuenta_dni')" type="button"><div class="pay-method-icon cuenta-dni">DNI</div><div class="pay-method-info"><div class="pay-method-name">Cuenta DNI</div><div class="pay-method-detail">20% de reintegro de lunes a viernes · tope $6000 semanal por cuenta. No se descuenta en la tienda.</div></div><span class="pay-method-badge badge-reintegro">20% reintegro</span></button>
       </div>
 
@@ -4178,6 +4257,15 @@
     cuentaDniDays: 'lunes a viernes',
     installmentsCount: 3,
     freeShippingMinAmount: 100000,
+    springPromo: {
+      enabled: true,
+      code: 'PRIMAVERA2026',
+      title: 'Primavera en Remera',
+      unitPrice: 25000,
+      startsAt: '2026-09-21',
+      endsAt: '2026-12-21',
+      endLabel: '21/12/2026'
+    },
     preLaunchMode: false,
     preLaunchMessage: 'Próximamente podrás comprar nuestras remeras en la tienda. Por ahora podés chusmear el catálogo completo y escribirnos por WhatsApp si querés consultar algo.',
     mpMode: 'backend', // 'direct_links' o 'backend'
@@ -4444,6 +4532,21 @@
     const date = new Date(normalized);
     return Number.isNaN(date.getTime()) ? null : date;
   };
+  const getSpringPromoConfig = () => STORE_CONFIG.springPromo || {};
+  const isSpringPromoActive = () => {
+    const promo = getSpringPromoConfig();
+    if (!promo.enabled || !(Number(promo.unitPrice || 0) > 0)) return false;
+    const now = new Date();
+    const startsAt = parsePromoBoundaryDate(promo.startsAt || '', false);
+    const endsAt = parsePromoBoundaryDate(promo.endsAt || '', true);
+    if (startsAt && now < startsAt) return false;
+    if (endsAt && now > endsAt) return false;
+    return true;
+  };
+  const getSpringPromoPrice = () => Number(getSpringPromoConfig().unitPrice || 25000);
+  const getSpringPromoLabel = () => String(getSpringPromoConfig().title || 'Primavera en Remera');
+  const getSpringPromoCode = () => String(getSpringPromoConfig().code || 'PRIMAVERA2026');
+  const getSpringPromoEndLabel = () => String(getSpringPromoConfig().endLabel || '21/12/2026');
   const getPromoType = (promo = activePromo) => String(promo?.promoType || promo?.promo_type || 'percent').toLowerCase() === 'bogo' ? 'bogo' : 'percent';
   const isBogoPromoRecord = (promo = activePromo) => getPromoType(promo) === 'bogo';
   const getPromoBuyQty = (promo = activePromo) => Math.max(2, Number(promo?.buyQty ?? promo?.buy_qty ?? 2) || 2);
@@ -4557,7 +4660,8 @@
       if (promo?.code) localStorage.setItem(getPromoDeclineStorageKey(), JSON.stringify({ code: promo.code, declinedAt: new Date().toISOString() }));
     } catch (error) {}
   };
-  const isPromoActive = () => Boolean(activePromo && isPromoCurrentlyAvailable(activePromo));
+  // La campaña de primavera tiene prioridad y no se acumula con cupones ni con el descuento por transferencia.
+  const isPromoActive = () => !isSpringPromoActive() && Boolean(activePromo && isPromoCurrentlyAvailable(activePromo));
   const getActivePromoDiscount = () => Number(activePromo?.discount || 0);
   const isActivePercentPromo = () => isPromoActive() && !isBogoPromoRecord(activePromo);
   const isActiveBogoPromo = () => isPromoActive() && isBogoPromoRecord(activePromo);
@@ -4566,9 +4670,12 @@
     const discount = getActivePromoDiscount();
     return isActivePercentPromo() && discount > 0 ? Math.max(0, Math.round(value * (1 - discount / 100))) : value;
   };
-  const getEffectiveProductPrice = (product = {}, stampSize = 'normal') => applyActivePromoToAmount(getProductPriceWithStamp(product, stampSize));
+  const getEffectiveProductPrice = (product = {}, stampSize = 'normal') => isSpringPromoActive()
+    ? getSpringPromoPrice()
+    : applyActivePromoToAmount(getProductPriceWithStamp(product, stampSize));
   const getEffectiveUnitPrice = (product = {}, paymentMethod = 'mp') => {
     const basePrice = Number(product.price || 0);
+    if (isSpringPromoActive()) return getSpringPromoPrice();
     if (isPromoActive()) return applyActivePromoToAmount(basePrice);
     return paymentMethod === 'transfer' ? Number(getTransferPrice(product) || 0) : basePrice;
   };
@@ -4585,7 +4692,16 @@
   };
   const getPromoDiscountAmount = amount => Math.max(0, Number(amount || 0) - applyActivePromoToAmount(amount));
   const getPromoLabel = () => activePromo?.publicCode || activePromo?.code || 'PROMO';
-  const getPromoPayload = () => isPromoActive() ? {
+  const getPromoPayload = () => isSpringPromoActive() ? {
+    promo_id: null,
+    promo_code: getSpringPromoCode(),
+    promo_discount: 0,
+    promo_type: 'fixed_price',
+    promo_fixed_price: getSpringPromoPrice(),
+    promo_buy_qty: null,
+    promo_pay_qty: null,
+    promo_description: `${getSpringPromoLabel()} · todas las remeras a $25.000 hasta el ${getSpringPromoEndLabel()}`
+  } : isPromoActive() ? {
     promo_id: activePromo?.id || null,
     promo_code: getPromoLabel(),
     promo_discount: getActivePromoDiscount(),
@@ -4596,7 +4712,7 @@
   } : { promo_id: null, promo_code: '', promo_discount: 0, promo_type: '', promo_buy_qty: null, promo_pay_qty: null, promo_description: '' };
   const hasPromoDeepLink = () => Boolean(getPromoFromUrl());
   const initPromoSystem = () => {
-    pendingPromo = getPromoFromUrl();
+    pendingPromo = isSpringPromoActive() ? null : getPromoFromUrl();
     activePromo = readStoredPromo();
     if (activePromo && !isPromoCurrentlyAvailable(activePromo)) {
       activePromo = null;
@@ -4710,6 +4826,28 @@
     const applied = document.getElementById('cartPromoApplied');
     const input = document.getElementById('cartPromoInput');
     const applyBtn = document.getElementById('cartPromoApplyBtn');
+    if (isSpringPromoActive()) {
+      if (applied) {
+        applied.innerHTML = `<div>🌼 <strong>${escapeHtml(getSpringPromoLabel())}</strong> activa · Todas las remeras a ${fmt(getSpringPromoPrice())} hasta el ${escapeHtml(getSpringPromoEndLabel())}.</div>`;
+        applied.classList.remove('hidden');
+      }
+      if (input) {
+        input.value = '';
+        input.placeholder = 'Promo Primavera activa';
+        input.disabled = true;
+      }
+      if (applyBtn) {
+        applyBtn.textContent = 'Activa';
+        applyBtn.disabled = true;
+      }
+      showCartPromoStatus('Esta promoción no se acumula con cupones ni con el descuento por transferencia.', 'info');
+      return;
+    }
+    if (input) {
+      input.disabled = false;
+      input.placeholder = 'Ej: SINRECREO20';
+    }
+    if (applyBtn) applyBtn.disabled = false;
     if (!isPromoActive()) {
       applied?.classList.add('hidden');
       if (applyBtn) applyBtn.textContent = 'Aplicar';
@@ -4725,6 +4863,10 @@
     if (applyBtn) applyBtn.textContent = 'Cambiar';
   };
   const applyCartPromoCode = () => {
+    if (isSpringPromoActive()) {
+      showCartPromoStatus(`La promo ${getSpringPromoLabel()} ya deja todas las remeras a ${fmt(getSpringPromoPrice())} y no es acumulable.`, 'info');
+      return;
+    }
     const input = document.getElementById('cartPromoInput');
     const code = String(input?.value || '').trim();
     if (!code) {
@@ -4753,6 +4895,16 @@
   };
   const renderPromoActiveUi = () => {
     const existing = document.getElementById('promoActiveStrip');
+    if (isSpringPromoActive()) {
+      const checkoutPanel = document.getElementById('cartCheckoutPanel');
+      const html = `<div class="promo-active-strip" id="promoActiveStrip">🌼 ${escapeHtml(getSpringPromoLabel())}: todas las remeras a ${fmt(getSpringPromoPrice())} hasta el ${escapeHtml(getSpringPromoEndLabel())}. No acumulable con otros descuentos internos.</div>`;
+      if (checkoutPanel) {
+        if (existing) existing.outerHTML = html;
+        else checkoutPanel.insertAdjacentHTML('afterbegin', html);
+      }
+      renderCartPromoPanel();
+      return;
+    }
     if (!isPromoActive()) {
       existing?.remove();
       renderCartPromoPanel();
@@ -4781,6 +4933,18 @@
   const isPaymentEnabled = () => true;
   const getPreSaleBannerHtml = getNormalBannerHtml;
 
+  const renderSpringPromoUi = () => {
+    const active = isSpringPromoActive();
+    document.getElementById('springPromoBanner')?.classList.toggle('hidden', !active);
+
+    const transferDetail = document.getElementById('transferMethodDetail');
+    const transferBadge = document.getElementById('transferMethodBadge');
+    if (transferDetail) transferDetail.textContent = active
+      ? `La promo ${getSpringPromoLabel()} ya está aplicada; no se suma otro descuento.`
+      : `Pagá por transferencia y aplicamos ${STORE_CONFIG.transferDiscount}% OFF en la tienda`;
+    if (transferBadge) transferBadge.textContent = active ? fmt(getSpringPromoPrice()) : `${STORE_CONFIG.transferDiscount}% OFF`;
+  };
+
   const renderPreSaleUi = () => {
     document.body.classList.remove('presale-mode');
 
@@ -4793,15 +4957,30 @@
     }
 
     const mpTextNode = document.getElementById('heroMpText');
+    const transferTextNode = document.getElementById('heroTransferText');
     const whatsAppTextNode = document.getElementById('heroWhatsAppText');
     if (mpTextNode) mpTextNode.innerHTML = `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`;
+    if (transferTextNode) transferTextNode.innerHTML = isSpringPromoActive()
+      ? `<strong>Promo Primavera:</strong> ${fmt(getSpringPromoPrice())} precio final`
+      : `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`;
     if (whatsAppTextNode) whatsAppTextNode.innerHTML = '<strong>WhatsApp:</strong> atención personalizada';
+
+    const trustTransfer = document.querySelector('.trust-grid .trust-item:nth-child(3)');
+    if (trustTransfer) {
+      const strong = trustTransfer.querySelector('strong');
+      const span = trustTransfer.querySelector('span');
+      if (strong) strong.textContent = isSpringPromoActive() ? 'Precio único de primavera' : `${STORE_CONFIG.transferDiscount}% off transferencia`;
+      if (span) span.textContent = isSpringPromoActive()
+        ? `Todas las remeras a ${fmt(getSpringPromoPrice())} hasta el ${getSpringPromoEndLabel()}`
+        : 'Pagando por transferencia bancaria';
+    }
 
     document.querySelectorAll('.shipping-help').forEach(node => {
       node.textContent = 'Hasta 7 remeras por envío. En compras desde $100.000, SIN RECREO bonifica el envío.';
     });
     const deliveryPudo = document.getElementById('deliveryChoicePudo')?.querySelector('span');
     if (deliveryPudo) deliveryPudo.textContent = 'Domicilio o Smart Locker';
+    renderSpringPromoUi();
     refreshPreSaleHeaderButton();
   };
 
@@ -5230,7 +5409,9 @@
     const destination = option.destination || {};
     const method = option.type === 'locker' ? (option.shippingMethodName + (option.lockerName ? ' · ' + option.lockerName : '')) : option.shippingMethodName;
     const destinationText = option.type === 'locker' ? ((option.address || 'Punto PUDO') + (option.city ? ', ' + option.city : '')) : ((destination.address || '') + ' ' + (destination.number || '') + (destination.city ? ', ' + destination.city : ''));
-    const freeText = option.freeReason === 'monto-minimo' ? ('Envío sin cargo por preventa docente. Costo real: ' + fmt(option.realPrice) + '.') : ('Envío bonificado por SIN RECREO. Costo real: ' + fmt(option.realPrice) + '.');
+    const freeText = option.freeReason === 'monto-minimo'
+      ? (`Envío gratis por compra desde ${fmt(getFreeShippingThreshold())}. Costo real: ${fmt(option.realPrice)}.`)
+      : (`Envío bonificado por SIN RECREO. Costo real: ${fmt(option.realPrice)}.`);
     node.innerHTML = '<strong>Entrega seleccionada:</strong> ' + escapeHtml(method) + '<br>' + escapeHtml(destinationText) + '<br>' + (option.isFree ? freeText : ('Costo de envío: ' + fmt(option.charge) + '.'));
     node.classList.remove('hidden');
   };
@@ -5328,6 +5509,7 @@
   const getProductPriceWithStamp = (product = {}, stampSize = 'normal') => Number(product.price || 0) + getStampSizeSurcharge(stampSize);
   const getStampSizeMeta = id => {
     const option = getStampSizeOption(id);
+    if (isSpringPromoActive()) return `${option.label} (incluida en promo)`;
     return option.surcharge > 0 ? `${option.label} (+${fmt(option.surcharge)})` : option.label;
   };
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]));
@@ -5404,6 +5586,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       : normalizeTextKey(productCapsule) === normalizeTextKey(capsuleName));
   const getTransferPrice = p => {
     const basePrice = Number(p?.price || 0);
+    if (isSpringPromoActive()) return getSpringPromoPrice();
     if (isPromoActive()) return applyActivePromoToAmount(basePrice);
     return p.transferPrice ?? Math.round(basePrice * (1 - ((p.transferDiscount ?? STORE_CONFIG.transferDiscount) / 100)));
   };
@@ -5838,7 +6021,9 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     }
 
     setHtml('#heroMpText', `<strong>MercadoPago:</strong> ${STORE_CONFIG.installmentsCount || 3} cuotas sin interés`);
-    setHtml('#heroTransferText', `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`);
+    setHtml('#heroTransferText', isSpringPromoActive()
+      ? `<strong>Promo Primavera:</strong> ${fmt(getSpringPromoPrice())} precio final`
+      : `<strong>Transferencia:</strong> ${STORE_CONFIG.transferDiscount}% de descuento`);
     setHtml('#heroCuentaDniText', `<strong>Cuenta DNI:</strong> ${getCuentaDniBenefitText()}`);
   };
 
@@ -6676,8 +6861,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       const baseCardPrice = Number(p.price || 0);
       const displayPrice = getEffectiveProductPrice(p, 'normal');
       const transferPrice = getTransferPrice({ ...p, price: baseCardPrice });
-      const promoCardHtml = isPromoActive()
-        ? `<div class="promo-price-old">${fmt(baseCardPrice)}</div><div class="promo-price-badge">${getActivePromoDiscount()}% OFF · ${escapeHtml(getPromoLabel())}</div>`
+      const promoCardHtml = isSpringPromoActive()
+        ? `<div class="promo-price-old">${fmt(baseCardPrice)}</div><div class="promo-price-badge">Primavera en Remera · hasta ${escapeHtml(getSpringPromoEndLabel())}</div>`
+        : isPromoActive()
+          ? `<div class="promo-price-old">${fmt(baseCardPrice)}</div><div class="promo-price-badge">${getActivePromoDiscount()}% OFF · ${escapeHtml(getPromoLabel())}</div>`
         : '';
       const descData = truncateWords(p.description, PRODUCT_DESCRIPTION_WORD_LIMIT_DESKTOP);
       const descriptionHtml = truncateDescriptions && descData.truncated
@@ -6711,7 +6898,9 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
               ${promoCardHtml}
               <div class="pcard-price">${fmt(displayPrice)}</div>
               <div class="pcard-cuotas">3 x ${fmt(Math.round(displayPrice / 3))} sin interés</div>
-              <div class="pcard-transfer">${isPromoActive() ? '🎁 Precio promocional aplicado' : '💸 ' + fmt(transferPrice) + ' por transferencia'}</div>
+              <div class="pcard-transfer">${isSpringPromoActive()
+                ? `🌼 Precio final promocional hasta el ${escapeHtml(getSpringPromoEndLabel())}`
+                : (isPromoActive() ? '🎁 Precio promocional aplicado' : '💸 ' + fmt(transferPrice) + ' por transferencia')}</div>
             </div>
             <div class="size-row">${sizes.map(sz => {
               const parsedSize = parseVariantSizeKey(sz);
@@ -6850,7 +7039,7 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     wrap.innerHTML = STAMP_SIZE_OPTIONS.map(option => `
       <button class="fit-btn ${selectedStampSize === option.id ? 'selected' : ''}" type="button" onclick="selectStampSize(this,'${option.id}')">
         <span>${option.label}</span>
-        <small>${option.surcharge > 0 ? '+' + fmt(option.surcharge) : 'Sin adicional'}</small>
+        <small>${isSpringPromoActive() ? 'Incluida en promo' : (option.surcharge > 0 ? '+' + fmt(option.surcharge) : 'Sin adicional')}</small>
       </button>`).join('');
   };
 
@@ -7074,15 +7263,19 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
       if (badge) badge.textContent = `${STORE_CONFIG.cuentaDniRebatePercent || 20}% REINTEGRO`;
       if (dataGrid) dataGrid.classList.add('hidden');
       if (actions) actions.classList.add('hidden');
-      if (note) note.innerHTML = `${getCuentaDniBenefitText()}. <strong>La tienda no descuenta ese reintegro en la orden de pago:</strong> el total se cobra completo y el beneficio lo reintegra Cuenta DNI según sus condiciones.`;
+      if (note) note.innerHTML = `${isSpringPromoActive() ? `La promo ${escapeHtml(getSpringPromoLabel())} ya deja cada remera a ${fmt(getSpringPromoPrice())}. ` : ''}${getCuentaDniBenefitText()}. <strong>La tienda no descuenta ese reintegro en la orden de pago:</strong> el beneficio lo acredita Cuenta DNI según sus condiciones.`;
       return;
     }
 
-    if (title) title.textContent = 'Transferencia con contacto directo';
-    if (badge) badge.textContent = isPromoActive() ? `${getActivePromoDiscount()}% OFF PROMO` : STORE_CONFIG.transferDiscount + '% OFF';
+    if (title) title.textContent = isSpringPromoActive() ? `Transferencia · ${getSpringPromoLabel()}` : 'Transferencia con contacto directo';
+    if (badge) badge.textContent = isSpringPromoActive()
+      ? fmt(getSpringPromoPrice())
+      : (isPromoActive() ? `${getActivePromoDiscount()}% OFF PROMO` : STORE_CONFIG.transferDiscount + '% OFF');
     if (dataGrid) dataGrid.classList.remove('hidden');
     if (actions) actions.classList.remove('hidden');
-    if (note) note.textContent = 'Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante.';
+    if (note) note.textContent = isSpringPromoActive()
+      ? `El precio de ${fmt(getSpringPromoPrice())} ya está aplicado y no acumula el descuento habitual por transferencia. Al confirmar, te abrimos WhatsApp con el pedido armado.`
+      : 'Al confirmar la transferencia, te abrimos WhatsApp con el pedido armado para que envíes el comprobante.';
   };
 
   const updateModalTotal = () => {
@@ -7091,8 +7284,10 @@ _Me ayudan a confirmar si el pedido quedó registrado?_`;
     const finalPrice = getEffectiveProductPrice(currentProduct, selectedStampSize);
     const modalTotal = document.getElementById('modalTotal');
     const modalProductPrice = document.getElementById('modalProductPrice');
-    const priceHtml = isPromoActive()
-      ? `<span class="promo-price-old">${fmt(basePrice)}</span><br>${fmt(finalPrice)} <span class="promo-price-badge">${getActivePromoDiscount()}% OFF</span>`
+    const priceHtml = isSpringPromoActive()
+      ? `<span class="promo-price-old">${fmt(basePrice)}</span><br>${fmt(finalPrice)} <span class="promo-price-badge">Primavera en Remera · hasta ${escapeHtml(getSpringPromoEndLabel())}</span>`
+      : isPromoActive()
+        ? `<span class="promo-price-old">${fmt(basePrice)}</span><br>${fmt(finalPrice)} <span class="promo-price-badge">${getActivePromoDiscount()}% OFF</span>`
       : fmt(finalPrice);
     if (modalTotal) modalTotal.textContent = fmt(finalPrice);
     if (modalProductPrice) modalProductPrice.innerHTML = priceHtml;
@@ -7126,19 +7321,21 @@ ${value}`);
     const stampSurcharge = Number(item.stampSurcharge ?? item.stamp_surcharge ?? getStampSizeSurcharge(stampSize));
     const color = item.color || item.selectedColor || '';
     const paymentMethod = item.paymentMethod || item.payment_method || selectedPayMethod;
-    const benefitLabel = isPromoActive() ? `promo ${getPromoLabel()} (${getPromoBenefitLabel(activePromo)})` : 'transferencia';
-    const benefitLine = isCuentaDniPaymentMethod(paymentMethod)
-      ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
-      : `• Descuento ${benefitLabel}: ${fmt(discount)}`;
+    const benefitLabel = isSpringPromoActive()
+      ? `promo ${getSpringPromoLabel()}`
+      : (isPromoActive() ? `promo ${getPromoLabel()} (${getPromoBenefitLabel(activePromo)})` : 'transferencia');
+    const benefitLines = [];
+    if (discount > 0) benefitLines.push(`• Descuento ${benefitLabel}: ${fmt(discount)}`);
+    if (isCuentaDniPaymentMethod(paymentMethod)) benefitLines.push(`• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (lo acredita Cuenta DNI)`);
 
     return `👕 *${item.title || 'Producto'}*
 • Código: ${item.sku || 'Sin código'}
 • Cápsula: ${getDisplayCapsuleName(item.capsule || 'Sin cápsula')}
 • Variante: ${describeFitAndSize(item.fit || 'unisex', item.size || 'A confirmar', color)}
-• Estampa: ${stampLabel}${stampSurcharge > 0 ? ` (+${fmt(stampSurcharge)} por unidad)` : ''}
+• Estampa: ${stampLabel}${stampSurcharge > 0 && !isSpringPromoActive() ? ` (+${fmt(stampSurcharge)} por unidad)` : (isSpringPromoActive() ? ' (incluida en promo)' : '')}
 • Cantidad: ${quantity}
 • Precio lista: ${fmt(subTotal)}
-${benefitLine}
+${benefitLines.join('\n')}
 • Total prenda: *${fmt(total)}*`;
   };
 
@@ -7160,7 +7357,7 @@ ${benefitLine}
         stampSizeLabel: getStampSizeLabel(selectedStampSize),
         stampSurcharge: getStampSizeSurcharge(selectedStampSize),
         basePrice: getProductPriceWithStamp(currentProduct, selectedStampSize),
-        discount: isTransferPaymentMethod(selectedPayMethod) ? getProductPriceWithStamp(currentProduct, selectedStampSize) - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }) || 0) : 0,
+        discount: Math.max(0, getProductPriceWithStamp(currentProduct, selectedStampSize) - Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }, getPricingPaymentMethod(selectedPayMethod)) || 0)),
         lineTotal: Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize) }, getPricingPaymentMethod(selectedPayMethod)) || 0)
       }],
       paymentMethod: selectedPayMethod
@@ -7189,7 +7386,7 @@ ${benefitLine}
           customer_email: customer.email || '',
           customer_phone: customer.phone || '',
           payment_method: isCuentaDniPaymentMethod(paymentMethod) ? 'cuenta_dni' : 'transferencia',
-          transfer_discount: isTransferPaymentMethod(paymentMethod) && !isPromoActive() ? STORE_CONFIG.transferDiscount : 0,
+          transfer_discount: isTransferPaymentMethod(paymentMethod) && !isSpringPromoActive() && !isPromoActive() ? STORE_CONFIG.transferDiscount : 0,
           ...getPromoPayload(),
           shipping: serializeShippingOption(shipping),
           shipping_price: Number(shipping?.charge || 0),
@@ -7240,7 +7437,7 @@ ${benefitLine}
           paymentMethod,
           basePrice: currentProduct ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') : 0,
           subTotal: currentProduct ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') : 0,
-          discount: currentProduct && isTransferPaymentMethod(paymentMethod) ? getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') - Number(getTransferPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }) || 0) : 0,
+          discount: currentProduct ? Math.max(0, getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') - Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }, getPricingPaymentMethod(paymentMethod)) || 0)) : 0,
           lineTotal: currentProduct ? Number(getEffectiveUnitPrice({ ...currentProduct, price: getProductPriceWithStamp(currentProduct, selectedStampSize || 'normal') }, getPricingPaymentMethod(paymentMethod)) || 0) : 0
         }];
 
@@ -7253,9 +7450,15 @@ ${benefitLine}
     const shippingText = describeShippingForMessage(shipping);
     const isCuentaDni = isCuentaDniPaymentMethod(paymentMethod);
     const paymentTitle = isCuentaDni ? 'Cuenta DNI' : 'transferencia bancaria';
-    const benefitSummary = isCuentaDni
-      ? `• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (no aplicado por la tienda)`
-      : `• Descuento ${isPromoActive() ? 'promo ' + getPromoLabel() + ' (' + getPromoBenefitLabel(activePromo) + ')' : 'transferencia'}: ${fmt(computedDiscount)}`;
+    const benefitSummaryLines = [];
+    if (computedDiscount > 0) {
+      const discountLabel = isSpringPromoActive()
+        ? `promo ${getSpringPromoLabel()}`
+        : (isPromoActive() ? `promo ${getPromoLabel()} (${getPromoBenefitLabel(activePromo)})` : 'transferencia');
+      benefitSummaryLines.push(`• Descuento ${discountLabel}: ${fmt(computedDiscount)}`);
+    }
+    if (isCuentaDni) benefitSummaryLines.push(`• Reintegro Cuenta DNI: ${getCuentaDniBenefitText()} (lo acredita Cuenta DNI)`);
+    const benefitSummary = benefitSummaryLines.join('\n');
     const totalLabel = isCuentaDni ? 'Total a pagar en tienda' : 'Total a transferir';
     const finalNote = isCuentaDni
       ? '_La tienda no aplica el reintegro en esta orden. Cuenta DNI lo acredita según sus condiciones._'
@@ -7354,7 +7557,9 @@ ${finalNote}`;
       stamp_size: stampSize,
       stamp_size_label: stampLabel,
       stamp_surcharge: stampSurcharge,
-      stamp_note: stampSurcharge > 0 ? `Adicional por estampa ${stampLabel}: ${fmt(stampSurcharge)}` : 'Estampa Normal sin adicional',
+      stamp_note: isSpringPromoActive()
+        ? `Estampa ${stampLabel} incluida en la promo ${getSpringPromoLabel()}`
+        : (stampSurcharge > 0 ? `Adicional por estampa ${stampLabel}: ${fmt(stampSurcharge)}` : 'Estampa Normal sin adicional'),
       quantity: qty,
       unit_price: unitPrice,
       base_price: basePrice,
@@ -7445,7 +7650,9 @@ ${finalNote}`;
       const pricing = cartPricing[cartIndex] || {};
       const lineTotal = Number(pricing.lineTotal ?? (Number(getEffectiveUnitPrice(item, getPricingPaymentMethod(selectedPayMethod)) || 0) * Number(item.qty || 1)));
       const discount = Number(pricing.discount || 0);
-      const promoLine = isPromoActive() && discount > 0 ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ' (' + escapeHtml(getPromoBenefitLabel(activePromo)) + '): -' + fmt(discount) + '</div>' : '';
+      const promoLine = isSpringPromoActive() && discount > 0
+        ? '<div class="cart-item-meta">Promo ' + escapeHtml(getSpringPromoLabel()) + ': ' + fmt(getSpringPromoPrice()) + ' por unidad · ahorro ' + fmt(discount) + '</div>'
+        : (isPromoActive() && discount > 0 ? '<div class="cart-item-meta">Promo ' + escapeHtml(getPromoLabel()) + ' (' + escapeHtml(getPromoBenefitLabel(activePromo)) + '): -' + fmt(discount) + '</div>' : '');
       return '<div class="cart-item"><div class="cart-item-img"><img src="' + img + '" alt="' + escapeHtml(item.title) + '" style="width:100%;height:100%;object-fit:cover;display:block" /></div><div class="cart-item-info"><div class="cart-item-name">' + escapeHtml(item.title) + '</div><div class="cart-item-meta">' + escapeHtml(item.capsule) + ' · ' + describeFitAndSize(item.selectedFit || 'unisex', item.selectedSize, item.selectedColor || 'Hueso') + ' · Estampa ' + escapeHtml(stampMeta) + ' · x' + item.qty + '</div>' + promoLine + '<div class="cart-item-price">' + fmt(lineTotal) + '</div></div><button class="cart-item-remove" type="button" onclick="removeCartItemByIndex(' + cartIndex + ')" aria-label="Eliminar ' + escapeHtml(item.title) + '">✕</button></div>';
     }).join('');
     renderPromoActiveUi();
@@ -7678,7 +7885,7 @@ ${finalNote}`;
     if (cart.length === 1) {
       const single = cart[0];
       const directLink = getMpLink(single, single.selectedSize, single.selectedFit || 'unisex');
-      if (!isPromoActive() && directLink && (single.selectedStampSize || 'normal') === 'normal') {
+      if (!isSpringPromoActive() && !isPromoActive() && directLink && (single.selectedStampSize || 'normal') === 'normal') {
         if (Number(shipping.charge || 0) > 0) {
           alert('Este carrito tiene envío PUDO. Para cobrar prendas + envío juntos, usá el checkout backend de Mercado Pago, no links directos por talle.');
           return;
@@ -7740,6 +7947,7 @@ ${finalNote}`;
   });
   window.addEventListener('load', updateFixedHeaderHeight);
   setTimeout(updateFixedHeaderHeight, 250);
+  renderSpringPromoUi();
   initStore();
 
   /* ─── EVENT LISTENERS ─── */
